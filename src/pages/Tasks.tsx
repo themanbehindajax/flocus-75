@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +44,7 @@ const Tasks = () => {
     projectId?: string;
     tags: string[];
     dueDate?: string;
+    subtasks: string[];
   }>({
     title: "",
     description: "",
@@ -51,6 +53,7 @@ const Tasks = () => {
     tags: [],
     projectId: undefined,
     dueDate: undefined,
+    subtasks: [],
   });
   
   const handleCreateTask = () => {
@@ -63,6 +66,7 @@ const Tasks = () => {
         tags: newTask.tags,
         projectId: newTask.projectId,
         dueDate: newTask.dueDate || undefined,
+        subtasks: newTask.subtasks,
       });
       
       setNewTask({
@@ -73,6 +77,7 @@ const Tasks = () => {
         tags: [],
         projectId: undefined,
         dueDate: undefined,
+        subtasks: [],
       });
       
       setIsAddDialogOpen(false);

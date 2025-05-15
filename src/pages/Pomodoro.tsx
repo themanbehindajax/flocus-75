@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -293,7 +292,7 @@ const Pomodoro = () => {
                     <SelectValue placeholder="Selecione uma tarefa" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Sem tarefa específica</SelectItem>
+                    <SelectItem value="none">Sem tarefa específica</SelectItem>
                     {tasks
                       .filter(task => !task.completed)
                       .map(task => (
@@ -316,7 +315,7 @@ const Pomodoro = () => {
                     <SelectValue placeholder="Selecione um projeto" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Sem projeto específico</SelectItem>
+                    <SelectItem value="none">Sem projeto específico</SelectItem>
                     {projects.map(project => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.name}

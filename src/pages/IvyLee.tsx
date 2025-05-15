@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import { 
   CheckCircle, 
-  DragDropIcon, 
   Grip, 
   Info, 
   ListChecks,

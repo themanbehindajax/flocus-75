@@ -10,6 +10,7 @@ import Tasks from "./pages/Tasks";
 import IvyLee from "./pages/IvyLee";
 import Pomodoro from "./pages/Pomodoro";
 import Settings from "./pages/Settings";
+import Achievements from "./pages/Achievements";
 import NotFound from "./pages/NotFound";
 import React from "react";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/ivy-lee" element={<IvyLee />} />
             <Route path="/pomodoro" element={<Pomodoro />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/achievements" element={<Achievements />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
