@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CheckCircle, ListPlus, Search, Plus } from "lucide-react";
-import { Task, PriorityLevel, TaskStatus } from "@/lib/types";
+import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
 
 const Tasks = () => {
   const { tasks, projects, tags, addTask, completeTask, deleteTask } = useAppStore();
@@ -44,7 +44,7 @@ const Tasks = () => {
     projectId?: string;
     tags: string[];
     dueDate?: string;
-    subtasks: string[];
+    subtasks: string[]; // This is for input only, will be converted to SubTask[]
   }>({
     title: "",
     description: "",
@@ -58,6 +58,13 @@ const Tasks = () => {
   
   const handleCreateTask = () => {
     if (newTask.title.trim()) {
+      // Convert string[] to SubTask[] when adding the task
+      const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => ({
+        id: crypto.randomUUID(),
+        title: title,
+        completed: false
+      }));
+      
       addTask({
         title: newTask.title.trim(),
         description: newTask.description,
@@ -66,7 +73,7 @@ const Tasks = () => {
         tags: newTask.tags,
         projectId: newTask.projectId,
         dueDate: newTask.dueDate || undefined,
-        subtasks: newTask.subtasks,
+        subtasks: formattedSubtasks, // Now passing correctly typed SubTask[]
       });
       
       setNewTask({
