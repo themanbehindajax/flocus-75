@@ -58,7 +58,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               />
             </svg>
           </button>
-          <h1 className="ml-3 font-bold text-xl text-primary">Produtivo</h1>
+          <h1 className="ml-3 font-bold text-xl text-primary">Flocus</h1>
         </div>
 
         {/* Overlay for mobile when sidebar is open */}

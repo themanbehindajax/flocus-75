@@ -54,7 +54,7 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
   return (
     <div className="h-screen flex flex-col border-r bg-card">
       <div className="p-4 flex items-center justify-between border-b">
-        <h1 className="font-bold text-xl text-primary">Produtivo</h1>
+        <h1 className="font-bold text-xl text-primary">Flocus</h1>
         <ThemeToggle />
       </div>
       
