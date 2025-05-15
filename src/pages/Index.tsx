@@ -33,10 +33,12 @@ const Index = () => {
   const [quickTasks, setQuickTasks] = useState<string[]>([]);
 
   useEffect(() => {
-    // Setup user profile on first visit
-    if (!profile.name || profile.name === "Usuário") {
-      const username = localStorage.getItem("username") || "Usuário";
-      updateProfile({ name: username });
+    // Setup user profile on first visit - only if name is exactly "Usuário"
+    if (profile.name === "Usuário") {
+      const username = localStorage.getItem("username");
+      if (username && username !== "Usuário") {
+        updateProfile({ name: username });
+      }
     }
 
     // Get today's date in YYYY-MM-DD format
@@ -60,7 +62,7 @@ const Index = () => {
       .map(task => task.id);
     
     setQuickTasks(quickTaskIds);
-  }, [dailyPriorities, tasks, profile, updateProfile]);
+  }, [dailyPriorities, tasks, profile.name, updateProfile]); // Include profile.name instead of the entire profile object
 
   // Statistics
   const totalTasks = tasks.length;
