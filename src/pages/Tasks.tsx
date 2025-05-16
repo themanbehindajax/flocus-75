@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -105,7 +104,7 @@ const Tasks = () => {
         {/* Quick Add Task */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Adicionar Tarefa Rápida</CardTitle>
+            <CardTitle className="text-lg">Adicionar Tarefa</CardTitle>
           </CardHeader>
           <CardContent>
             <QuickAddTask />

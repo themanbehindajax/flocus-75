@@ -5,6 +5,7 @@ import { PriorityLevel } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Zap } from "lucide-react";
 
 interface QuickAddTaskProps {
   projectId?: string;
@@ -13,6 +14,7 @@ interface QuickAddTaskProps {
 
 export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
   const [taskTitle, setTaskTitle] = useState("");
+  const [isQuickTask, setIsQuickTask] = useState(false);
   const { addTask } = useAppStore();
 
   const handleCreateTask = () => {
@@ -24,12 +26,18 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         status: "todo",
         tags: [],
         projectId: projectId,
-        subtasks: [], // Add missing subtasks property
-        isQuick: true,
+        subtasks: [],
+        isQuick: isQuickTask,
       });
 
-      toast(`Tarefa "${taskTitle}" adicionada`);
+      if (isQuickTask) {
+        toast(`Tarefa rápida "${taskTitle}" adicionada`);
+      } else {
+        toast(`Tarefa "${taskTitle}" adicionada`);
+      }
+      
       setTaskTitle("");
+      setIsQuickTask(false);
       
       if (onTaskAdded) {
         onTaskAdded();
@@ -46,11 +54,21 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       }}
     >
       <Input
-        placeholder="Adicionar nova tarefa rápida..."
+        placeholder="Adicionar nova tarefa..."
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         className="flex-1"
       />
+      <Button
+        type="button"
+        size="icon"
+        variant={isQuickTask ? "default" : "outline"}
+        onClick={() => setIsQuickTask(!isQuickTask)}
+        className="min-w-10"
+        title={isQuickTask ? "Tarefa rápida ativa" : "Marcar como tarefa rápida"}
+      >
+        <Zap className={`h-4 w-4 ${isQuickTask ? "text-white" : ""}`} />
+      </Button>
       <Button type="submit" disabled={!taskTitle.trim()}>
         Adicionar
       </Button>
