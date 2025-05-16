@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import {
@@ -41,6 +41,10 @@ const Pomodoro = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Refs for keeping track of timer even when tab is inactive
+  const timerRef = useRef<number | null>(null);
+  const lastTickTimeRef = useRef<number>(Date.now());
+
   // Get durations based on current mode
   const getDuration = (): number => {
     switch (timerMode) {
@@ -60,63 +64,102 @@ const Pomodoro = () => {
     setTimeRemaining(getDuration());
   }, [timerMode, settings]);
 
+  // Handle timer completion logic
+  const handleTimerCompletion = () => {
+    if (timerMode === "pomodoro") {
+      // Complete the session
+      if (activeSessionId) {
+        completePomodoroSession(activeSessionId);
+        setActiveSessionId(null);
+      }
+      
+      // Increment pomodoro count
+      const newCount = pomodoroCount + 1;
+      setPomodoroCount(newCount);
+      
+      // Determine which break to take
+      const nextMode = newCount % 4 === 0 ? "longBreak" : "shortBreak";
+      setTimerMode(nextMode);
+      
+      toast({
+        title: "Pomodoro concluído!",
+        description: "Hora de fazer uma pausa.",
+      });
+      
+      setTimerState("completed");
+    } else {
+      // Break completed
+      setTimerMode("pomodoro");
+      
+      toast({
+        title: "Pausa concluída!",
+        description: "Hora de voltar ao trabalho.",
+      });
+      
+      setTimerState("completed");
+    }
+    
+    setTimeRemaining(0);
+  };
+
   // Timer logic
   useEffect(() => {
-    if (timerState !== "running") return;
+    if (timerState !== "running") {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
 
-    const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          
-          // Handle timer completion
-          if (timerMode === "pomodoro") {
-            // Complete the session
-            if (activeSessionId) {
-              completePomodoroSession(activeSessionId);
-              setActiveSessionId(null);
-            }
-            
-            // Increment pomodoro count
-            const newCount = pomodoroCount + 1;
-            setPomodoroCount(newCount);
-            
-            // Determine which break to take
-            const nextMode = newCount % 4 === 0 ? "longBreak" : "shortBreak";
-            setTimerMode(nextMode);
-            
-            toast({
-              title: "Pomodoro concluído!",
-              description: "Hora de fazer uma pausa.",
-            });
-            
-            setTimerState("completed");
-            
-            return 0;
-          } else {
-            // Break completed
-            setTimerMode("pomodoro");
-            
-            toast({
-              title: "Pausa concluída!",
-              description: "Hora de voltar ao trabalho.",
-            });
-            
-            setTimerState("completed");
-            
+    // Use requestAnimationFrame for more accurate timing
+    const tick = () => {
+      const now = Date.now();
+      const deltaTime = Math.floor((now - lastTickTimeRef.current) / 1000);
+      
+      if (deltaTime >= 1) {
+        lastTickTimeRef.current = now;
+        
+        setTimeRemaining((prev) => {
+          if (prev <= deltaTime) {
+            handleTimerCompletion();
             return 0;
           }
-        }
-        return prev - 1;
-      });
-    }, 1000);
+          return prev - deltaTime;
+        });
+      }
+      
+      if (timerState === "running") {
+        timerRef.current = window.requestAnimationFrame(tick);
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [timerState, timerMode, pomodoroCount, activeSessionId]);
+    // Start the timer
+    lastTickTimeRef.current = Date.now();
+    timerRef.current = window.requestAnimationFrame(tick);
+    
+    // Cleanup function
+    return () => {
+      if (timerRef.current) {
+        window.cancelAnimationFrame(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [timerState, timerMode, pomodoroCount]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        window.cancelAnimationFrame(timerRef.current);
+      }
+    };
+  }, []);
 
   const startTimer = () => {
     if (timerState === "paused") {
       setTimerState("running");
+      lastTickTimeRef.current = Date.now();
       return;
     }
     
@@ -127,6 +170,7 @@ const Pomodoro = () => {
     }
     
     setTimerState("running");
+    lastTickTimeRef.current = Date.now();
 
     toast({
       title: timerMode === "pomodoro" ? "Foco iniciado!" : "Pausa iniciada!",

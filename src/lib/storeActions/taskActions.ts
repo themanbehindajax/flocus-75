@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -36,9 +37,14 @@ export const createTaskActions = (set: any, get: any) => ({
       const oldTask = state.tasks.find((t: Task) => t.id === task.id);
       const updatedTask = { ...task, updatedAt: new Date().toISOString() };
       
-      // Verifica se o projeto da tarefa foi alterado
+      // Verify if status changed to done and task is not completed yet
+      if (updatedTask.status === "done" && !updatedTask.completed) {
+        updatedTask.completed = true;
+      }
+      
+      // Verify if the project of the task was changed
       if (oldTask && oldTask.projectId !== updatedTask.projectId) {
-        // Se estava em um projeto e foi removida ou mudou de projeto
+        // If it was in a project and was removed or moved to another project
         if (oldTask.projectId) {
           const oldProject = state.projects.find((p: Project) => p.id === oldTask.projectId);
           if (oldProject) {
@@ -51,7 +57,7 @@ export const createTaskActions = (set: any, get: any) => ({
           }
         }
         
-        // Se foi adicionada a um novo projeto
+        // If it was added to a new project
         if (updatedTask.projectId) {
           const newProject = state.projects.find((p: Project) => p.id === updatedTask.projectId);
           if (newProject && !newProject.tasks.includes(task.id)) {
@@ -74,7 +80,14 @@ export const createTaskActions = (set: any, get: any) => ({
   completeTask: (id: string) => {
     set((state: any) => {
       const updatedTasks = state.tasks.map((task: Task) =>
-        task.id === id ? { ...task, completed: true, updatedAt: new Date().toISOString() } : task
+        task.id === id 
+        ? { 
+            ...task, 
+            completed: true, 
+            status: "done", 
+            updatedAt: new Date().toISOString() 
+          } 
+        : task
       );
       const taskCompleted = state.tasks.find((t: Task) => t.id === id && !t.completed);
       const updatedProfile = { ...state.profile };

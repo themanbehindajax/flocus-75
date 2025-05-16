@@ -10,7 +10,7 @@ interface KanbanBoardProps {
 }
 
 export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
-  const { updateTask } = useAppStore();
+  const { updateTask, completeTask } = useAppStore();
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   
   // Group tasks by status
@@ -28,11 +28,18 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   
   const handleDrop = (status: TaskStatus) => {
     if (draggedTask && draggedTask.status !== status) {
+      // First update the task status
       updateTask({
         ...draggedTask,
         status: status,
         updatedAt: new Date().toISOString(),
       });
+      
+      // If moving to "done" status, also mark as completed
+      if (status === "done" && !draggedTask.completed) {
+        completeTask(draggedTask.id);
+      }
+      
       setDraggedTask(null);
     }
   };
