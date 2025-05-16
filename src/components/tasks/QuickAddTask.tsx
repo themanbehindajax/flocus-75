@@ -27,6 +27,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         priority: "media" as PriorityLevel,
         status: "todo",
         tags: [],
+        subtasks: [], // Added the missing subtasks property
         projectId,
         isQuick: true
       });
