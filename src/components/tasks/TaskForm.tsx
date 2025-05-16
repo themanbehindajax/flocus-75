@@ -6,10 +6,15 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "react-router-dom";
-import { 
-  TaskFormTitle, TaskFormDescription, TaskFormPriority, TaskFormStatus, TaskFormDueDate,
-  TaskFormProject, TaskFormTags, TaskFormQuick, TaskFormSubtasks
-} from "./";
+import { TaskFormTitle } from "./TaskFormTitle";
+import { TaskFormDescription } from "./TaskFormDescription";
+import { TaskFormPriority } from "./TaskFormPriority";
+import { TaskFormStatus } from "./TaskFormStatus";
+import { TaskFormDueDate } from "./TaskFormDueDate";
+import { TaskFormProject } from "./TaskFormProject";
+import { TaskFormTags } from "./TaskFormTags";
+import { TaskFormQuick } from "./TaskFormQuick";
+import { TaskFormSubtasks } from "./TaskFormSubtasks";
 
 export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; editTask?: Task; }) => {
   const { addTask, updateTask, projects, tags } = useAppStore();
@@ -200,4 +205,3 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
     </div>
   );
 };
-
