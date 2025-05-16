@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronUp, Trash2, Zap } from "lucide-react";
 
 interface TaskCardProps {
   task: Task;
@@ -60,6 +60,9 @@ export const TaskCard = ({ task }: TaskCardProps) => {
             <span className={task.completed ? "line-through text-muted-foreground" : ""}>
               {task.title}
             </span>
+            {task.isQuick && (
+              <Zap className="h-4 w-4 text-yellow-500" title="Tarefa rápida (2 minutos)" />
+            )}
             {task.subtasks.length > 0 && (
               <Button 
                 variant="ghost" 

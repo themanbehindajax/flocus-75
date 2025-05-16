@@ -15,45 +15,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { 
-  CheckCircle, 
   ListPlus, 
-  Search, 
-  Plus, 
-  X, 
-  ChevronDown, 
-  ChevronUp, 
-  Trash2 
+  Search,
+  List, 
+  Kanban
 } from "lucide-react";
-import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { ptBR } from 'date-fns/locale';
-import { useToast } from "@/hooks/use-toast";
-import { TaskCard } from "@/components/tasks/TaskCard";
+import { Input } from "@/components/ui/input";
 import { TaskForm } from "@/components/tasks/TaskForm";
 import { TaskList } from "@/components/tasks/TaskList";
 import { EmptyTasksPlaceholder } from "@/components/tasks/EmptyTasksPlaceholder";
+import { KanbanBoard } from "@/components/projects/KanbanBoard";
 
 const Tasks = () => {
   const { tasks } = useAppStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [view, setView] = useState<"list" | "kanban">("list");
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -82,6 +62,25 @@ const Tasks = () => {
               />
             </div>
             
+            <div className="flex items-center border rounded-md overflow-hidden">
+              <Button
+                variant={view === "list" ? "default" : "ghost"} 
+                size="sm"
+                onClick={() => setView("list")}
+                className="rounded-none"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={view === "kanban" ? "default" : "ghost"} 
+                size="sm"
+                onClick={() => setView("kanban")}
+                className="rounded-none"
+              >
+                <Kanban className="h-4 w-4" />
+              </Button>
+            </div>
+            
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -104,7 +103,11 @@ const Tasks = () => {
         
         {/* Tasks Grid */}
         {filteredTasks.length > 0 ? (
-          <TaskList tasks={filteredTasks} />
+          view === "list" ? (
+            <TaskList tasks={filteredTasks} />
+          ) : (
+            <KanbanBoard tasks={filteredTasks} projectId="" />
+          )
         ) : (
           <EmptyTasksPlaceholder onCreateTask={() => setIsAddDialogOpen(true)} />
         )}

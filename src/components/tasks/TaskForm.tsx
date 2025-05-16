@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DialogFooter } from "@/components/ui/dialog";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Zap } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 interface TaskFormProps {
   onComplete: () => void;
@@ -39,6 +40,7 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
     tags: string[];
     dueDate?: string;
     subtasks: string[]; // This is for input only, will be converted to SubTask[]
+    isQuick: boolean;
   }>({
     title: "",
     description: "",
@@ -48,6 +50,7 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
     projectId: undefined,
     dueDate: undefined,
     subtasks: [],
+    isQuick: false,
   });
   
   const [newSubtask, setNewSubtask] = useState("");
@@ -55,6 +58,14 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
   
   const handleCreateTask = () => {
     if (newTask.title.trim()) {
+      // Determine if this is a "quick task" automatically if not explicitly marked
+      const isAutomaticallyQuick = 
+        !newTask.isQuick && // Not already marked as quick
+        newTask.description.length < 50 && // Short description
+        newTask.subtasks.length === 0 && // No subtasks
+        (newTask.dueDate === undefined || 
+          (new Date(newTask.dueDate).getTime() - new Date().getTime()) < 86400000); // Due within 24 hours
+      
       // Convert string[] to SubTask[] when adding the task
       const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => ({
         id: crypto.randomUUID(),
@@ -71,6 +82,7 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
         projectId: newTask.projectId,
         dueDate: date ? format(date, 'yyyy-MM-dd') : undefined,
         subtasks: formattedSubtasks, // Now passing correctly typed SubTask[]
+        isQuick: newTask.isQuick || isAutomaticallyQuick, // Use explicit or auto-detection
       };
       
       addTask(taskData);
@@ -89,6 +101,7 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
         projectId: undefined,
         dueDate: undefined,
         subtasks: [],
+        isQuick: false,
       });
       setDate(undefined);
       
@@ -261,6 +274,22 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
               );
             })}
           </div>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="quick-task"
+              checked={newTask.isQuick}
+              onCheckedChange={(checked) => setNewTask({ ...newTask, isQuick: checked })}
+            />
+            <Label htmlFor="quick-task" className="flex items-center gap-1">
+              <Zap className="h-4 w-4 text-yellow-500" />
+              Tarefa rápida (2 minutos)
+            </Label>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Marque tarefas que podem ser concluídas em 2 minutos ou menos
+          </p>
         </div>
         <div className="space-y-2">
           <Label>Subtarefas</Label>
