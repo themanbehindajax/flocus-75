@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
@@ -25,10 +25,11 @@ import { Switch } from "@/components/ui/switch";
 
 interface TaskFormProps {
   onComplete: () => void;
+  editTask?: Task;
 }
 
-export const TaskForm = ({ onComplete }: TaskFormProps) => {
-  const { addTask, projects, tags } = useAppStore();
+export const TaskForm = ({ onComplete, editTask }: TaskFormProps) => {
+  const { addTask, updateTask, projects, tags } = useAppStore();
   const { toast } = useToast();
   
   const [newTask, setNewTask] = useState<{
@@ -54,9 +55,30 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
   });
   
   const [newSubtask, setNewSubtask] = useState("");
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>();
   
-  const handleCreateTask = () => {
+  // Preencher os dados se estivermos editando uma tarefa existente
+  useEffect(() => {
+    if (editTask) {
+      setNewTask({
+        title: editTask.title,
+        description: editTask.description || "",
+        priority: editTask.priority,
+        status: editTask.status,
+        projectId: editTask.projectId,
+        tags: editTask.tags || [],
+        dueDate: editTask.dueDate,
+        subtasks: editTask.subtasks.map(st => st.title),
+        isQuick: editTask.isQuick || false,
+      });
+      
+      if (editTask.dueDate) {
+        setDate(new Date(editTask.dueDate));
+      }
+    }
+  }, [editTask]);
+  
+  const handleSaveTask = () => {
     if (newTask.title.trim()) {
       // Determine if this is a "quick task" automatically if not explicitly marked
       const isAutomaticallyQuick = 
@@ -67,11 +89,20 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
           (new Date(newTask.dueDate).getTime() - new Date().getTime()) < 86400000); // Due within 24 hours
       
       // Convert string[] to SubTask[] when adding the task
-      const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => ({
-        id: crypto.randomUUID(),
-        title: title,
-        completed: false
-      }));
+      const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => {
+        // Se estamos editando, tente preservar os IDs das subtarefas existentes
+        if (editTask) {
+          const existingSubtask = editTask.subtasks.find(st => st.title === title);
+          if (existingSubtask) {
+            return existingSubtask;
+          }
+        }
+        return {
+          id: crypto.randomUUID(),
+          title: title,
+          completed: false
+        };
+      });
       
       const taskData = {
         title: newTask.title.trim(),
@@ -85,13 +116,29 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
         isQuick: newTask.isQuick || isAutomaticallyQuick, // Use explicit or auto-detection
       };
       
-      addTask(taskData);
+      if (editTask) {
+        // Estamos editando uma tarefa existente
+        updateTask({
+          ...editTask,
+          ...taskData,
+          updatedAt: new Date().toISOString()
+        });
+        
+        toast({
+          title: "Tarefa atualizada",
+          description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
+        });
+      } else {
+        // Estamos criando uma nova tarefa
+        addTask(taskData);
+        
+        toast({
+          title: "Tarefa criada",
+          description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+        });
+      }
       
-      toast({
-        title: "Tarefa criada",
-        description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
-      });
-      
+      // Resetar formulário
       setNewTask({
         title: "",
         description: "",
@@ -333,7 +380,9 @@ export const TaskForm = ({ onComplete }: TaskFormProps) => {
         <Button variant="outline" onClick={onComplete}>
           Cancelar
         </Button>
-        <Button onClick={handleCreateTask}>Criar Tarefa</Button>
+        <Button onClick={handleSaveTask}>
+          {editTask ? "Salvar Alterações" : "Criar Tarefa"}
+        </Button>
       </DialogFooter>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -7,16 +6,26 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, ListPlus, Kanban, List } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { KanbanBoard } from "@/components/projects/KanbanBoard";
+import { QuickAddTask } from "@/components/tasks/QuickAddTask";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { TaskForm } from "@/components/tasks/TaskForm";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks, addTask } = useAppStore();
+  const { projects, tasks } = useAppStore();
   const [view, setView] = useState<"list" | "kanban">("list");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   const project = projects.find(p => p.id === projectId);
   
@@ -47,10 +56,6 @@ const ProjectDetails = () => {
   const progress = projectTasks.length > 0 
     ? Math.round((completedTasks.length / projectTasks.length) * 100) 
     : 0;
-  
-  const handleAddTask = () => {
-    navigate("/tasks", { state: { preSelectedProject: project.id } });
-  };
   
   return (
     <AppLayout>
@@ -119,17 +124,60 @@ const ProjectDetails = () => {
                     <Kanban className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button onClick={handleAddTask}>
-                  <ListPlus className="mr-2 h-4 w-4" />
-                  Nova Tarefa
-                </Button>
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <ListPlus className="mr-2 h-4 w-4" />
+                      Nova Tarefa
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Criar Nova Tarefa</DialogTitle>
+                      <DialogDescription>
+                        Adicione os detalhes da sua nova tarefa.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <TaskForm 
+                      onComplete={() => setIsAddDialogOpen(false)} 
+                      editTask={{
+                        id: '',
+                        title: '',
+                        description: '',
+                        status: 'todo',
+                        priority: 'media',
+                        tags: [],
+                        projectId: project.id,
+                        subtasks: [],
+                        completed: false,
+                        createdAt: '',
+                        updatedAt: ''
+                      }}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
+            
+            {/* Quick Add Task for Project */}
+            <Card className="mb-4">
+              <CardContent className="p-4">
+                <QuickAddTask 
+                  projectId={project.id}
+                  onTaskAdded={() => {
+                    toast({
+                      title: "Tarefa adicionada",
+                      description: "Tarefa adicionada ao projeto com sucesso."
+                    });
+                  }}
+                />
+              </CardContent>
+            </Card>
             
             {projectTasks.length === 0 ? (
               <div className="text-center py-8 border rounded-lg bg-muted/30">
                 <p className="text-muted-foreground mb-4">Nenhuma tarefa adicionada a este projeto</p>
-                <Button onClick={handleAddTask}>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
                   <ListPlus className="mr-2 h-4 w-4" />
                   Adicionar Tarefa
                 </Button>

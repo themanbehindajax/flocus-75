@@ -28,6 +28,7 @@ import { TaskForm } from "@/components/tasks/TaskForm";
 import { TaskList } from "@/components/tasks/TaskList";
 import { EmptyTasksPlaceholder } from "@/components/tasks/EmptyTasksPlaceholder";
 import { KanbanBoard } from "@/components/projects/KanbanBoard";
+import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 
 const Tasks = () => {
   const { tasks } = useAppStore();
@@ -100,6 +101,16 @@ const Tasks = () => {
             </Dialog>
           </div>
         </div>
+        
+        {/* Quick Add Task */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Adicionar Tarefa Rápida</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <QuickAddTask />
+          </CardContent>
+        </Card>
         
         {/* Tasks Grid */}
         {filteredTasks.length > 0 ? (
