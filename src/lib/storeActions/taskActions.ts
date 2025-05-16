@@ -35,9 +35,12 @@ export const createTaskActions = (set: any, get: any) => ({
   updateTask: (task: Task) => {
     set((state: any) => {
       const oldTask = state.tasks.find((t: Task) => t.id === task.id);
-      const updatedTask = { ...task, updatedAt: new Date().toISOString() };
+      const updatedTask = { 
+        ...task, 
+        updatedAt: new Date().toISOString() 
+      };
       
-      // Verify if status changed to done and task is not completed yet
+      // If status changed to done and task is not completed yet, mark it as completed
       if (updatedTask.status === "done" && !updatedTask.completed) {
         updatedTask.completed = true;
       }
@@ -89,24 +92,30 @@ export const createTaskActions = (set: any, get: any) => ({
           } 
         : task
       );
+      
       const taskCompleted = state.tasks.find((t: Task) => t.id === id && !t.completed);
       const updatedProfile = { ...state.profile };
+      
       if (taskCompleted) {
         updatedProfile.points += 5;
         updatedProfile.totalTasksCompleted += 1;
         updatedProfile.lastActivity = new Date().toISOString();
         const today = new Date().toISOString().split("T")[0];
         const lastActivityDate = new Date(state.profile.lastActivity).toISOString().split("T")[0];
+        
         if (lastActivityDate === today) {
+          // Same day activity, maintain streak
         } else if (
-          new Date(lastActivityDate) >= new Date(today + "T00:00:00.000Z") ||
-          new Date(lastActivityDate) >= new Date(new Date(today).getTime() - 86400000)
+          new Date(lastActivityDate).getTime() >= new Date(new Date(today).getTime() - 86400000).getTime()
         ) {
+          // Activity within last 24 hours, increase streak
           updatedProfile.streak += 1;
         } else {
+          // Activity after a break, reset streak to 1
           updatedProfile.streak = 1;
         }
       }
+      
       return {
         tasks: updatedTasks,
         profile: updatedProfile,

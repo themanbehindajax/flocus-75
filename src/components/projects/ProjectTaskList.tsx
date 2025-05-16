@@ -1,12 +1,13 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ListPlus, List, Kanban } from "lucide-react";
+import { ListPlus, List, Kanban, CheckCircle, CheckCircle2 } from "lucide-react";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { KanbanBoard } from "@/components/projects/KanbanBoard";
 import { Task } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useAppStore } from "@/lib/store";
 
 interface ProjectTaskListProps {
   projectId: string;
@@ -22,6 +23,28 @@ export const ProjectTaskList = ({
   projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children,
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
+  const { completeTask, updateTask } = useAppStore();
+  
+  const handleCompleteTask = (task: Task) => {
+    if (!task.completed) {
+      completeTask(task.id);
+      
+      // Also update status to "done"
+      if (task.status !== "done") {
+        updateTask({
+          ...task,
+          status: "done",
+          completed: true,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+      
+      toast({
+        title: "Tarefa concluída",
+        description: `A tarefa "${task.title}" foi marcada como concluída.`,
+      });
+    }
+  };
 
   return (
     <div className="md:col-span-3">
@@ -81,13 +104,21 @@ export const ProjectTaskList = ({
                   task.priority === "alta" ? "border-l-red-500" :
                   task.priority === "media" ? "border-l-yellow-500" :
                   "border-l-green-500"
-                }`}>
+                } ${task.completed ? 'bg-muted/30' : ''}`}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full ${
-                          task.completed ? "bg-primary" : "border border-primary"
-                        }`} />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-6 w-6 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
+                          onClick={() => handleCompleteTask(task)}
+                        >
+                          {task.completed ? 
+                            <CheckCircle2 className="h-4 w-4" /> : 
+                            <CheckCircle className="h-4 w-4" />
+                          }
+                        </Button>
                         <span className={task.completed ? "line-through text-muted-foreground" : ""}>
                           {task.title}
                         </span>

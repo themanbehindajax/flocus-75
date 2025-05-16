@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, TaskStatus } from "@/lib/types";
 import { KanbanColumn } from "./KanbanColumn";
+import { toast } from "sonner";
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -27,21 +28,27 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   };
   
   const handleDrop = (status: TaskStatus) => {
-    if (draggedTask && draggedTask.status !== status) {
-      // First update the task status
-      updateTask({
+    if (!draggedTask) return;
+    
+    if (draggedTask.status !== status) {
+      // Update the task status
+      const updatedTask = {
         ...draggedTask,
         status: status,
         updatedAt: new Date().toISOString(),
-      });
+      };
+      
+      updateTask(updatedTask);
       
       // If moving to "done" status, also mark as completed
       if (status === "done" && !draggedTask.completed) {
         completeTask(draggedTask.id);
+        toast(`Tarefa "${draggedTask.title}" concluída!`);
       }
-      
-      setDraggedTask(null);
     }
+    
+    // Reset the dragged task state
+    setDraggedTask(null);
   };
   
   return (
