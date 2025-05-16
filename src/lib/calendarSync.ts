@@ -73,7 +73,7 @@ export const syncCalendarToTasks = async (
             dueDate: new Date(event.start.dateTime).toISOString(),
             tags: [],
             subtasks: [],
-            calendarEventId: event.id, // Store reference to calendar event ID
+            calendarEventId: event.id // Store reference to calendar event ID
           });
         }
       }
