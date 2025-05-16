@@ -20,9 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { AppSettings } from "@/lib/types";
+import { SpotifyAuth } from "@/components/spotify/SpotifyAuth";
 
 const Settings = () => {
   const { settings, updateSettings, profile, updateProfile } = useAppStore();
@@ -141,6 +141,19 @@ const Settings = () => {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
+        
+        {/* Spotify Integration */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Integração com Spotify</CardTitle>
+            <CardDescription>
+              Conecte sua conta do Spotify para tocar música durante seus pomodoros
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SpotifyAuth />
           </CardContent>
         </Card>
         

@@ -18,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SpotifyPlayer } from "@/components/spotify/SpotifyPlayer";
+import { SpotifyPlaylists } from "@/components/spotify/SpotifyPlaylists";
 
 type TimerState = "idle" | "running" | "paused" | "break" | "completed";
 type TimerMode = "pomodoro" | "shortBreak" | "longBreak";
@@ -273,82 +275,96 @@ const Pomodoro = () => {
           </Card>
           
           {/* Settings Card */}
-          <Card className="md:col-span-1">
-            <CardHeader>
-              <CardTitle>Tarefa Atual</CardTitle>
-              <CardDescription>
-                Selecione uma tarefa ou projeto para este pomodoro
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Tarefa</label>
-                <Select
-                  value={selectedTaskId}
-                  onValueChange={setSelectedTaskId}
-                  disabled={timerState === "running"}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma tarefa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Sem tarefa específica</SelectItem>
-                    {tasks
-                      .filter(task => !task.completed)
-                      .map(task => (
-                        <SelectItem key={task.id} value={task.id}>
-                          {task.title}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tarefa Atual</CardTitle>
+                <CardDescription>
+                  Selecione uma tarefa ou projeto para este pomodoro
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tarefa</label>
+                  <Select
+                    value={selectedTaskId}
+                    onValueChange={setSelectedTaskId}
+                    disabled={timerState === "running"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma tarefa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sem tarefa específica</SelectItem>
+                      {tasks
+                        .filter(task => !task.completed)
+                        .map(task => (
+                          <SelectItem key={task.id} value={task.id}>
+                            {task.title}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Projeto</label>
+                  <Select
+                    value={selectedProjectId}
+                    onValueChange={setSelectedProjectId}
+                    disabled={timerState === "running"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um projeto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sem projeto específico</SelectItem>
+                      {projects.map(project => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
                         </SelectItem>
                       ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Projeto</label>
-                <Select
-                  value={selectedProjectId}
-                  onValueChange={setSelectedProjectId}
-                  disabled={timerState === "running"}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um projeto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Sem projeto específico</SelectItem>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="pt-4 border-t">
-                <h3 className="font-medium mb-2">Dicas para o Pomodoro</h3>
-                <ul className="text-sm space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 mt-1 text-primary" />
-                    <span>Foque em uma única tarefa durante cada pomodoro</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 mt-1 text-primary" />
-                    <span>Elimine distrações como notificações durante o período de foco</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 mt-1 text-primary" />
-                    <span>Levante-se e alongue-se durante as pausas</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 mt-1 text-primary" />
-                    <span>Após 4 pomodoros, faça uma pausa mais longa</span>
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Spotify Player */}
+            <SpotifyPlayer />
+            
+            {/* Spotify Playlists */}
+            <SpotifyPlaylists />
+          </div>
         </div>
+        
+        {/* Tips Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Dicas para o Pomodoro</CardTitle>
+            <CardDescription>Maximize sua produtividade com estas práticas</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-2 sm:grid-cols-2">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 mt-1 text-primary" />
+                <span>Foque em uma única tarefa durante cada pomodoro</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 mt-1 text-primary" />
+                <span>Elimine distrações como notificações</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 mt-1 text-primary" />
+                <span>Levante-se e alongue-se durante as pausas</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 mt-1 text-primary" />
+                <span>Após 4 pomodoros, faça uma pausa mais longa</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </AppLayout>
   );

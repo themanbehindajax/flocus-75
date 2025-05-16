@@ -7,7 +7,8 @@ import {
   createProjectActions, 
   createTagActions, 
   createPomodoroActions,
-  createMiscActions
+  createMiscActions,
+  createSpotifyActions
 } from "./storeActions";
 import { Task, Project, Tag, PomodoroSession, DailyPriority, UserProfile, AppSettings } from "./types";
 
@@ -46,6 +47,17 @@ export interface AppState {
   setDailyPriorities: (date: string, taskIds: string[]) => void;
   updateProfile: (profileUpdate: Partial<UserProfile>) => void;
   updateSettings: (settingsUpdate: Partial<AppSettings>) => void;
+  
+  // Actions from spotify actions
+  setSpotifyAuth: (auth: { accessToken: string; refreshToken: string; expiresAt: number }) => void;
+  clearSpotifyAuth: () => void;
+  getCurrentTrack: () => Promise<any | null>;
+  playTrack: (uri: string) => Promise<void>;
+  pauseTrack: () => Promise<void>;
+  nextTrack: () => Promise<void>;
+  previousTrack: () => Promise<void>;
+  getUserPlaylists: () => Promise<any[]>;
+  playPlaylist: (playlistUri: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>()(
@@ -80,6 +92,7 @@ export const useAppStore = create<AppState>()(
       ...createTagActions(set),
       ...createPomodoroActions(set, get),
       ...createMiscActions(set),
+      ...createSpotifyActions(set, get),
     }),
     {
       name: "flocus-app-storage",
