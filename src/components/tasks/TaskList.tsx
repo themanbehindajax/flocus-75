@@ -1,6 +1,6 @@
 
 import { Task } from "@/lib/types";
-import { TaskCard } from "./TaskCard";
+import { TaskCardWrapper as TaskCard } from "./TaskCard";
 
 interface TaskListProps {
   tasks: Task[];

@@ -40,7 +40,7 @@ export const TaskCardWrapper = ({ task }: { task: Task }) => {
               </Tooltip>
             )}
             
-            {task.priority === 'high' && (
+            {task.priority === 'alta' && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-6 w-6">
