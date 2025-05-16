@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -24,7 +25,7 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks } = useAppStore();
+  const { projects, tasks, addTask } = useAppStore(); // Added addTask to the destructuring
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
@@ -57,6 +58,14 @@ const ProjectDetails = () => {
   const progress = projectTasks.length > 0 
     ? Math.round((completedTasks.length / projectTasks.length) * 100) 
     : 0;
+  
+  // Create a new function to handle task creation specific to this project
+  const handleTaskCreated = (taskId) => {
+    toast({
+      title: "Tarefa adicionada",
+      description: "Tarefa adicionada ao projeto com sucesso."
+    });
+  };
   
   return (
     <AppLayout>
@@ -140,7 +149,9 @@ const ProjectDetails = () => {
                       </DialogDescription>
                     </DialogHeader>
                     <TaskForm 
-                      onComplete={() => setIsAddDialogOpen(false)} 
+                      onComplete={() => {
+                        setIsAddDialogOpen(false);
+                      }} 
                       editTask={{
                         id: '',
                         title: '',
@@ -148,7 +159,7 @@ const ProjectDetails = () => {
                         status: 'todo',
                         priority: 'media',
                         tags: [],
-                        projectId: project.id,
+                        projectId: project.id, // Ensure project ID is set correctly
                         subtasks: [],
                         completed: false,
                         createdAt: '',
@@ -165,7 +176,7 @@ const ProjectDetails = () => {
               <CardContent className="p-4">
                 <QuickAddTask 
                   projectId={project.id}
-                  onTaskAdded={() => {
+                  onTaskAdded={(taskId) => {
                     toast({
                       title: "Tarefa adicionada",
                       description: "Tarefa adicionada ao projeto com sucesso."

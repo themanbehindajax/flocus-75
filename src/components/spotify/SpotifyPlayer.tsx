@@ -3,219 +3,123 @@ import { useAppStore } from "@/lib/store";
 import {
   Card,
   CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Play, Pause, SkipForward, SkipBack, Music, Spotify } from "lucide-react";
-import { toast } from "sonner";
-
-interface CurrentTrack {
-  name: string;
-  artists: { name: string }[];
-  album: {
-    name: string;
-    images: { url: string }[];
-  };
-  is_playing: boolean;
-  uri: string;
-}
+import { Play, Pause, SkipBack, SkipForward, Music } from "lucide-react";
 
 export const SpotifyPlayer = () => {
-  const { settings, getCurrentTrack, playTrack, pauseTrack, nextTrack, previousTrack } = useAppStore();
-  const [currentTrack, setCurrentTrack] = useState<CurrentTrack | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState<number | null>(null);
+  const { getCurrentTrack, playTrack, pauseTrack, nextTrack, previousTrack } = useAppStore();
+  const [currentTrack, setCurrentTrack] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const isConnected = !!settings.spotifyAuth?.accessToken;
+  useEffect(() => {
+    const fetchCurrentTrack = async () => {
+      setIsLoading(true);
+      const track = await getCurrentTrack();
+      setCurrentTrack(track);
+      setIsPlaying(track?.is_playing || false);
+      setIsLoading(false);
+    };
 
-  const fetchCurrentTrack = async () => {
-    if (!isConnected) return;
+    fetchCurrentTrack();
     
-    try {
-      setLoading(true);
-      const trackData = await getCurrentTrack();
-      
-      if (trackData && trackData.item) {
-        setCurrentTrack({
-          name: trackData.item.name,
-          artists: trackData.item.artists,
-          album: trackData.item.album,
-          is_playing: trackData.is_playing,
-          uri: trackData.item.uri
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching current track:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePlayPause = async () => {
-    if (!currentTrack) return;
+    // Refresh every 10 seconds
+    const intervalId = setInterval(fetchCurrentTrack, 10000);
     
-    try {
-      if (currentTrack.is_playing) {
+    return () => clearInterval(intervalId);
+  }, [getCurrentTrack]);
+
+  const togglePlayPause = async () => {
+    if (currentTrack) {
+      if (isPlaying) {
         await pauseTrack();
-        setCurrentTrack(prev => prev ? { ...prev, is_playing: false } : null);
+        setIsPlaying(false);
       } else {
-        await playTrack(currentTrack.uri);
-        setCurrentTrack(prev => prev ? { ...prev, is_playing: true } : null);
+        await playTrack(currentTrack.item.uri);
+        setIsPlaying(true);
       }
-    } catch (error) {
-      toast.error("Failed to control playback. Make sure Spotify is active on a device.");
     }
   };
 
   const handleNext = async () => {
-    try {
-      await nextTrack();
-      // Fetch updated track info after a short delay
-      setTimeout(fetchCurrentTrack, 500);
-    } catch (error) {
-      toast.error("Failed to skip track");
-    }
+    await nextTrack();
   };
 
   const handlePrevious = async () => {
-    try {
-      await previousTrack();
-      // Fetch updated track info after a short delay
-      setTimeout(fetchCurrentTrack, 500);
-    } catch (error) {
-      toast.error("Failed to go to previous track");
-    }
+    await previousTrack();
   };
-
-  // Start polling for current track when component mounts
-  useEffect(() => {
-    if (isConnected) {
-      fetchCurrentTrack();
-      
-      // Poll every 10 seconds to keep track info updated
-      const interval = window.setInterval(fetchCurrentTrack, 10000);
-      setPollingInterval(interval);
-      
-      return () => {
-        if (pollingInterval) {
-          window.clearInterval(pollingInterval);
-        }
-      };
-    }
-  }, [isConnected]);
-
-  // Clean up interval on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingInterval) {
-        window.clearInterval(pollingInterval);
-      }
-    };
-  }, [pollingInterval]);
-
-  if (!isConnected) {
-    return (
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Spotify className="mr-2 h-5 w-5" />
-            Spotify não conectado
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Conecte-se ao Spotify nas configurações para controlar música durante seus pomodoros.
-          </p>
-          <Button variant="outline" className="w-full" asChild>
-            <a href="/settings">Ir para Configurações</a>
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
+  
   return (
-    <Card className="mt-4">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Spotify className="mr-2 h-5 w-5 text-green-500" />
-          Música para Foco
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {loading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-12 rounded-md" />
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        ) : currentTrack ? (
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 shrink-0">
-              {currentTrack.album.images && currentTrack.album.images[0] ? (
-                <img
-                  src={currentTrack.album.images[0].url}
-                  alt={`${currentTrack.album.name} cover`}
-                  className="w-full h-full object-cover rounded-md"
-                />
-              ) : (
-                <div className="w-full h-full bg-muted rounded-md flex items-center justify-center">
-                  <Music className="h-6 w-6 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-            
-            <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-medium truncate">{currentTrack.name}</h4>
-              <p className="text-xs text-muted-foreground truncate">
-                {currentTrack.artists.map(artist => artist.name).join(", ")}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-2">
-            <Music className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Nenhuma música tocando</p>
-          </div>
-        )}
-      </CardContent>
-      
-      <CardFooter className="flex justify-center space-x-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handlePrevious}
-          disabled={!currentTrack}
-        >
-          <SkipBack className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          variant="default"
-          size="icon"
-          onClick={handlePlayPause}
-          disabled={!currentTrack}
-        >
-          {currentTrack?.is_playing ? (
-            <Pause className="h-4 w-4" />
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center space-x-4">
+          {isLoading ? (
+            <Skeleton className="w-10 h-10 rounded-md" />
+          ) : currentTrack ? (
+            <img 
+              src={currentTrack.item?.album?.images?.[0]?.url} 
+              alt="Album Art" 
+              className="w-10 h-10 rounded-md"
+            />
           ) : (
-            <Play className="h-4 w-4" />
+            <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+              <Music size={20} className="text-primary" />
+            </div>
           )}
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleNext}
-          disabled={!currentTrack}
-        >
-          <SkipForward className="h-4 w-4" />
-        </Button>
-      </CardFooter>
+          
+          <div className="flex-1 min-w-0">
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ) : currentTrack ? (
+              <>
+                <p className="font-medium truncate">{currentTrack.item?.name}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {currentTrack.item?.artists?.map((a: any) => a.name).join(", ")}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhuma música tocando</p>
+            )}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={handlePrevious}
+              disabled={isLoading || !currentTrack}
+            >
+              <SkipBack size={16} />
+            </Button>
+            
+            <Button
+              variant="default"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={togglePlayPause}
+              disabled={isLoading || !currentTrack}
+            >
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={handleNext}
+              disabled={isLoading || !currentTrack}
+            >
+              <SkipForward size={16} />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 };

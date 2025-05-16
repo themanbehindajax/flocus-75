@@ -21,6 +21,7 @@ export const createTaskActions = (set: any, get: any) => ({
     if (taskData.projectId) {
       const project = get().projects.find((p: Project) => p.id === taskData.projectId);
       if (project) {
+        // Ensure we're creating a completely new array for the project tasks
         const updatedProject = {
           ...project,
           tasks: [...project.tasks, newTask.id],

@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Spotify } from "lucide-react";
+import { Music } from "lucide-react"; // Changed from Spotify to Music
 import { useAppStore } from "@/lib/store";
 import { getSpotifyAuthUrl, exchangeSpotifyCode } from "@/lib/spotifyApi";
 import { toast } from "sonner";
@@ -49,7 +49,7 @@ export const SpotifyAuth = () => {
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Spotify className={isConnected ? "text-green-500" : "text-muted-foreground"} />
+          <Music className={isConnected ? "text-green-500" : "text-muted-foreground"} /> {/* Changed from Spotify to Music */}
           <span>{isConnected ? 'Conectado ao Spotify' : 'Não conectado ao Spotify'}</span>
         </div>
         
@@ -59,7 +59,7 @@ export const SpotifyAuth = () => {
           </Button>
         ) : (
           <Button onClick={handleConnect}>
-            <Spotify className="mr-2 h-4 w-4" />
+            <Music className="mr-2 h-4 w-4" /> {/* Changed from Spotify to Music */}
             Conectar
           </Button>
         )}
