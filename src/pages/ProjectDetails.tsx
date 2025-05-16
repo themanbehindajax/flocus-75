@@ -16,6 +16,7 @@ import {
   DialogHeader, 
   DialogTitle,
   DialogDescription,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { TaskForm } from "@/components/tasks/TaskForm";
 
@@ -174,6 +175,7 @@ const ProjectDetails = () => {
               </CardContent>
             </Card>
             
+            {/* Project Tasks */}
             {projectTasks.length === 0 ? (
               <div className="text-center py-8 border rounded-lg bg-muted/30">
                 <p className="text-muted-foreground mb-4">Nenhuma tarefa adicionada a este projeto</p>
