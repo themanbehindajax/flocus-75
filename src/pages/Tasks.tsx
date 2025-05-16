@@ -28,14 +28,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle, ListPlus, Search, Plus } from "lucide-react";
+import { 
+  CheckCircle, 
+  ListPlus, 
+  Search, 
+  Plus, 
+  X, 
+  ChevronDown, 
+  ChevronUp, 
+  Trash2 
+} from "lucide-react";
 import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { ptBR } from 'date-fns/locale';
+import { useToast } from "@/hooks/use-toast";
 
 const Tasks = () => {
-  const { tasks, projects, tags, addTask, completeTask, deleteTask } = useAppStore();
+  const { tasks, projects, tags, addTask, completeTask, deleteTask, updateTask } = useAppStore();
+  const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [newTask, setNewTask] = useState<{
     title: string;
     description: string;
@@ -56,6 +73,9 @@ const Tasks = () => {
     subtasks: [],
   });
   
+  const [newSubtask, setNewSubtask] = useState("");
+  const [date, setDate] = useState<Date>();
+  
   const handleCreateTask = () => {
     if (newTask.title.trim()) {
       // Convert string[] to SubTask[] when adding the task
@@ -65,15 +85,22 @@ const Tasks = () => {
         completed: false
       }));
       
-      addTask({
+      const taskData = {
         title: newTask.title.trim(),
         description: newTask.description,
         priority: newTask.priority,
         status: newTask.status,
         tags: newTask.tags,
         projectId: newTask.projectId,
-        dueDate: newTask.dueDate || undefined,
+        dueDate: date ? format(date, 'yyyy-MM-dd') : undefined,
         subtasks: formattedSubtasks, // Now passing correctly typed SubTask[]
+      };
+      
+      addTask(taskData);
+      
+      toast({
+        title: "Tarefa criada",
+        description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
       });
       
       setNewTask({
@@ -86,14 +113,58 @@ const Tasks = () => {
         dueDate: undefined,
         subtasks: [],
       });
+      setDate(undefined);
       
       setIsAddDialogOpen(false);
     }
   };
 
+  const handleAddSubtask = () => {
+    if (newSubtask.trim()) {
+      setNewTask({
+        ...newTask,
+        subtasks: [...newTask.subtasks, newSubtask.trim()]
+      });
+      setNewSubtask("");
+    }
+  };
+
+  const handleRemoveSubtask = (index: number) => {
+    const updatedSubtasks = [...newTask.subtasks];
+    updatedSubtasks.splice(index, 1);
+    setNewTask({
+      ...newTask,
+      subtasks: updatedSubtasks
+    });
+  };
+
+  const handleToggleSubtask = (taskId: string, subtaskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const updatedSubtasks = task.subtasks.map(subtask => 
+      subtask.id === subtaskId 
+        ? { ...subtask, completed: !subtask.completed } 
+        : subtask
+    );
+
+    updateTask({
+      ...task,
+      subtasks: updatedSubtasks
+    });
+  };
+
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const toggleExpandTask = (taskId: string) => {
+    if (expandedTaskId === taskId) {
+      setExpandedTaskId(null);
+    } else {
+      setExpandedTaskId(taskId);
+    }
+  };
 
   return (
     <AppLayout>
@@ -125,7 +196,7 @@ const Tasks = () => {
                   Nova Tarefa
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Criar Nova Tarefa</DialogTitle>
                   <DialogDescription>
@@ -187,12 +258,32 @@ const Tasks = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dueDate">Data de entrega</Label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={newTask.dueDate || ""}
-                      onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          {date ? (
+                            format(date, "PPP", { locale: ptBR })
+                          ) : (
+                            <span>Selecione uma data</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="project">Projeto</Label>
@@ -212,6 +303,86 @@ const Tasks = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tags</Label>
+                    <Select onValueChange={(value) => {
+                      if (!newTask.tags.includes(value)) {
+                        setNewTask({ ...newTask, tags: [...newTask.tags, value] });
+                      }
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Adicionar tag" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tags.map((tag) => (
+                          <SelectItem key={tag.id} value={tag.id}>
+                            {tag.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {newTask.tags.map((tagId) => {
+                        const tag = tags.find(t => t.id === tagId);
+                        if (!tag) return null;
+                        
+                        return (
+                          <span 
+                            key={tag.id}
+                            className="px-2 py-1 rounded-full text-xs flex items-center gap-1"
+                            style={{ backgroundColor: tag.color + '20', color: tag.color }}
+                          >
+                            {tag.name}
+                            <button onClick={() => {
+                              setNewTask({
+                                ...newTask,
+                                tags: newTask.tags.filter(id => id !== tagId)
+                              });
+                            }}>
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtarefas</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Adicionar subtarefa"
+                        value={newSubtask}
+                        onChange={(e) => setNewSubtask(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddSubtask();
+                          }
+                        }}
+                      />
+                      <Button type="button" onClick={handleAddSubtask}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {newTask.subtasks.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {newTask.subtasks.map((subtask, index) => (
+                          <div 
+                            key={index}
+                            className="flex items-center justify-between py-1 px-3 bg-background border rounded-md"
+                          >
+                            <span>{subtask}</span>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleRemoveSubtask(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <DialogFooter>
@@ -233,7 +404,7 @@ const Tasks = () => {
                 task.priority === 'alta' ? 'border-l-red-500' : 
                 task.priority === 'media' ? 'border-l-yellow-500' : 
                 'border-l-green-500'
-              }`}>
+              } ${task.completed ? 'bg-muted/20' : ''}`}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex justify-between">
                     <div className="flex items-center gap-2">
@@ -248,6 +419,20 @@ const Tasks = () => {
                       <span className={task.completed ? "line-through text-muted-foreground" : ""}>
                         {task.title}
                       </span>
+                      {task.subtasks.length > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="ml-2 h-6 w-6 p-0"
+                          onClick={() => toggleExpandTask(task.id)}
+                        >
+                          {expandedTaskId === task.id ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                     <div className="text-sm font-normal text-muted-foreground">
                       {task.dueDate && (
@@ -260,6 +445,31 @@ const Tasks = () => {
                   {task.description && (
                     <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
                   )}
+                  
+                  {/* Subtasks */}
+                  {expandedTaskId === task.id && task.subtasks.length > 0 && (
+                    <div className="mt-3 space-y-2 pl-8 border-l-2 border-muted mb-4">
+                      {task.subtasks.map((subtask) => (
+                        <div 
+                          key={subtask.id} 
+                          className="flex items-center gap-2"
+                        >
+                          <button
+                            onClick={() => handleToggleSubtask(task.id, subtask.id)}
+                            className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
+                              subtask.completed ? "bg-primary text-white" : "border border-muted-foreground"
+                            }`}
+                          >
+                            {subtask.completed && <CheckCircle className="h-3 w-3" />}
+                          </button>
+                          <span className={subtask.completed ? "line-through text-muted-foreground text-sm" : "text-sm"}>
+                            {subtask.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
                   <div className="flex flex-wrap gap-2">
                     {task.tags.map((tagId) => {
                       const tag = tags.find(t => t.id === tagId);
@@ -281,6 +491,17 @@ const Tasks = () => {
                         {projects.find(p => p.id === task.projectId)?.name || 'Projeto'}
                       </span>
                     )}
+                  </div>
+                  
+                  <div className="flex justify-end mt-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => deleteTask(task.id)}
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

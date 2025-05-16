@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
 import Tasks from "./pages/Tasks";
+import Calendar from "./pages/Calendar";
 import IvyLee from "./pages/IvyLee";
 import Pomodoro from "./pages/Pomodoro";
 import Settings from "./pages/Settings";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:projectId" element={<ProjectDetails />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/calendar" element={<Calendar />} />
             <Route path="/ivy-lee" element={<IvyLee />} />
             <Route path="/pomodoro" element={<Pomodoro />} />
             <Route path="/settings" element={<Settings />} />
