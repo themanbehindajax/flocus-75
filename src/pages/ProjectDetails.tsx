@@ -175,7 +175,7 @@ const ProjectDetails = () => {
               <CardContent className="p-4">
                 <QuickAddTask 
                   projectId={project.id}
-                  onTaskAdded={(taskId) => {
+                  onTaskAdded={() => {
                     toast({
                       title: "Tarefa adicionada",
                       description: "Tarefa adicionada ao projeto com sucesso."
