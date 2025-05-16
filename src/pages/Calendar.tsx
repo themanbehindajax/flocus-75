@@ -15,6 +15,7 @@ import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon } from "lucide-react";
 import { CalendarTaskCard } from "@/components/calendar/CalendarTaskCard";
+import { SyncCalendarButton } from "@/components/calendar/SyncCalendarButton";
 
 const Calendar = () => {
   const { tasks, projects } = useAppStore();
@@ -42,6 +43,7 @@ const Calendar = () => {
               Visualize suas tarefas em formato de calendário
             </p>
           </div>
+          <SyncCalendarButton />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

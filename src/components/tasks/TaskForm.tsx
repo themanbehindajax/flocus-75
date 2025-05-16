@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
@@ -17,11 +16,12 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { useLocation } from "react-router-dom";
 
 interface TaskFormProps {
   onComplete: () => void;
@@ -31,6 +31,12 @@ interface TaskFormProps {
 export const TaskForm = ({ onComplete, editTask }: TaskFormProps) => {
   const { addTask, updateTask, projects, tags } = useAppStore();
   const { toast } = useToast();
+  const location = useLocation();
+  
+  // Extract projectId from URL if we're on a project page
+  const projectIdFromUrl = location.pathname.startsWith('/projects/') 
+    ? location.pathname.split('/projects/')[1]
+    : undefined;
   
   const [newTask, setNewTask] = useState<{
     title: string;
@@ -48,7 +54,7 @@ export const TaskForm = ({ onComplete, editTask }: TaskFormProps) => {
     priority: "media",
     status: "todo",
     tags: [],
-    projectId: undefined,
+    projectId: projectIdFromUrl,
     dueDate: undefined,
     subtasks: [],
     isQuick: false,
@@ -57,7 +63,7 @@ export const TaskForm = ({ onComplete, editTask }: TaskFormProps) => {
   const [newSubtask, setNewSubtask] = useState("");
   const [date, setDate] = useState<Date | undefined>();
   
-  // Preencher os dados se estivermos editando uma tarefa existente
+  // Fill in the data if we're editing an existing task
   useEffect(() => {
     if (editTask) {
       setNewTask({
@@ -77,6 +83,16 @@ export const TaskForm = ({ onComplete, editTask }: TaskFormProps) => {
       }
     }
   }, [editTask]);
+  
+  // If we're on a project page, use that project ID
+  useEffect(() => {
+    if (projectIdFromUrl && !editTask) {
+      setNewTask(prev => ({
+        ...prev,
+        projectId: projectIdFromUrl
+      }));
+    }
+  }, [projectIdFromUrl, editTask]);
   
   const handleSaveTask = () => {
     if (newTask.title.trim()) {

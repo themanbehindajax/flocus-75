@@ -1,11 +1,10 @@
 
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { PriorityLevel } from "@/lib/types";
-import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface QuickAddTaskProps {
   projectId?: string;
@@ -13,45 +12,46 @@ interface QuickAddTaskProps {
 }
 
 export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
-  const { addTask } = useAppStore();
-  const { toast } = useToast();
   const [taskTitle, setTaskTitle] = useState("");
-  
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const { addTask } = useAppStore();
+
+  const handleCreateTask = () => {
     if (taskTitle.trim()) {
-      const newTask = addTask({
+      addTask({
         title: taskTitle.trim(),
         description: "",
         priority: "media" as PriorityLevel,
         status: "todo",
         tags: [],
-        subtasks: [], // Added the missing subtasks property
-        projectId,
-        isQuick: true
+        projectId: projectId,
+        subtasks: [], // Add missing subtasks property
+        isQuick: true,
       });
-      
-      toast({
-        title: "Tarefa adicionada",
-        description: "Tarefa rápida adicionada com sucesso."
-      });
-      
+
+      toast(`Tarefa "${taskTitle}" adicionada`);
       setTaskTitle("");
-      if (onTaskAdded) onTaskAdded();
+      
+      if (onTaskAdded) {
+        onTaskAdded();
+      }
     }
   };
-  
+
   return (
-    <form onSubmit={handleAddTask} className="flex gap-2">
+    <form 
+      className="flex items-center gap-2" 
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleCreateTask();
+      }}
+    >
       <Input
-        placeholder="Adicionar tarefa rápida..."
+        placeholder="Adicionar nova tarefa rápida..."
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         className="flex-1"
       />
-      <Button type="submit">
-        <Plus className="h-4 w-4 mr-1" />
+      <Button type="submit" disabled={!taskTitle.trim()}>
         Adicionar
       </Button>
     </form>

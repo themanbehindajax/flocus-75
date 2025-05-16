@@ -29,6 +29,7 @@ export interface Task {
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   isQuick?: boolean; // for 2-minute rule tasks
+  calendarEventId?: string; // ID of the associated Google Calendar event
 }
 
 export interface Project {
