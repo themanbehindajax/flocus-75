@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GoogleLogin as GoogleOAuthLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { useAuthStore } from "@/lib/auth";
 import { useAppStore } from "@/lib/store";
 import { UserProfile } from "@/lib/types";
 import { toast } from "sonner";
-import { Google } from "lucide-react";
+import { LogIn } from "lucide-react"; // Using LogIn from lucide-react instead of Google
 
 interface GoogleUserInfo {
   email: string;
@@ -79,7 +79,7 @@ export const GoogleLogin = () => {
         
         <Button variant="outline" className="w-full" disabled={isLoading} asChild>
           <div>
-            <Google className="mr-2 h-4 w-4" />
+            <LogIn className="mr-2 h-4 w-4" />
             Entrar com Google
           </div>
         </Button>

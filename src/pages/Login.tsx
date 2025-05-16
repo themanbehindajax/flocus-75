@@ -5,7 +5,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { useAuthStore } from "@/lib/auth";
 
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Replace with your Google Client ID
+// Use the client ID provided by the user
+const GOOGLE_CLIENT_ID = "803068792420-t0ndpse3ju98b7smatl9jmphp6udhkk7.apps.googleusercontent.com";
 
 const Login = () => {
   const { isAuthenticated } = useAuthStore();
