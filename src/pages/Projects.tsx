@@ -19,6 +19,7 @@ import {
   Plus,
   Search,
   Trash2,
+  CalendarIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -33,6 +34,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const Projects = () => {
   const { projects, tasks, addProject, updateProject, deleteProject } = useAppStore();
@@ -44,13 +53,14 @@ const Projects = () => {
     goal: "",
     dueDate: "",
   });
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   
   const handleCreateProject = () => {
     if (newProject.name.trim()) {
       addProject({
         name: newProject.name.trim(),
         goal: newProject.goal.trim(),
-        dueDate: newProject.dueDate || undefined,
+        dueDate: selectedDate ? selectedDate.toISOString() : undefined,
       });
       
       setNewProject({
@@ -58,9 +68,15 @@ const Projects = () => {
         goal: "",
         dueDate: "",
       });
+      setSelectedDate(undefined);
       
       setIsAddDialogOpen(false);
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return format(date, "dd/MM/yyyy");
   };
 
   const filteredProjects = projects.filter((project) =>
@@ -125,12 +141,30 @@ const Projects = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dueDate">Data de Conclusão</Label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={newProject.dueDate}
-                      onChange={(e) => setNewProject({ ...newProject, dueDate: e.target.value })}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="dueDate"
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Selecione uma data</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
                 <DialogFooter>
@@ -174,7 +208,7 @@ const Projects = () => {
                       {project.dueDate && (
                         <div className="flex items-center text-muted-foreground">
                           <Clock className="h-3 w-3 mr-1" />
-                          {new Date(project.dueDate).toLocaleDateString('pt-BR')}
+                          {formatDate(project.dueDate)}
                         </div>
                       )}
                     </div>
