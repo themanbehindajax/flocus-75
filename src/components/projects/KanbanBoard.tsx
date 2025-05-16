@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, TaskStatus } from "@/lib/types";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { KanbanColumn } from "./KanbanColumn";
 
 interface KanbanBoardProps {
@@ -23,7 +22,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDraggedTask(task);
   };
   
-  const handleDragOver = (e: React.DragOverEvent) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
   
