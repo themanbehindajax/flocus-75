@@ -9,8 +9,46 @@ import {
   createPomodoroActions,
   createMiscActions
 } from "./storeActions";
+import { Task, Project, Tag, PomodoroSession, DailyPriority, UserProfile, AppSettings } from "./types";
 
-export const useAppStore = create()(
+// Define the full store state type
+export interface AppState {
+  // State
+  tasks: Task[];
+  projects: Project[];
+  tags: Tag[];
+  pomodoroSessions: PomodoroSession[];
+  dailyPriorities: DailyPriority[];
+  profile: UserProfile;
+  settings: AppSettings;
+  
+  // Actions from task actions
+  addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => Task;
+  updateTask: (task: Task) => void;
+  completeTask: (id: string) => void;
+  deleteTask: (id: string) => void;
+  
+  // Actions from project actions
+  addProject: (projectData: Omit<Project, "id" | "createdAt" | "updatedAt" | "tasks">) => Project;
+  updateProject: (project: Project) => void;
+  deleteProject: (id: string) => void;
+  
+  // Actions from tag actions
+  addTag: (tagData: Omit<Tag, "id">) => Tag;
+  updateTag: (tag: Tag) => void;
+  deleteTag: (id: string) => void;
+  
+  // Actions from pomodoro actions
+  startPomodoroSession: (taskId?: string, projectId?: string) => PomodoroSession;
+  completePomodoroSession: (id: string) => void;
+  
+  // Actions from misc actions
+  setDailyPriorities: (date: string, taskIds: string[]) => void;
+  updateProfile: (profileUpdate: Partial<UserProfile>) => void;
+  updateSettings: (settingsUpdate: Partial<AppSettings>) => void;
+}
+
+export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       tasks: [],

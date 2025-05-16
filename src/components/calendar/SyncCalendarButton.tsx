@@ -5,7 +5,7 @@ import { useAuthStore } from "@/lib/auth";
 import { useAppStore } from "@/lib/store";
 import { syncTasksToCalendar, syncCalendarToTasks } from "@/lib/calendarSync";
 import { toast } from "sonner";
-import { Calendar, SyncIcon } from "lucide-react";
+import { Calendar, RefreshCw } from "lucide-react";
 
 export const SyncCalendarButton = () => {
   const { googleToken } = useAuthStore();
@@ -44,7 +44,7 @@ export const SyncCalendarButton = () => {
       title="Sincronizar com Google Calendar"
     >
       {isLoading ? (
-        <SyncIcon className="h-4 w-4 animate-spin" />
+        <RefreshCw className="h-4 w-4 animate-spin" />
       ) : (
         <Calendar className="h-4 w-4" />
       )}
