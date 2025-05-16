@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
 import { Project, Task } from "@/lib/types";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectProgressCardProps {
   project: Project;
@@ -11,10 +12,15 @@ interface ProjectProgressCardProps {
 }
 
 export const ProjectProgressCard = ({ project, projectTasks }: ProjectProgressCardProps) => {
+  const navigate = useNavigate();
   const completedTasks = projectTasks.filter(task => task.completed);
   const progress = projectTasks.length > 0 
     ? Math.round((completedTasks.length / projectTasks.length) * 100) 
     : 0;
+
+  const handleStartPomodoro = () => {
+    navigate("/pomodoro", { state: { projectId: project.id } });
+  };
 
   return (
     <Card className="md:col-span-1">
@@ -36,7 +42,7 @@ export const ProjectProgressCard = ({ project, projectTasks }: ProjectProgressCa
           </div>
         )}
         <div className="mt-4">
-          <Button className="w-full">
+          <Button className="w-full" onClick={handleStartPomodoro}>
             Iniciar Pomodoro
           </Button>
         </div>

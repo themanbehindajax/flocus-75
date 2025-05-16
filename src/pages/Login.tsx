@@ -23,7 +23,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-background rounded-lg shadow-lg p-6 border">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Produtivo</h1>
+            <h1 className="text-3xl font-bold">Flocus</h1>
             <p className="text-muted-foreground mt-2">Sua ferramenta de produtividade pessoal</p>
           </div>
           
