@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -19,8 +19,17 @@ const ProjectDetails = () => {
   const { projects, tasks } = useAppStore();
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [projectTasks, setProjectTasks] = useState<any[]>([]);
 
   const project = projects.find(p => p.id === projectId);
+
+  // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
+  useEffect(() => {
+    if (project) {
+      const filteredTasks = tasks.filter(task => project.tasks.includes(task.id));
+      setProjectTasks(filteredTasks);
+    }
+  }, [project, tasks]);
 
   if (!project) {
     return (
@@ -46,9 +55,14 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectTasks = tasks.filter(task => project.tasks.includes(task.id));
+  const handleTaskCreated = () => {
+    toast({
+      title: "Tarefa criada",
+      description: "Tarefa adicionada ao projeto com sucesso."
+    });
+    setIsAddDialogOpen(false);
+  };
 
-  // O botão/função de diálogo nova tarefa é passado via children para ProjectTaskList
   return (
     <AppLayout>
       <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -80,22 +94,7 @@ const ProjectDetails = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <TaskForm
-                  onComplete={() => {
-                    setIsAddDialogOpen(false);
-                  }}
-                  editTask={{
-                    id: "",
-                    title: "",
-                    description: "",
-                    status: "todo",
-                    priority: "media",
-                    tags: [],
-                    projectId: project.id,
-                    subtasks: [],
-                    completed: false,
-                    createdAt: "",
-                    updatedAt: ""
-                  }}
+                  onComplete={handleTaskCreated}
                 />
               </DialogContent>
             </Dialog>

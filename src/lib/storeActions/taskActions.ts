@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -12,9 +11,11 @@ export const createTaskActions = (set: any, get: any) => ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+    
     set((state: any) => ({
       tasks: [...state.tasks, newTask],
     }));
+    
     if (taskData.projectId) {
       const project = get().projects.find((p: Project) => p.id === taskData.projectId);
       if (project) {
@@ -26,15 +27,50 @@ export const createTaskActions = (set: any, get: any) => ({
         get().updateProject(updatedProject);
       }
     }
+    
     return newTask;
   },
+  
   updateTask: (task: Task) => {
-    set((state: any) => ({
-      tasks: state.tasks.map((t: Task) =>
-        t.id === task.id ? { ...task, updatedAt: new Date().toISOString() } : t
-      ),
-    }));
+    set((state: any) => {
+      const oldTask = state.tasks.find((t: Task) => t.id === task.id);
+      const updatedTask = { ...task, updatedAt: new Date().toISOString() };
+      
+      // Verifica se o projeto da tarefa foi alterado
+      if (oldTask && oldTask.projectId !== updatedTask.projectId) {
+        // Se estava em um projeto e foi removida ou mudou de projeto
+        if (oldTask.projectId) {
+          const oldProject = state.projects.find((p: Project) => p.id === oldTask.projectId);
+          if (oldProject) {
+            const updatedOldProject = {
+              ...oldProject,
+              tasks: oldProject.tasks.filter((id: string) => id !== task.id),
+              updatedAt: new Date().toISOString(),
+            };
+            get().updateProject(updatedOldProject);
+          }
+        }
+        
+        // Se foi adicionada a um novo projeto
+        if (updatedTask.projectId) {
+          const newProject = state.projects.find((p: Project) => p.id === updatedTask.projectId);
+          if (newProject && !newProject.tasks.includes(task.id)) {
+            const updatedNewProject = {
+              ...newProject,
+              tasks: [...newProject.tasks, task.id],
+              updatedAt: new Date().toISOString(),
+            };
+            get().updateProject(updatedNewProject);
+          }
+        }
+      }
+      
+      return {
+        tasks: state.tasks.map((t: Task) => t.id === task.id ? updatedTask : t)
+      };
+    });
   },
+  
   completeTask: (id: string) => {
     set((state: any) => {
       const updatedTasks = state.tasks.map((task: Task) =>
@@ -64,6 +100,7 @@ export const createTaskActions = (set: any, get: any) => ({
       };
     });
   },
+  
   deleteTask: (id: string) => {
     set((state: any) => {
       const task = state.tasks.find((t: Task) => t.id === id);
