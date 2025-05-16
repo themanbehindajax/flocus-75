@@ -46,7 +46,7 @@ export const syncTasksToCalendar = async (
  */
 export const syncCalendarToTasks = async (
   token: string,
-  addTaskFunction: typeof useAppStore.getState().addTask
+  addTaskFunction: (task: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => void
 ): Promise<void> => {
   try {
     // Fetch events from Google Calendar
