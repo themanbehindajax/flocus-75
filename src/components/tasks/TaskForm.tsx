@@ -103,6 +103,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         dueDate: date ? date.toISOString().split("T")[0] : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
+        completed: false, // Add the missing completed property
       };
 
       if (editTask) {

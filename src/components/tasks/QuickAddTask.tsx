@@ -28,6 +28,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         projectId: projectId,
         subtasks: [],
         isQuick: isQuickTask,
+        completed: false,
       });
 
       if (isQuickTask) {

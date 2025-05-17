@@ -60,7 +60,7 @@ export const KanbanTask = ({
       transition={{ duration: 0.2 }}
       draggable="true"
       onDragStart={handleDragStart}
-      onDragEnd={onDragEnd}
+      onDragEnd={() => onDragEnd && onDragEnd()}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md'
@@ -100,25 +100,7 @@ export const KanbanTask = ({
               </>
             )}
           </div>
-
-          {task.estimatedTime && (
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>{task.estimatedTime}h</span>
-            </div>
-          )}
         </div>
-
-        {task.assignee && (
-          <div className="flex justify-end mt-1">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={task.assignee.avatar} alt={task.assignee.name} />
-              <AvatarFallback className="text-xs">
-                {task.assignee.name.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        )}
       </div>
     </motion.div>
   );

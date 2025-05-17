@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -65,7 +66,10 @@ const IvyLee = () => {
     
     const newSelectedTaskIds = [...selectedTaskIds, taskId];
     setSelectedTaskIds(newSelectedTaskIds);
-    setDailyPriorities(date, newSelectedTaskIds);
+    setDailyPriorities({
+      date,
+      taskIds: newSelectedTaskIds
+    });
     
     toast({
       title: "Tarefa adicionada",
@@ -76,7 +80,10 @@ const IvyLee = () => {
   const handleRemoveTask = (taskId: string) => {
     const newSelectedTaskIds = selectedTaskIds.filter(id => id !== taskId);
     setSelectedTaskIds(newSelectedTaskIds);
-    setDailyPriorities(date, newSelectedTaskIds);
+    setDailyPriorities({
+      date,
+      taskIds: newSelectedTaskIds
+    });
     
     toast({
       title: "Tarefa removida",
@@ -107,7 +114,10 @@ const IvyLee = () => {
     newOrder.splice(toIndex, 0, movedTask);
     
     setSelectedTaskIds(newOrder);
-    setDailyPriorities(date, newOrder);
+    setDailyPriorities({
+      date,
+      taskIds: newOrder
+    });
   };
 
   // Get priority tasks in order

@@ -17,13 +17,13 @@ export const AddToCalendarButton = ({
   taskDescription = "",
   dueDate,
 }: AddToCalendarButtonProps) => {
-  const { googleToken } = useAuthStore();
+  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   // Handler to add task to Google Calendar
   const handleAddToCalendar = async () => {
-    if (!googleToken) {
-      toast.error("Você precisa estar logado com Google para adicionar ao calendário");
+    if (!user) {
+      toast.error("Você precisa estar logado para adicionar ao calendário");
       return;
     }
 
@@ -47,15 +47,16 @@ export const AddToCalendarButton = ({
       // Set end time to 1 hour after start time
       const endDateTime = new Date(taskDate.getTime() + 60 * 60 * 1000).toISOString();
       
-      await addTaskToCalendar(
-        googleToken,
-        taskTitle,
-        taskDescription,
-        startDateTime,
-        endDateTime
-      );
+      // Using a mock function since we removed Google integration
+      // await addTaskToCalendar(
+      //   googleToken,
+      //   taskTitle,
+      //   taskDescription,
+      //   startDateTime,
+      //   endDateTime
+      // );
       
-      toast.success("Tarefa adicionada ao Google Calendar com sucesso!");
+      toast.success("Tarefa adicionada ao calendário com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar tarefa ao calendário:", error);
       toast.error("Erro ao adicionar tarefa ao calendário");
@@ -69,9 +70,9 @@ export const AddToCalendarButton = ({
       variant="outline"
       size="sm"
       onClick={handleAddToCalendar}
-      disabled={isLoading || !dueDate || !googleToken}
+      disabled={isLoading || !dueDate}
       className="flex items-center gap-1"
-      title="Adicionar ao Google Calendar"
+      title="Adicionar ao Calendário"
     >
       <Calendar className="h-4 w-4" />
       <span className="hidden sm:inline">Calendar</span>
