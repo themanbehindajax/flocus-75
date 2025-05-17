@@ -17,11 +17,12 @@ export const createTaskActions = (set: any, get: any) => ({
       tasks: [...state.tasks, newTask],
     }));
     
-    // If the task belongs to a project, add it to the project's task list
+    // Se a tarefa pertence a um projeto, adiciona ao projeto
     if (taskData.projectId) {
       set((state: any) => {
         const updatedProjects = state.projects.map((project: Project) => {
           if (project.id === taskData.projectId) {
+            console.log(`Adicionando tarefa ${newTask.id} ao projeto ${project.id}`);
             return {
               ...project,
               tasks: [...project.tasks, newTask.id],

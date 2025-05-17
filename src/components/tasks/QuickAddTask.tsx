@@ -19,7 +19,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
 
   const handleCreateTask = () => {
     if (taskTitle.trim()) {
-      // Use taskActions from the store to ensure proper project task association
+      // Certifica-se de que a tarefa será associada ao projeto
       const newTask = {
         title: taskTitle.trim(),
         description: "",
@@ -32,6 +32,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         completed: false,
       };
       
+      // Adiciona a tarefa e obtém a referência da tarefa criada
       const createdTask = addTask(newTask);
 
       if (isQuickTask) {
@@ -43,7 +44,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       setTaskTitle("");
       setIsQuickTask(false);
       
-      // Trigger callback to update the parent component's state
+      // Chama o callback para atualizar a interface
       if (onTaskAdded) {
         onTaskAdded();
       }

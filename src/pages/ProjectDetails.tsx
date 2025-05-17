@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -55,19 +56,14 @@ const ProjectDetails = () => {
   }
 
   const handleTaskCreated = () => {
-    // Força uma atualização da lista de tarefas com base nos dados mais recentes
-    if (project) {
-      // Busca as tarefas atualizadas diretamente do store
-      const currentTasks = useAppStore.getState().tasks;
-      const updatedProjectTasks = currentTasks.filter(task => project.tasks.includes(task.id));
-      setProjectTasks(updatedProjectTasks);
-    }
+    // Fecha o diálogo de adição de tarefa
+    setIsAddDialogOpen(false);
     
+    // Notifica o usuário sobre a criação da tarefa
     toast({
       title: "Tarefa criada",
       description: "Tarefa adicionada ao projeto com sucesso."
     });
-    setIsAddDialogOpen(false);
   };
 
   return (

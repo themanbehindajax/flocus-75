@@ -136,6 +136,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
       });
       setDate(undefined);
 
+      // Chamar onComplete após salvar a tarefa para fechar o modal
       onComplete();
     }
   };
