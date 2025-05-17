@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
-import { PriorityLevel } from "@/lib/types";
+import { PriorityLevel, TaskStatus } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         title: taskTitle.trim(),
         description: "",
         priority: "media" as PriorityLevel,
-        status: "todo",
+        status: "todo" as TaskStatus,
         tags: [],
         projectId: projectId,
         subtasks: [],
