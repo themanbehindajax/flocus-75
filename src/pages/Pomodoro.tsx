@@ -76,231 +76,241 @@ const Pomodoro = () => {
   return (
     <AppLayout>
       <PageTransition>
-        <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-center py-8 px-4">
+        <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-start py-8 px-4">
           {/* Fundo com gradiente */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-700 to-primary-900 z-0" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
           
           {/* Conteúdo centralizado */}
-          <div className="relative z-10 w-full max-w-3xl mx-auto text-white">
+          <div className="relative z-10 w-full max-w-5xl mx-auto text-white">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center text-center mb-12"
+              className="flex flex-col items-center justify-center text-center mb-8 md:mb-12"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                O que você quer focar hoje?
+              <h1 className="text-3xl md:text-5xl font-bold mb-2">
+                Foco no que importa
               </h1>
-              <p className="text-xl opacity-80">
-                "It's never too late for a fresh start"
+              <p className="text-lg md:text-xl opacity-80 max-w-md">
+                "É na concentração das horas mais produtivas que nascem as maiores conquistas"
               </p>
             </motion.div>
             
-            {/* Seletor de modo do timer */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mb-8"
-            >
-              <TimerModeSelector 
-                currentMode={timerMode}
-                onModeChange={setTimerMode}
-                className="justify-center"
-              />
-            </motion.div>
-            
-            {/* Timer circular */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3, type: "spring" }}
-              className="flex justify-center mb-8"
-            >
-              <div className="relative w-64 h-64">
-                <svg className="w-full h-full" viewBox="0 0 256 256">
-                  {/* Background circle */}
-                  <circle
-                    cx="128"
-                    cy="128"
-                    r="120"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.2)"
-                    strokeWidth="4"
-                  />
-                  
-                  {/* Progress circle */}
-                  <motion.circle
-                    cx="128"
-                    cy="128"
-                    r="120"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset }}
-                    transition={{ duration: 0.6, ease: "easeInOut" }}
-                    transform="rotate(-90, 128, 128)"
-                  />
-                </svg>
-                
-                {/* Time display */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.span 
-                    key={timeRemaining}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-6xl md:text-7xl font-mono font-bold"
-                  >
-                    {formatTime(timeRemaining)}
-                  </motion.span>
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Controles do timer */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex justify-center gap-4 mb-12"
-            >
-              {timerState === "running" ? (
-                <Button 
-                  size="lg" 
-                  onClick={pauseTimer}
-                  variant="secondary"
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-8 rounded-full transition-all"
-                >
-                  Pausar
-                </Button>
-              ) : (
-                <Button 
-                  size="lg" 
-                  onClick={startTimer}
-                  className="bg-white text-primary-700 hover:bg-white/90 px-8 rounded-full font-medium transition-all"
-                >
-                  {timerState === "paused" ? "Continuar" : "Iniciar"}
-                </Button>
-              )}
-              
-              <Button 
-                size="lg" 
-                variant="outline" 
-                onClick={resetTimer}
-                className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all"
+            {/* Layout em duas colunas para desktop */}
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+              {/* Coluna da esquerda - Timer */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex flex-col items-center w-full md:w-1/2"
               >
-                <RotateCw className="mr-2 h-4 w-4" />
-                Reiniciar
-              </Button>
-            </motion.div>
-            
-            {/* Seletor de projetos e tarefas */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="glass-effect p-6 max-w-md mx-auto"
-            >
-              <div className="mb-6">
-                <h2 className="text-xl font-bold mb-4">Escolha seu foco</h2>
+                {/* Seletor de modo do timer */}
+                <div className="w-full mb-6">
+                  <TimerModeSelector 
+                    currentMode={timerMode}
+                    onModeChange={setTimerMode}
+                    className="justify-center"
+                  />
+                </div>
                 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium opacity-80">Projeto</label>
-                    <Select
-                      value={selectedProjectId || "none"}
-                      onValueChange={(value) => {
-                        setSelectedProjectId(value === "none" ? null : value);
-                        setSelectedTaskId(null); // Reset task selection
-                      }}
-                      disabled={isActive && !isPaused}
-                    >
-                      <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                        <SelectValue placeholder="Selecione um projeto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Sem projeto específico</SelectItem>
-                        {projects.map(project => (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                {/* Timer circular */}
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3, type: "spring" }}
+                  className="flex justify-center mb-6 relative"
+                >
+                  <div className="relative w-72 h-72">
+                    <svg className="w-full h-full" viewBox="0 0 256 256">
+                      {/* Background circle */}
+                      <circle
+                        cx="128"
+                        cy="128"
+                        r="120"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.2)"
+                        strokeWidth="6"
+                      />
+                      
+                      {/* Progress circle */}
+                      <motion.circle
+                        cx="128"
+                        cy="128"
+                        r="120"
+                        fill="none"
+                        stroke="white"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        transform="rotate(-90, 128, 128)"
+                      />
+                    </svg>
+                    
+                    {/* Time display */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <motion.span 
+                        key={timeRemaining}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-6xl md:text-7xl font-mono font-bold mb-1"
+                      >
+                        {formatTime(timeRemaining)}
+                      </motion.span>
+                      <span className="text-sm font-medium uppercase tracking-wider opacity-70">
+                        {timerMode === 'pomodoro' ? 'Concentração' : timerMode === 'shortBreak' ? 'Pausa Curta' : 'Pausa Longa'}
+                      </span>
+                    </div>
                   </div>
+                </motion.div>
+                
+                {/* Controles do timer */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="flex justify-center gap-4 mb-6"
+                >
+                  {timerState === "running" ? (
+                    <Button 
+                      size="lg" 
+                      onClick={pauseTimer}
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-8 rounded-full transition-all"
+                    >
+                      Pausar
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="lg" 
+                      onClick={startTimer}
+                      className="bg-white text-blue-700 hover:bg-white/90 px-10 rounded-full font-medium transition-all shadow-lg"
+                    >
+                      {timerState === "paused" ? "Continuar" : "Iniciar"}
+                    </Button>
+                  )}
                   
-                  {selectedProjectId && (
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    onClick={resetTimer}
+                    className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all"
+                  >
+                    <RotateCw className="mr-2 h-4 w-4" />
+                    Reiniciar
+                  </Button>
+                </motion.div>
+                
+                {/* Contador de pomodoros */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium">
+                  Pomodoros completados hoje: {pomodoroCount}
+                </div>
+              </motion.div>
+              
+              {/* Coluna da direita - Projetos e Tarefas */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="glass-effect p-6 rounded-2xl w-full md:w-1/2"
+              >
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold mb-4">Escolha seu foco</h2>
+                  
+                  <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium opacity-80">Tarefa</label>
+                      <label className="text-sm font-medium opacity-80">Projeto</label>
                       <Select
-                        value={selectedTaskId || "none"}
-                        onValueChange={(value) => setSelectedTaskId(value === "none" ? null : value)}
+                        value={selectedProjectId || "none"}
+                        onValueChange={(value) => {
+                          setSelectedProjectId(value === "none" ? null : value);
+                          setSelectedTaskId(null); // Reset task selection
+                        }}
                         disabled={isActive && !isPaused}
                       >
                         <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                          <SelectValue placeholder="Selecione uma tarefa" />
+                          <SelectValue placeholder="Selecione um projeto" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">Sem tarefa específica</SelectItem>
-                          {projectTasks.map(task => (
-                            <SelectItem key={task.id} value={task.id}>
-                              {task.title}
+                          <SelectItem value="none">Sem projeto específico</SelectItem>
+                          {projects.map(project => (
+                            <SelectItem key={project.id} value={project.id}>
+                              {project.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Lista de tarefas do projeto */}
-              {selectedProjectId && projectTasks.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-3">Tarefas do projeto</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin">
-                    {projectTasks.map(task => (
-                      <motion.div
-                        key={task.id}
-                        initial={{ opacity: 0, x: -5 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className={`p-2 rounded-lg transition-all cursor-pointer ${
-                          selectedTaskId === task.id 
-                            ? 'bg-white/20' 
-                            : 'bg-white/5 hover:bg-white/10'
-                        }`}
-                        onClick={() => setSelectedTaskId(task.id)}
-                      >
-                        <p className="truncate text-sm">{task.title}</p>
-                      </motion.div>
-                    ))}
+                    
+                    {selectedProjectId && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium opacity-80">Tarefa</label>
+                        <Select
+                          value={selectedTaskId || "none"}
+                          onValueChange={(value) => setSelectedTaskId(value === "none" ? null : value)}
+                          disabled={isActive && !isPaused}
+                        >
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                            <SelectValue placeholder="Selecione uma tarefa" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Sem tarefa específica</SelectItem>
+                            {projectTasks.map(task => (
+                              <SelectItem key={task.id} value={task.id}>
+                                {task.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-              
-              {/* Adicionar tarefa rápida */}
-              {selectedProjectId && (
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Adicionar tarefa</h3>
-                  <QuickAddTask 
-                    projectId={selectedProjectId} 
-                    onTaskAdded={handleTaskAdded}
-                  />
-                </div>
-              )}
-              
-              {/* Contador de pomodoros */}
-              <div className="mt-6 text-center">
-                <p className="text-sm opacity-70">
-                  Pomodoros completados hoje: {pomodoroCount}
-                </p>
-              </div>
-            </motion.div>
+                
+                {/* Lista de tarefas do projeto */}
+                {selectedProjectId && projectTasks.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium mb-3 flex items-center">
+                      <span>Tarefas do projeto</span>
+                      <span className="ml-2 bg-white/20 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
+                    </h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar rounded-xl">
+                      {projectTasks.map(task => (
+                        <motion.div
+                          key={task.id}
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`p-3 rounded-lg transition-all cursor-pointer ${
+                            selectedTaskId === task.id 
+                              ? 'bg-white/20 shadow-inner' 
+                              : 'bg-white/5 hover:bg-white/10'
+                          }`}
+                          onClick={() => setSelectedTaskId(task.id)}
+                        >
+                          <p className="truncate text-sm">{task.title}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Adicionar tarefa rápida */}
+                {selectedProjectId && (
+                  <div>
+                    <h3 className="text-lg font-medium mb-3">Adicionar tarefa</h3>
+                    <QuickAddTask 
+                      projectId={selectedProjectId} 
+                      onTaskAdded={handleTaskAdded}
+                    />
+                  </div>
+                )}
+              </motion.div>
+            </div>
             
             {/* Botão de tela cheia */}
             <motion.div 

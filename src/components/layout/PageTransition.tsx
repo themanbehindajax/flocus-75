@@ -2,12 +2,14 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 import { useAppStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
 
 interface PageTransitionProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
+export const PageTransition: React.FC<PageTransitionProps> = ({ children, className }) => {
   const { sidebarCollapsed } = useAppStore();
 
   const variants = {
@@ -26,7 +28,11 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
         duration: 0.35,
         ease: [0.22, 1, 0.36, 1]
       }}
-      className={`w-full transition-all duration-300 ${sidebarCollapsed ? 'px-4' : 'px-2'}`}
+      className={cn(
+        `w-full transition-all duration-300`,
+        sidebarCollapsed ? 'pl-0 md:pl-2' : 'px-2 md:px-4',
+        className
+      )}
     >
       {children}
     </motion.div>

@@ -52,14 +52,16 @@ export const PomodoroMiniWidget = () => {
         transition={{ duration: 0.3 }}
       >
         <Card 
-          className={`fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg bg-gradient-to-br from-primary-400 to-primary-700 text-white border-none ${
-            isMinimized 
-              ? 'w-auto p-2' 
-              : 'w-64 p-4'
-          }`}
+          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none"
+          style={{
+            width: isMinimized ? 'auto' : '16rem',
+            padding: isMinimized ? '0.5rem' : '1rem',
+            borderRadius: '1.5rem',
+            boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)'
+          }}
         >
           {isMinimized ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-2">
               <motion.span 
                 key={timeRemaining}
                 initial={{ opacity: 0 }}
@@ -72,7 +74,7 @@ export const PomodoroMiniWidget = () => {
                 onClick={() => setIsMinimized(false)} 
                 size="sm" 
                 variant="ghost"
-                className="text-white hover:bg-white/10"
+                className="text-white hover:bg-white/10 h-7 w-7 p-0"
               >
                 <Maximize2 className="h-4 w-4" />
               </Button>

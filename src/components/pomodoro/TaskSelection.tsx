@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { motion } from "framer-motion";
 
 interface TaskSelectionProps {
   selectedTaskId: string;
@@ -27,7 +28,12 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
   const { tasks, projects } = useAppStore();
   
   return (
-    <div className="space-y-4">
+    <motion.div 
+      className="space-y-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className="space-y-2">
         <label className="text-sm font-medium">Tarefa</label>
         <Select
@@ -71,6 +77,6 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -92,10 +92,19 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
 
   return (
     <motion.div 
-      className="h-screen flex flex-col border-r bg-card"
+      className={cn(
+        "h-screen flex flex-col border-r bg-card",
+        sidebarCollapsed && "shadow-lg rounded-r-xl border"
+      )}
       variants={sidebarVariants}
       initial={sidebarCollapsed ? "collapsed" : "expanded"}
       animate={sidebarCollapsed ? "collapsed" : "expanded"}
+      style={{ 
+        position: sidebarCollapsed ? "fixed" : "relative",
+        top: sidebarCollapsed ? "50%" : "auto",
+        transform: sidebarCollapsed ? "translateY(-50%)" : "none",
+        zIndex: 50,
+      }}
     >
       <div className={cn("p-4 flex items-center border-b", 
         sidebarCollapsed ? "justify-center" : "justify-between"
