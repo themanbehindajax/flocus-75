@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -86,6 +87,10 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight font-satoshi;
+  }
+
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
   }
 
   ::-webkit-scrollbar {
@@ -206,6 +211,16 @@
   
   .premium-badge {
     @apply rounded-full px-3 py-1 text-xs font-medium bg-gradient-to-r;
+  }
+  
+  /* Glassmorphism effect */
+  .glassmorphism {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg;
+  }
+  
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
   }
 }
 

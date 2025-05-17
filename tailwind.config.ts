@@ -27,6 +27,7 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         satoshi: ['Satoshi', 'Inter', 'sans-serif'],
         mono: ['Space Grotesk', 'monospace'],
+        playfair: ['Playfair Display', 'serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -125,7 +126,11 @@ export default {
         "count-up": {
           "0%": { transform: "translateY(0)" },
           "100%": { transform: "translateY(-100%)" }
-        }
+        },
+        "glow": {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(59, 130, 246, 0.5)" },
+          "50%": { boxShadow: "0 0 20px rgba(59, 130, 246, 0.7)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -135,7 +140,8 @@ export default {
         "pulse-light": "pulse-light 2s infinite",
         "float": "float 3s ease-in-out infinite",
         "scale-in": "scale-in 0.3s ease-out",
-        "count-up": "count-up 0.5s ease-out forwards"
+        "count-up": "count-up 0.5s ease-out forwards",
+        "glow": "glow 2s infinite ease-in-out"
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

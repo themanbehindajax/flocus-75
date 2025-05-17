@@ -21,6 +21,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -31,7 +32,9 @@ import {
   Clock,
   ChartPie,
   ChartBar,
-  ChartLine
+  ChartLine,
+  Calendar,
+  Filter
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -41,6 +44,7 @@ import {
   ChartLegend,
   ChartLegendContent
 } from "@/components/ui/chart";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 const Achievements = () => {
   const { profile, tasks, projects, tags, pomodoroSessions } = useAppStore();
@@ -146,290 +150,425 @@ const Achievements = () => {
     }
   };
 
+  // Badge data
+  const badges = [
+    { id: 1, name: "Produtividade Excelente", icon: "🏆", achieved: profile.points > 500, description: "Complete mais de 500 pontos de produtividade" },
+    { id: 2, name: "Mestre do Foco", icon: "🧠", achieved: completedPomodoros > 50, description: "Complete 50 sessões de pomodoro" },
+    { id: 3, name: "Consistência Diária", icon: "🔥", achieved: profile.streak > 7, description: "Mantenha uma sequência de 7 dias" },
+    { id: 4, name: "Organizador", icon: "📊", achieved: projects.length > 3, description: "Crie e organize mais de 3 projetos" },
+    { id: 5, name: "Velocidade", icon: "⚡", achieved: false, description: "Complete 5 tarefas em um único dia" },
+    { id: 6, name: "Maratonista", icon: "🏃", achieved: false, description: "Use o app por 30 dias consecutivos" },
+  ];
+
+  // Helper for time range button styling
+  const getTimeRangeButtonClass = (range: "week" | "month" | "all") => {
+    return `px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+      selectedTimeRange === range 
+        ? "bg-blue-500 text-white shadow-lg" 
+        : "bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white/80"
+    }`;
+  };
+
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 max-w-7xl mx-auto">
-        <div className="space-y-6">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+      {/* Background gradient */}
+      <div className="absolute inset-0 -left-[100vw] -right-[100vw] bg-gradient-to-br from-blue-400/20 via-blue-500/10 to-purple-500/20 z-0" />
+      
+      <div className="relative z-10 p-4 md:p-6 max-w-7xl mx-auto">
+        <motion.div 
+          className="space-y-8"
+          initial="hidden"
+          animate="show"
+          variants={containerVariants}
+        >
+          {/* Header with gradient text */}
+          <motion.div variants={itemVariants}>
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-satoshi">
               Conquistas & Análises
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-2">
               Monitore seu progresso e visualize suas conquistas
             </p>
-          </div>
+          </motion.div>
+          
+          {/* Time range filter */}
+          <motion.div variants={itemVariants} className="flex justify-center gap-2 mb-6">
+            <button 
+              className={getTimeRangeButtonClass("week")} 
+              onClick={() => setSelectedTimeRange("week")}
+            >
+              <span className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                Semana
+              </span>
+            </button>
+            <button 
+              className={getTimeRangeButtonClass("month")} 
+              onClick={() => setSelectedTimeRange("month")}
+            >
+              <span className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                Mês
+              </span>
+            </button>
+            <button 
+              className={getTimeRangeButtonClass("all")} 
+              onClick={() => setSelectedTimeRange("all")}
+            >
+              <span className="flex items-center">
+                <Filter className="mr-2 h-4 w-4" />
+                Total
+              </span>
+            </button>
+          </motion.div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <motion.div 
+            variants={itemVariants} 
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            {/* Points Card */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="h-full"
             >
-              <Card className="h-full overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
-                    <Trophy className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="text-white/90 flex items-center text-xl">
+                    <Trophy className="mr-2 h-5 w-5 text-blue-400" />
                     Pontos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent"
+                  >
                     {profile.points}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  </motion.div>
+                  <p className="text-sm text-white/70 mt-1">
                     Ganho com tarefas concluídas
                   </p>
                 </CardContent>
               </Card>
             </motion.div>
 
+            {/* Streak Card */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="h-full"
             >
-              <Card className="h-full overflow-hidden border border-purple-100/40 dark:border-purple-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-900/70 dark:text-purple-300/90 flex items-center text-xl">
-                    <Flame className="mr-2 h-5 w-5 text-purple-500" />
+                  <CardTitle className="text-white/90 flex items-center text-xl">
+                    <Flame className="mr-2 h-5 w-5 text-orange-400" />
                     Streak Atual
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-700 dark:text-purple-400">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="text-3xl font-bold bg-gradient-to-r from-orange-300 to-red-500 bg-clip-text text-transparent"
+                  >
                     {profile.streak} dias
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  </motion.div>
+                  <p className="text-sm text-white/70 mt-1">
                     Última atividade: {formatDistanceToNow(new Date(profile.lastActivity), { locale: ptBR, addSuffix: true })}
                   </p>
                 </CardContent>
               </Card>
             </motion.div>
 
+            {/* Tasks Card */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="h-full"
             >
-              <Card className="h-full overflow-hidden border border-cyan-100/40 dark:border-cyan-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-cyan-900/70 dark:text-cyan-300/90 flex items-center text-xl">
-                    <CheckCircle2 className="mr-2 h-5 w-5 text-cyan-500" />
+                  <CardTitle className="text-white/90 flex items-center text-xl">
+                    <CheckCircle2 className="mr-2 h-5 w-5 text-teal-400" />
                     Tarefas Concluídas
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-cyan-700 dark:text-cyan-400">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4, type: "spring" }}
+                    className="text-3xl font-bold bg-gradient-to-r from-teal-300 to-cyan-500 bg-clip-text text-transparent"
+                  >
                     {completedTasks}
+                  </motion.div>
+                  <div className="text-sm text-white/70 mt-1 flex items-center">
+                    <span>Taxa de conclusão:</span>
+                    <span className="ml-1 font-medium text-teal-300">{completionRate.toFixed(0)}%</span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Taxa de conclusão: {completionRate.toFixed(0)}%
-                  </p>
                 </CardContent>
               </Card>
             </motion.div>
 
+            {/* Pomodoro Card */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="h-full"
             >
-              <Card className="h-full overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
-                    <Clock className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="text-white/90 flex items-center text-xl">
+                    <Clock className="mr-2 h-5 w-5 text-blue-400" />
                     Pomodoros
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5, type: "spring" }}
+                    className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-indigo-500 bg-clip-text text-transparent"
+                  >
                     {completedPomodoros}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  </motion.div>
+                  <p className="text-sm text-white/70 mt-1">
                     Total de sessões concluídas
                   </p>
                 </CardContent>
               </Card>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Main Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div 
+            variants={itemVariants}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          >
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              whileHover={{ scale: 1.01 }}
+              className="h-full"
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
+              <Card className="h-full backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
-                    <ChartLine className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-white/90 text-xl">
+                    <ChartLine className="mr-2 h-5 w-5 text-blue-400" />
                     Progresso Semanal
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-white/60">
                     Tarefas e pomodoros concluídos por dia
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-72">
-                  <ChartContainer config={weeklyChartConfig}>
-                    <LineChart
-                      data={weeklyData}
-                      margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} vertical={false} />
-                      <XAxis 
-                        dataKey="name" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 12 }} 
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 12 }} 
-                      />
-                      <ChartTooltip 
-                        content={<ChartTooltipContent />}
-                      />
-                      <ChartLegend 
-                        content={<ChartLegendContent />} 
-                        verticalAlign="top" 
-                        align="right"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="tasks"
-                        stroke="var(--color-tasks)"
-                        strokeWidth={2}
-                        dot={{ r: 4, strokeWidth: 2 }}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="pomodoros"
-                        stroke="var(--color-pomodoros)"
-                        strokeWidth={2}
-                        dot={{ r: 4, strokeWidth: 2 }}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ChartContainer>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                    className="h-full"
+                  >
+                    <ChartContainer config={weeklyChartConfig}>
+                      <LineChart
+                        data={weeklyData}
+                        margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} vertical={false} />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 12, fill: "#CBD5E1" }} 
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "#CBD5E1" }} 
+                        />
+                        <ChartTooltip 
+                          content={<ChartTooltipContent />}
+                        />
+                        <ChartLegend 
+                          content={<ChartLegendContent />} 
+                          verticalAlign="top" 
+                          align="right"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="tasks"
+                          stroke="var(--color-tasks)"
+                          strokeWidth={3}
+                          dot={{ r: 4, strokeWidth: 2, fill: "#0EA5E9" }}
+                          activeDot={{ r: 8, strokeWidth: 0, fill: "#0EA5E9" }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="pomodoros"
+                          stroke="var(--color-pomodoros)"
+                          strokeWidth={3}
+                          dot={{ r: 4, strokeWidth: 2, fill: "#3B82F6" }}
+                          activeDot={{ r: 8, strokeWidth: 0, fill: "#3B82F6" }}
+                        />
+                      </LineChart>
+                    </ChartContainer>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.01 }}
+              className="h-full"
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
+              <Card className="h-full backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
-                    <ChartBar className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-white/90 text-xl">
+                    <ChartBar className="mr-2 h-5 w-5 text-blue-400" />
                     Produtividade por Dia
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-white/60">
                     Número de tarefas concluídas por dia
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-72">
-                  <ChartContainer config={tasksByDayConfig}>
-                    <BarChart
-                      data={tasksByDayOfWeek}
-                      margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} horizontal={true} vertical={false} />
-                      <XAxis 
-                        dataKey="name" 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 12 }} 
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 12 }} 
-                      />
-                      <ChartTooltip
-                        content={<ChartTooltipContent />}
-                      />
-                      <ChartLegend 
-                        content={<ChartLegendContent />} 
-                        verticalAlign="top" 
-                        align="right" 
-                      />
-                      <Bar 
-                        dataKey="completed" 
-                        fill="var(--color-completed)"
-                        radius={[4, 4, 0, 0]}
-                        barSize={24}
-                      />
-                    </BarChart>
-                  </ChartContainer>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                    className="h-full"
+                  >
+                    <ChartContainer config={tasksByDayConfig}>
+                      <BarChart
+                        data={tasksByDayOfWeek}
+                        margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} horizontal={true} vertical={false} />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "#CBD5E1" }} 
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "#CBD5E1" }} 
+                        />
+                        <ChartTooltip
+                          content={<ChartTooltipContent />}
+                        />
+                        <ChartLegend 
+                          content={<ChartLegendContent />} 
+                          verticalAlign="top" 
+                          align="right" 
+                        />
+                        <Bar 
+                          dataKey="completed" 
+                          fill="url(#barGradient)"
+                          radius={[4, 4, 0, 0]}
+                          barSize={30}
+                        >
+                          <defs>
+                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#38BDF8" stopOpacity={1}/>
+                              <stop offset="100%" stopColor="#0EA5E9" stopOpacity={0.8}/>
+                            </linearGradient>
+                          </defs>
+                        </Bar>
+                      </BarChart>
+                    </ChartContainer>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Distribution Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
+          <motion.div 
+            variants={itemVariants}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          >
+            <motion.div whileHover={{ scale: 1.01 }}>
+              <Card className="backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
-                    <ChartPie className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-white/90 text-xl">
+                    <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
                     Distribuição por Projeto
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-white/60">
                     Número de tarefas por projeto
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
                   {projectDistribution.length > 0 ? (
-                    <PieChart width={300} height={280}>
-                      <Pie
-                        data={projectDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={100}
-                        innerRadius={60}
-                        fill="#8884d8"
-                        dataKey="value"
-                        nameKey="name"
-                        paddingAngle={2}
-                      >
-                        {projectDistribution.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.color} 
-                            stroke="rgba(255,255,255,0.2)"
-                            strokeWidth={2}
+                    <motion.div
+                      initial={{ opacity: 0, rotate: -10 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      className="w-full h-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={projectDistribution}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={100}
+                            innerRadius={60}
+                            fill="#8884d8"
+                            dataKey="value"
+                            nameKey="name"
+                            paddingAngle={2}
+                            animationBegin={400}
+                            animationDuration={1500}
+                          >
+                            {projectDistribution.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.color} 
+                                stroke="rgba(255,255,255,0.2)"
+                                strokeWidth={2}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value) => [`${value} tarefas`, ""]}
+                            contentStyle={{ 
+                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                              backdropFilter: "blur(8px)",
+                              borderRadius: "0.5rem",
+                              border: "1px solid rgba(255, 255, 255, 0.2)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                              padding: "0.75rem",
+                              color: "white"
+                            }}
                           />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value) => [`${value} tarefas`, ""]}
-                        contentStyle={{ 
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
-                          backdropFilter: "blur(8px)",
-                          borderRadius: "0.5rem",
-                          border: "1px solid rgba(59, 130, 246, 0.1)",
-                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
-                          padding: "0.75rem"
-                        }}
-                      />
-                    </PieChart>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </motion.div>
                   ) : (
                     <div className="text-center p-8">
-                      <p className="text-muted-foreground">
+                      <p className="text-white/60">
                         Nenhum projeto com tarefas ainda.
                       </p>
                     </div>
@@ -438,60 +577,68 @@ const Achievements = () => {
               </Card>
             </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
+            <motion.div whileHover={{ scale: 1.01 }}>
+              <Card className="backdrop-blur-xl bg-white/5 border border-white/20 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
-                    <ChartPie className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-white/90 text-xl">
+                    <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
                     Distribuição por Tag
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-white/60">
                     Número de tarefas por tag
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
                   {tagDistribution.length > 0 ? (
-                    <PieChart width={300} height={280}>
-                      <Pie
-                        data={tagDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={100}
-                        innerRadius={60}
-                        fill="#8884d8"
-                        dataKey="value"
-                        nameKey="name"
-                        paddingAngle={2}
-                      >
-                        {tagDistribution.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.color} 
-                            stroke="rgba(255,255,255,0.2)"
-                            strokeWidth={2}
+                    <motion.div
+                      initial={{ opacity: 0, rotate: 10 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      transition={{ duration: 0.8, delay: 0.5 }}
+                      className="w-full h-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={tagDistribution}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={100}
+                            innerRadius={60}
+                            fill="#8884d8"
+                            dataKey="value"
+                            nameKey="name"
+                            paddingAngle={2}
+                            animationBegin={500}
+                            animationDuration={1500}
+                          >
+                            {tagDistribution.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.color} 
+                                stroke="rgba(255,255,255,0.2)"
+                                strokeWidth={2}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value) => [`${value} tarefas`, ""]}
+                            contentStyle={{ 
+                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                              backdropFilter: "blur(8px)",
+                              borderRadius: "0.5rem",
+                              border: "1px solid rgba(255, 255, 255, 0.2)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                              padding: "0.75rem",
+                              color: "white"
+                            }}
                           />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value) => [`${value} tarefas`, ""]}
-                        contentStyle={{ 
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
-                          backdropFilter: "blur(8px)",
-                          borderRadius: "0.5rem",
-                          border: "1px solid rgba(59, 130, 246, 0.1)",
-                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
-                          padding: "0.75rem"
-                        }}
-                      />
-                    </PieChart>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </motion.div>
                   ) : (
                     <div className="text-center p-8">
-                      <p className="text-muted-foreground">
+                      <p className="text-white/60">
                         Nenhuma tarefa com tags ainda.
                       </p>
                     </div>
@@ -499,8 +646,72 @@ const Achievements = () => {
                 </CardContent>
               </Card>
             </motion.div>
-          </div>
-        </div>
+          </motion.div>
+
+          {/* Conquistas/Badges Section - NEW */}
+          <motion.div variants={itemVariants}>
+            <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Conquistas
+            </h2>
+            
+            <motion.div 
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"
+              variants={containerVariants}
+            >
+              {badges.map((badge) => (
+                <motion.div 
+                  key={badge.id}
+                  whileHover={{ y: -5, scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <HoverCard>
+                    <HoverCardTrigger>
+                      <Card className={`h-full overflow-hidden backdrop-blur-xl ${
+                          badge.achieved 
+                            ? "bg-gradient-to-br from-blue-500/30 to-purple-500/30 border-white/30" 
+                            : "bg-white/5 border-white/10 grayscale"
+                        } border shadow-lg transition-all text-center cursor-help`}
+                      >
+                        <CardContent className="flex flex-col items-center justify-center pt-6 pb-4">
+                          <div className="text-4xl mb-2">{badge.icon}</div>
+                          <h3 className="font-medium text-sm text-white/80 line-clamp-2">
+                            {badge.name}
+                          </h3>
+                          {badge.achieved && (
+                            <motion.div 
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                              className="mt-2 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-xs"
+                            >
+                              Conquistado
+                            </motion.div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="backdrop-blur-xl bg-white/10 border border-white/20 shadow-xl text-white w-60">
+                      <div className="flex justify-between items-start">
+                        <div className="text-2xl mr-2">{badge.icon}</div>
+                        <div>
+                          <h4 className="font-bold text-blue-300">{badge.name}</h4>
+                          <p className="text-sm text-white/70 mt-1">{badge.description}</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-white/60 flex justify-end">
+                        {badge.achieved ? (
+                          <span className="text-green-400">Conquistado</span>
+                        ) : (
+                          <span>Em progresso</span>
+                        )}
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
     </AppLayout>
   );
