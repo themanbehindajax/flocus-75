@@ -55,8 +55,11 @@ const ProjectDetails = () => {
     );
   }
 
-  // Fixed: Changed to a function with no parameters to match the expected type
   const handleTaskCreated = () => {
+    // Atualiza a lista de tarefas imediatamente após criar uma nova tarefa
+    const updatedTasks = tasks.filter(task => project.tasks.includes(task.id));
+    setProjectTasks(updatedTasks);
+    
     toast({
       title: "Tarefa criada",
       description: "Tarefa adicionada ao projeto com sucesso."
