@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger
+} from "@/components/ui/dialog";
+import { 
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, MoreVertical } from "lucide-react";
