@@ -16,7 +16,7 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks } = useAppStore();
+  const { projects, tasks, addTask } = useAppStore();
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [projectTasks, setProjectTasks] = useState<any[]>([]);
@@ -55,7 +55,7 @@ const ProjectDetails = () => {
     );
   }
 
-  const handleTaskCreated = () => {
+  const handleTaskCreated = (task) => {
     toast({
       title: "Tarefa criada",
       description: "Tarefa adicionada ao projeto com sucesso."
@@ -95,6 +95,7 @@ const ProjectDetails = () => {
                 </DialogHeader>
                 <TaskForm
                   onComplete={handleTaskCreated}
+                  initialValues={{ projectId: project.id }}
                 />
               </DialogContent>
             </Dialog>

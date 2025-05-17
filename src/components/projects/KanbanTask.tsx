@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CalendarIcon, Clock } from 'lucide-react';
+import { CalendarIcon, Clock, GripVertical } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAppStore } from '@/lib/store';
@@ -88,7 +88,12 @@ export const KanbanTask = ({
       >
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-start">
-            <span className="font-medium text-sm">{task.title}</span>
+            <div className="flex items-center gap-2">
+              <div className="cursor-grab active:cursor-grabbing p-1 hover:text-primary transition-colors">
+                <GripVertical size={14} />
+              </div>
+              <span className="font-medium text-sm">{task.title}</span>
+            </div>
             {task.priority && (
               <div
                 className={cn(

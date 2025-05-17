@@ -13,14 +13,16 @@ interface TaskFormProjectProps {
   projectId: string | undefined;
   setProjectId: (id: string | undefined) => void;
   projects: Project[];
+  disabled?: boolean;
 }
 
-export const TaskFormProject = ({ projectId, setProjectId, projects }: TaskFormProjectProps) => (
+export const TaskFormProject = ({ projectId, setProjectId, projects, disabled = false }: TaskFormProjectProps) => (
   <div className="space-y-2">
     <Label htmlFor="project">Projeto</Label>
     <Select
       value={projectId || "none"}
       onValueChange={(value) => setProjectId(value === "none" ? undefined : value)}
+      disabled={disabled}
     >
       <SelectTrigger>
         <SelectValue placeholder="Selecione um projeto" />
