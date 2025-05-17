@@ -16,7 +16,7 @@ export const PomodoroMiniWidget = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   
-  // Get pomodoro state from the new store
+  // Get pomodoro state from store
   const { 
     isActive, timeRemaining, timerMode,
     startTimer, pauseTimer, resetTimer
@@ -27,9 +27,40 @@ export const PomodoroMiniWidget = () => {
     setIsVisible(location.pathname !== '/pomodoro' && isActive);
   }, [location.pathname, isActive]);
 
-  // Play sound and show notification when timer completes
+  // Setup browser notification permissions
   useEffect(() => {
-    if (timeRemaining === 0 && isActive) {
+    // Request notification permissions
+    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Create a title-based notification to make it visible even when tab is not active
+  useEffect(() => {
+    if (!isActive) return;
+    
+    // Update document title when timer is active
+    const originalTitle = document.title;
+    
+    const updateTitle = () => {
+      if (document.hidden && isActive) {
+        document.title = `${formatTime(timeRemaining)} - Flocus`;
+      } else {
+        document.title = originalTitle;
+      }
+    };
+    
+    // Update title initially
+    updateTitle();
+    
+    // Set up event listeners for visibility change
+    document.addEventListener('visibilitychange', updateTitle);
+    
+    // Set up timer to update title
+    const titleInterval = setInterval(updateTitle, 1000);
+    
+    // Play sound and show notification when timer completes
+    if (timeRemaining === 0) {
       const audio = new Audio('/notification.mp3');
       audio.play().catch(err => console.error('Could not play notification sound', err));
       
@@ -37,8 +68,27 @@ export const PomodoroMiniWidget = () => {
       const message = timerMode === 'pomodoro' ? 'Hora de fazer uma pausa.' : 'Hora de voltar ao trabalho.';
       
       showNotification(title, message);
+      
+      if (Notification.permission === 'granted') {
+        const notification = new Notification(title, {
+          body: message,
+          icon: '/favicon.ico'
+        });
+        
+        notification.onclick = () => {
+          window.focus();
+          navigate('/pomodoro');
+          notification.close();
+        };
+      }
     }
-  }, [timeRemaining, isActive, timerMode]);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', updateTitle);
+      clearInterval(titleInterval);
+      document.title = originalTitle;
+    };
+  }, [timeRemaining, isActive, timerMode, navigate]);
 
   if (!isVisible) return null;
 
@@ -52,7 +102,7 @@ export const PomodoroMiniWidget = () => {
         transition={{ duration: 0.3 }}
       >
         <Card 
-          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none"
+          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none backdrop-blur-md"
           style={{
             width: isMinimized ? 'auto' : '16rem',
             padding: isMinimized ? '0.5rem' : '1rem',
@@ -62,14 +112,9 @@ export const PomodoroMiniWidget = () => {
         >
           {isMinimized ? (
             <div className="flex items-center gap-2 px-2">
-              <motion.span 
-                key={timeRemaining}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-mono font-bold"
-              >
+              <span className="font-mono font-bold">
                 {formatTime(timeRemaining)}
-              </motion.span>
+              </span>
               <Button 
                 onClick={() => setIsMinimized(false)} 
                 size="sm" 
@@ -104,15 +149,9 @@ export const PomodoroMiniWidget = () => {
               </div>
               
               <div className="flex flex-col items-center">
-                <motion.span 
-                  key={timeRemaining}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-2xl font-mono font-bold"
-                >
+                <span className="text-2xl font-mono font-bold">
                   {formatTime(timeRemaining)}
-                </motion.span>
+                </span>
                 <span className="text-xs text-white/80 capitalize">
                   {timerMode === 'pomodoro' ? 'Focus' : timerMode === 'shortBreak' ? 'Short Break' : 'Long Break'}
                 </span>

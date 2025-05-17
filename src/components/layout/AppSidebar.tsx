@@ -93,21 +93,22 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
   return (
     <motion.div 
       className={cn(
-        "h-auto flex flex-col border-r bg-card/90 backdrop-blur-sm",
-        sidebarCollapsed ? "shadow-lg rounded-xl border fixed z-50" : "h-screen"
+        "fixed z-50 h-auto shadow-lg rounded-xl border backdrop-blur-md",
+        sidebarCollapsed 
+          ? "bg-white/15 border-white/20" 
+          : "bg-white/10 border-white/15 h-screen"
       )}
       variants={sidebarVariants}
       initial={sidebarCollapsed ? "collapsed" : "expanded"}
       animate={sidebarCollapsed ? "collapsed" : "expanded"}
       style={{ 
-        position: sidebarCollapsed ? "fixed" : "relative",
-        top: sidebarCollapsed ? "50%" : "auto",
+        position: "fixed",
+        top: sidebarCollapsed ? "50%" : "0",
         transform: sidebarCollapsed ? "translateY(-50%)" : "none",
-        zIndex: 50,
-        left: sidebarCollapsed ? "12px" : "auto",
+        left: "12px",
       }}
     >
-      <div className={cn("p-4 flex items-center border-b", 
+      <div className={cn("p-4 flex items-center border-b border-white/10", 
         sidebarCollapsed ? "justify-center" : "justify-between"
       )}>
         {sidebarCollapsed ? (
@@ -145,7 +146,7 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
         </nav>
       </div>
       
-      <div className={cn("p-4 border-t", sidebarCollapsed && "flex justify-center")}>
+      <div className={cn("p-4 border-t border-white/10", sidebarCollapsed && "flex justify-center")}>
         {sidebarCollapsed ? (
           <TooltipProvider delayDuration={300}>
             <Tooltip>

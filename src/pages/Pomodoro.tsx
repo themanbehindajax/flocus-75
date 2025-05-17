@@ -74,14 +74,14 @@ const Pomodoro = () => {
   return (
     <AppLayout>
       <PageTransition>
-        <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-start py-8 px-4">
+        <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-center py-8 px-4">
           {/* Fundo com gradiente */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
           
           {/* Conteúdo centralizado */}
           <div className="relative z-10 w-full max-w-5xl mx-auto text-white">
             {/* Layout em duas colunas para desktop */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start mt-4">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center justify-center">
               {/* Coluna da esquerda - Timer */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -134,17 +134,11 @@ const Pomodoro = () => {
                       />
                     </svg>
                     
-                    {/* Time display */}
+                    {/* Time display - without animation */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <motion.span 
-                        key={timeRemaining}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-6xl md:text-7xl font-mono font-bold mb-1"
-                      >
+                      <span className="text-6xl md:text-7xl font-mono font-bold mb-1">
                         {formatTime(timeRemaining)}
-                      </motion.span>
+                      </span>
                       <span className="text-sm font-medium uppercase tracking-wider opacity-70">
                         {timerMode === 'pomodoro' ? 'Concentração' : timerMode === 'shortBreak' ? 'Pausa Curta' : 'Pausa Longa'}
                       </span>
@@ -200,7 +194,7 @@ const Pomodoro = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="glass-effect p-6 rounded-2xl w-full md:w-1/2"
+                className="backdrop-blur-md bg-white/10 border border-white/20 p-6 rounded-2xl w-full md:w-1/2"
               >
                 <div className="mb-6">
                   <h2 className="text-xl font-bold mb-4">Escolha seu foco</h2>
@@ -225,12 +219,9 @@ const Pomodoro = () => {
                       <span className="ml-2 bg-white/20 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
                     </h3>
                     <div className="space-y-2 h-[120px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
-                      {projectTasks.map(task => (
-                        <motion.div
+                      {projectTasks.slice(0, 3).map(task => (
+                        <div
                           key={task.id}
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3 }}
                           className={`p-3 rounded-lg transition-all cursor-pointer ${
                             selectedTaskId === task.id 
                               ? 'bg-white/20 shadow-inner' 
@@ -239,7 +230,7 @@ const Pomodoro = () => {
                           onClick={() => setSelectedTaskId(task.id)}
                         >
                           <p className="truncate text-sm">{task.title}</p>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   </div>
