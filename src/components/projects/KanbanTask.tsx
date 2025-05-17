@@ -60,7 +60,7 @@ export const KanbanTask = ({
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
       draggable="true"
-      // Use the HTML5 native drag event instead of Framer Motion's drag
+      // Remove the framer-motion specific drag props and only use HTML5 native drag events
       onDragStart={handleNativeDragStart}
       onDragEnd={() => onDragEnd && onDragEnd()}
       className={cn(
