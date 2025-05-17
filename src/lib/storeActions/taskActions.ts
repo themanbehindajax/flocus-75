@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -114,6 +113,58 @@ export const createTaskActions = (set: any, get: any) => ({
           // Activity after a break, reset streak to 1
           updatedProfile.streak = 1;
         }
+      }
+      
+      return {
+        tasks: updatedTasks,
+        profile: updatedProfile,
+      };
+    });
+  },
+  
+  toggleTaskCompletion: (id: string) => {
+    set((state: any) => {
+      const task = state.tasks.find((t: Task) => t.id === id);
+      
+      if (!task) return state;
+      
+      const newCompletedState = !task.completed;
+      const updatedTasks = state.tasks.map((t: Task) =>
+        t.id === id 
+        ? { 
+            ...t, 
+            completed: newCompletedState, 
+            status: newCompletedState ? "done" : t.status === "done" ? "todo" : t.status,
+            updatedAt: new Date().toISOString() 
+          } 
+        : t
+      );
+      
+      const updatedProfile = { ...state.profile };
+      
+      // If completing the task (not uncompleting)
+      if (newCompletedState) {
+        updatedProfile.points += 5;
+        updatedProfile.totalTasksCompleted += 1;
+        updatedProfile.lastActivity = new Date().toISOString();
+        const today = new Date().toISOString().split("T")[0];
+        const lastActivityDate = new Date(state.profile.lastActivity).toISOString().split("T")[0];
+        
+        if (lastActivityDate === today) {
+          // Same day activity, maintain streak
+        } else if (
+          new Date(lastActivityDate).getTime() >= new Date(new Date(today).getTime() - 86400000).getTime()
+        ) {
+          // Activity within last 24 hours, increase streak
+          updatedProfile.streak += 1;
+        } else {
+          // Activity after a break, reset streak to 1
+          updatedProfile.streak = 1;
+        }
+      } else {
+        // If uncompleting, remove points (but ensure it doesn't go below 0)
+        updatedProfile.points = Math.max(0, updatedProfile.points - 5);
+        updatedProfile.totalTasksCompleted = Math.max(0, updatedProfile.totalTasksCompleted - 1);
       }
       
       return {

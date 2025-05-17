@@ -23,25 +23,21 @@ export const ProjectTaskList = ({
   projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children,
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
-  const { completeTask, updateTask } = useAppStore();
+  const { toggleTaskCompletion, updateTask } = useAppStore();
   
-  const handleCompleteTask = (task: Task) => {
+  const handleToggleTaskCompletion = (task: Task) => {
+    toggleTaskCompletion(task.id);
+    
+    // Show toast notification based on new completion state
     if (!task.completed) {
-      completeTask(task.id);
-      
-      // Also update status to "done"
-      if (task.status !== "done") {
-        updateTask({
-          ...task,
-          status: "done",
-          completed: true,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-      
       toast({
         title: "Tarefa concluída",
         description: `A tarefa "${task.title}" foi marcada como concluída.`,
+      });
+    } else {
+      toast({
+        title: "Tarefa reaberta",
+        description: `A tarefa "${task.title}" foi desmarcada como concluída.`,
       });
     }
   };
@@ -112,7 +108,7 @@ export const ProjectTaskList = ({
                           variant="ghost"
                           size="icon"
                           className={`h-6 w-6 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
-                          onClick={() => handleCompleteTask(task)}
+                          onClick={() => handleToggleTaskCompletion(task)}
                         >
                           {task.completed ? 
                             <CheckCircle2 className="h-4 w-4" /> : 

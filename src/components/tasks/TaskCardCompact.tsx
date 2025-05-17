@@ -12,11 +12,11 @@ interface TaskCardCompactProps {
 }
 
 export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
-  const handleCompleteTask = (e: React.MouseEvent) => {
+  const handleToggleTaskCompletion = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     
-    if (!task.completed && onComplete) {
+    if (onComplete) {
       onComplete();
     }
   };
@@ -34,7 +34,7 @@ export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
             variant="ghost"
             size="icon"
             className={`h-6 w-6 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
-            onClick={handleCompleteTask}
+            onClick={handleToggleTaskCompletion}
             aria-label={task.completed ? "Tarefa concluída" : "Marcar como concluída"}
           >
             {task.completed ? 

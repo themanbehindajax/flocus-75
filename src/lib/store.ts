@@ -27,6 +27,7 @@ export interface AppState {
   addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => Task;
   updateTask: (task: Task) => void;
   completeTask: (id: string) => void;
+  toggleTaskCompletion: (id: string) => void;
   deleteTask: (id: string) => void;
   
   // Actions from project actions

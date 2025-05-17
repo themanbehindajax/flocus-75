@@ -13,30 +13,23 @@ interface KanbanTaskProps {
 }
 
 export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
-  const { tags, completeTask, updateTask } = useAppStore();
+  const { tags, toggleTaskCompletion, updateTask } = useAppStore();
   
   const getTaskTags = task.tags.map(tagId => 
     tags.find(t => t.id === tagId)
   ).filter(Boolean);
   
-  const handleCompleteTask = (e: React.MouseEvent) => {
+  const handleToggleTaskCompletion = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     
+    toggleTaskCompletion(task.id);
+    
+    // Show toast notification based on new completion state
     if (!task.completed) {
-      completeTask(task.id);
-      
-      // Also update the status to "done" if not already
-      if (task.status !== "done") {
-        updateTask({
-          ...task,
-          status: "done",
-          completed: true,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-      
       toast(`Tarefa "${task.title}" concluída!`);
+    } else {
+      toast(`Tarefa "${task.title}" reaberta!`);
     }
   };
   
@@ -58,7 +51,7 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
                 variant="ghost"
                 size="icon"
                 className={`h-5 w-5 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
-                onClick={handleCompleteTask}
+                onClick={handleToggleTaskCompletion}
               >
                 {task.completed ? 
                   <CheckCircle2 className="h-4 w-4" /> : 

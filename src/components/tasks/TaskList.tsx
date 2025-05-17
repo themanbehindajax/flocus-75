@@ -11,23 +11,16 @@ interface TaskListProps {
 }
 
 export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
-  const { completeTask, updateTask } = useAppStore();
+  const { toggleTaskCompletion, updateTask } = useAppStore();
 
-  const handleCompleteTask = (task: Task) => {
+  const handleToggleTaskCompletion = (task: Task) => {
+    toggleTaskCompletion(task.id);
+    
+    // Show toast notification
     if (!task.completed) {
-      completeTask(task.id);
-      
-      // Also update status to "done" if not already
-      if (task.status !== "done") {
-        updateTask({
-          ...task,
-          status: "done",
-          completed: true,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-      
       toast(`Tarefa "${task.title}" concluída!`);
+    } else {
+      toast(`Tarefa "${task.title}" reaberta!`);
     }
   };
 
@@ -43,13 +36,13 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
             <TaskCardCompact
               key={task.id}
               task={task}
-              onComplete={() => handleCompleteTask(task)}
+              onComplete={() => handleToggleTaskCompletion(task)}
             />
           ) : (
             <TaskCard
               key={task.id}
               task={task}
-              onComplete={() => handleCompleteTask(task)}
+              onComplete={() => handleToggleTaskCompletion(task)}
             />
           )
         ))
