@@ -55,7 +55,8 @@ const ProjectDetails = () => {
     );
   }
 
-  const handleTaskCreated = (task) => {
+  // Fixed: Changed to a function with no parameters to match the expected type
+  const handleTaskCreated = () => {
     toast({
       title: "Tarefa criada",
       description: "Tarefa adicionada ao projeto com sucesso."
