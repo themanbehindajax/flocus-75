@@ -17,8 +17,18 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   const circumference = 2 * Math.PI * 45; // Circle radius is 45
   const dashoffset = circumference * (1 - progress);
 
+  // Get the appropriate text based on timer mode
+  const getModeText = () => {
+    switch(timerMode) {
+      case "pomodoro": return "CONCENTRAÇÃO";
+      case "shortBreak": return "PAUSA CURTA";
+      case "longBreak": return "PAUSA LONGA";
+      default: return "CONCENTRAÇÃO";
+    }
+  };
+
   return (
-    <div className="relative w-52 h-52 mb-4">
+    <div className="relative w-64 h-64 mb-4 flex items-center justify-center">
       <svg className="w-full h-full" viewBox="0 0 100 100">
         {/* Background circle */}
         <circle
@@ -28,7 +38,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="text-muted-foreground/20"
+          className="text-white/20"
         />
         
         {/* Progress circle */}
@@ -38,13 +48,9 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           r="45"
           fill="none"
           stroke="currentColor"
-          strokeWidth="4"
+          strokeWidth="3"
           strokeLinecap="round"
-          className={`${
-            timerMode === "pomodoro"
-              ? "text-primary"
-              : "text-primary/80"
-          } transition-all duration-1000`}
+          className="text-white"
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: dashoffset }}
@@ -54,16 +60,19 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
       </svg>
       
       {/* Time display */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span 
           key={timeRemaining}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="text-4xl font-bold"
+          className="text-5xl font-mono font-bold text-white"
         >
           {formatTime(timeRemaining)}
         </motion.span>
+        <span className="text-xs font-medium text-white/70 uppercase tracking-wider mt-2">
+          {getModeText()}
+        </span>
       </div>
     </div>
   );

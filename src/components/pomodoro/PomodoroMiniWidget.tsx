@@ -102,7 +102,7 @@ export const PomodoroMiniWidget = () => {
         transition={{ duration: 0.3 }}
       >
         <Card 
-          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none backdrop-blur-md"
+          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg backdrop-blur-xl border-white/20 bg-blue-500/70"
           style={{
             width: isMinimized ? 'auto' : '16rem',
             padding: isMinimized ? '0.5rem' : '1rem',
@@ -112,7 +112,7 @@ export const PomodoroMiniWidget = () => {
         >
           {isMinimized ? (
             <div className="flex items-center gap-2 px-2">
-              <span className="font-mono font-bold">
+              <span className="font-mono font-bold text-white">
                 {formatTime(timeRemaining)}
               </span>
               <Button 
@@ -127,7 +127,7 @@ export const PomodoroMiniWidget = () => {
           ) : (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-medium">Pomodoro Timer</h3>
+                <h3 className="font-medium text-white">Pomodoro Timer</h3>
                 <div className="flex gap-1">
                   <Button 
                     onClick={() => setIsMinimized(true)} 
@@ -149,7 +149,7 @@ export const PomodoroMiniWidget = () => {
               </div>
               
               <div className="flex flex-col items-center">
-                <span className="text-2xl font-mono font-bold">
+                <span className="text-2xl font-mono font-bold text-white">
                   {formatTime(timeRemaining)}
                 </span>
                 <span className="text-xs text-white/80 capitalize">

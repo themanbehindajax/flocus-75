@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { RotateCw, Maximize } from "lucide-react";
+import { RotateCw, Maximize, CheckCircle2 } from "lucide-react";
 import { TimerModeSelector } from "@/components/pomodoro/TimerModeSelector";
 import { usePomodoroStore } from "@/hooks/usePomodoroStore";
 import { useAppStore } from "@/lib/store";
@@ -11,9 +11,10 @@ import { formatTime } from "@/hooks/usePomodoro";
 import { TaskSelection } from "@/components/pomodoro/TaskSelection";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { TimerDisplay } from "@/components/pomodoro/TimerDisplay";
 
 const Pomodoro = () => {
-  const { projects, tasks } = useAppStore();
+  const { projects, tasks, completeTask, toggleTaskCompletion } = useAppStore();
   const [projectTasks, setProjectTasks] = useState<any[]>([]);
   const {
     isActive,
@@ -55,8 +56,6 @@ const Pomodoro = () => {
   };
   
   const progress = 1 - timeRemaining / getDuration();
-  const circumference = 2 * Math.PI * 120;
-  const strokeDashoffset = circumference * (1 - progress);
   const timerState = isActive 
     ? (isPaused ? "paused" : "running") 
     : (timeRemaining === 0 ? "completed" : "idle");
@@ -71,17 +70,23 @@ const Pomodoro = () => {
     }
   };
 
+  // Handler para marcar tarefa como concluída
+  const handleCompleteTask = (taskId: string) => {
+    toggleTaskCompletion(taskId);
+  };
+
+  const selectedTask = tasks.find(task => task.id === selectedTaskId);
+
   return (
     <AppLayout>
       <PageTransition>
-        <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-center py-8 px-4">
-          {/* Fundo com gradiente */}
+        <div className="relative min-h-screen flex flex-col overflow-hidden">
+          {/* Fundo com gradiente que vai até a extrema esquerda */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
           
-          {/* Conteúdo centralizado */}
-          <div className="relative z-10 w-full max-w-5xl mx-auto text-white">
-            {/* Layout em duas colunas para desktop */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center justify-center">
+          {/* Conteúdo centralizado verticalmente e horizontalmente */}
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4">
+            <div className="max-w-5xl w-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
               {/* Coluna da esquerda - Timer */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -103,47 +108,13 @@ const Pomodoro = () => {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.3, type: "spring" }}
-                  className="flex justify-center mb-6 relative"
+                  className="flex justify-center mb-6"
                 >
-                  <div className="relative w-72 h-72">
-                    <svg className="w-full h-full" viewBox="0 0 256 256">
-                      {/* Background circle */}
-                      <circle
-                        cx="128"
-                        cy="128"
-                        r="120"
-                        fill="none"
-                        stroke="rgba(255,255,255,0.2)"
-                        strokeWidth="6"
-                      />
-                      
-                      {/* Progress circle */}
-                      <motion.circle
-                        cx="128"
-                        cy="128"
-                        r="120"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeDasharray={circumference}
-                        initial={{ strokeDashoffset: circumference }}
-                        animate={{ strokeDashoffset }}
-                        transition={{ duration: 0.6, ease: "easeInOut" }}
-                        transform="rotate(-90, 128, 128)"
-                      />
-                    </svg>
-                    
-                    {/* Time display - without animation */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-6xl md:text-7xl font-mono font-bold mb-1">
-                        {formatTime(timeRemaining)}
-                      </span>
-                      <span className="text-sm font-medium uppercase tracking-wider opacity-70">
-                        {timerMode === 'pomodoro' ? 'Concentração' : timerMode === 'shortBreak' ? 'Pausa Curta' : 'Pausa Longa'}
-                      </span>
-                    </div>
-                  </div>
+                  <TimerDisplay 
+                    timeRemaining={timeRemaining} 
+                    progress={progress} 
+                    timerMode={timerMode} 
+                  />
                 </motion.div>
                 
                 {/* Controles do timer */}
@@ -194,10 +165,10 @@ const Pomodoro = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="backdrop-blur-md bg-white/10 border border-white/20 p-6 rounded-2xl w-full md:w-1/2"
+                className="backdrop-blur-xl bg-white/10 border border-white/20 p-6 rounded-3xl w-full md:w-1/2 shadow-xl"
               >
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Escolha seu foco</h2>
+                  <h2 className="text-xl font-bold mb-4 text-white">Escolha seu foco</h2>
                   
                   <TaskSelection
                     selectedTaskId={selectedTaskId}
@@ -211,27 +182,57 @@ const Pomodoro = () => {
                   />
                 </div>
                 
-                {/* Lista de tarefas do projeto - limitada a 3 visíveis */}
+                {/* Lista de tarefas do projeto */}
                 {selectedProjectId && projectTasks.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-medium mb-3 flex items-center">
+                    <h3 className="text-lg font-medium mb-3 flex items-center text-white">
                       <span>Tarefas do projeto</span>
                       <span className="ml-2 bg-white/20 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
                     </h3>
-                    <div className="space-y-2 h-[120px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
-                      {projectTasks.slice(0, 3).map(task => (
+                    <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
+                      {projectTasks.map(task => (
                         <div
                           key={task.id}
-                          className={`p-3 rounded-lg transition-all cursor-pointer ${
+                          className={`p-3 rounded-lg transition-all flex justify-between items-center ${
                             selectedTaskId === task.id 
                               ? 'bg-white/20 shadow-inner' 
                               : 'bg-white/5 hover:bg-white/10'
                           }`}
-                          onClick={() => setSelectedTaskId(task.id)}
                         >
-                          <p className="truncate text-sm">{task.title}</p>
+                          <p 
+                            className={`truncate text-sm flex-1 cursor-pointer ${task.completed ? 'line-through opacity-60' : ''}`}
+                            onClick={() => setSelectedTaskId(task.id)}
+                          >
+                            {task.title}
+                          </p>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10"
+                            onClick={() => handleCompleteTask(task.id)}
+                          >
+                            <CheckCircle2 className={`h-5 w-5 ${task.completed ? 'fill-green-500 text-white' : ''}`} />
+                          </Button>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Tarefa atual selecionada */}
+                {selectedTaskId && selectedTask && (
+                  <div className="mb-6 p-3 rounded-xl bg-white/15 backdrop-blur-md">
+                    <h3 className="text-sm font-medium text-white/80 mb-1">Tarefa atual</h3>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-white">{selectedTask.title}</p>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10"
+                        onClick={() => handleCompleteTask(selectedTaskId)}
+                      >
+                        <CheckCircle2 className={`h-5 w-5 ${selectedTask.completed ? 'fill-green-500 text-white' : ''}`} />
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -239,7 +240,7 @@ const Pomodoro = () => {
                 {/* Adicionar tarefa rápida */}
                 {selectedProjectId && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">Adicionar tarefa</h3>
+                    <h3 className="text-lg font-medium mb-3 text-white">Adicionar tarefa</h3>
                     <QuickAddTask 
                       projectId={selectedProjectId} 
                       onTaskAdded={handleTaskAdded}
@@ -259,7 +260,7 @@ const Pomodoro = () => {
               <Button
                 size="icon"
                 variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-full"
                 onClick={() => {
                   if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();
