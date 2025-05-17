@@ -3,6 +3,7 @@ import { Task } from "@/lib/types";
 import { TaskCardWrapper as TaskCard } from "./TaskCard";
 import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
+import { TaskCardCompact } from "./TaskCardCompact";
 
 interface TaskListProps {
   tasks: Task[];
@@ -38,12 +39,19 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
         </div>
       ) : (
         tasks.map((task) => (
-          <TaskCard 
-            key={task.id} 
-            task={task} 
-            onComplete={() => handleCompleteTask(task)}
-            variant={variant}
-          />
+          variant === "compact" ? (
+            <TaskCardCompact
+              key={task.id}
+              task={task}
+              onComplete={() => handleCompleteTask(task)}
+            />
+          ) : (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onComplete={() => handleCompleteTask(task)}
+            />
+          )
         ))
       )}
     </div>
