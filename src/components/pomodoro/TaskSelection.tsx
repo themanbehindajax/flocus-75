@@ -35,7 +35,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-2">
-        <label className="text-sm font-medium">Projeto</label>
+        <label className="text-sm font-medium text-white">Projeto</label>
         <Select
           value={selectedProjectId || "none"}
           onValueChange={onProjectChange}
@@ -56,7 +56,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       </div>
       
       <div className="space-y-2">
-        <label className="text-sm font-medium">Tarefa</label>
+        <label className="text-sm font-medium text-white">Tarefa</label>
         <Select
           value={selectedTaskId || "none"}
           onValueChange={onTaskChange}

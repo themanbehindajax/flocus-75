@@ -26,7 +26,7 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
             Pausar
           </Button>
         ) : (
-          <Button size="lg" onClick={onStart} className="relative overflow-hidden bg-white text-blue-700 hover:bg-white/90 rounded-full font-medium shadow-lg">
+          <Button size="lg" onClick={onStart} className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg">
             <Play className="mr-2 h-4 w-4" />
             {timerState === "paused" ? "Continuar" : "Iniciar"}
             <motion.div

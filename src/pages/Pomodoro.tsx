@@ -134,7 +134,7 @@ const Pomodoro = () => {
                 </motion.div>
                 
                 {/* Contador de pomodoros */}
-                <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium">
+                <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-white">
                   Pomodoros completados hoje: {pomodoroCount}
                 </div>
               </motion.div>
@@ -179,7 +179,7 @@ const Pomodoro = () => {
                           }`}
                         >
                           <p 
-                            className={`truncate text-sm flex-1 cursor-pointer ${task.completed ? 'line-through opacity-60' : ''}`}
+                            className={`truncate text-sm flex-1 cursor-pointer text-white ${task.completed ? 'line-through opacity-60' : ''}`}
                             onClick={() => setSelectedTaskId(task.id)}
                           >
                             {task.title}
@@ -201,7 +201,7 @@ const Pomodoro = () => {
                 {/* Tarefa atual selecionada */}
                 {selectedTaskId && selectedTask && (
                   <div className="mb-6 p-3 rounded-xl bg-white/15 backdrop-blur-md">
-                    <h3 className="text-sm font-medium text-white/80 mb-1">Tarefa atual</h3>
+                    <h3 className="text-sm font-medium text-white mb-1">Tarefa atual</h3>
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-white">{selectedTask.title}</p>
                       <Button 
