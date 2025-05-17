@@ -32,15 +32,20 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
 
   return (
     <div className={`grid grid-cols-1 ${variant === "compact" ? "gap-2" : "gap-4"}`}>
-      {tasks.map((task) => (
-        <TaskCard 
-          key={task.id} 
-          task={task} 
-          onComplete={() => handleCompleteTask(task)}
-          // Only pass variant if it's provided in props
-          {...(variant ? { variant } : {})}
-        />
-      ))}
+      {tasks.length === 0 ? (
+        <div className="py-8 text-center">
+          <p className="text-muted-foreground">Nenhuma tarefa encontrada.</p>
+        </div>
+      ) : (
+        tasks.map((task) => (
+          <TaskCard 
+            key={task.id} 
+            task={task} 
+            onComplete={() => handleCompleteTask(task)}
+            variant={variant}
+          />
+        ))
+      )}
     </div>
   );
-};
+}

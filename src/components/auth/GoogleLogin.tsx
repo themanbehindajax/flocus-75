@@ -2,12 +2,10 @@
 import { useState } from "react";
 import { GoogleLogin as GoogleOAuthLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/auth";
 import { useAppStore } from "@/lib/store";
 import { UserProfile } from "@/lib/types";
 import { toast } from "sonner";
-import { LogIn } from "lucide-react"; // Using LogIn from lucide-react instead of Google
 
 interface GoogleUserInfo {
   email: string;
@@ -49,41 +47,25 @@ export const GoogleLogin = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+    <div className="w-full">
+      {isLoading ? (
+        <div className="w-full h-10 flex items-center justify-center border rounded-md bg-muted/20">
+          <span className="text-sm">Processando...</span>
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Ou continue com
-          </span>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-2">
-        {isLoading ? (
-          <Button variant="outline" disabled className="w-full">
-            <span className="loading loading-spinner loading-sm mr-2"></span>
-            Processando...
-          </Button>
-        ) : (
-          <GoogleOAuthLogin
-            onSuccess={handleSuccess}
-            onError={() => {
-              toast.error("Erro ao fazer login com Google");
-            }}
-            width="100%"
-          />
-        )}
-        
-        <Button variant="outline" className="w-full" disabled={isLoading} asChild>
-          <div>
-            <LogIn className="mr-2 h-4 w-4" />
-            Entrar com Google
-          </div>
-        </Button>
-      </div>
+      ) : (
+        <GoogleOAuthLogin
+          onSuccess={handleSuccess}
+          onError={() => {
+            toast.error("Erro ao fazer login com Google");
+          }}
+          width="100%"
+          shape="rectangular"
+          text="signin_with"
+          locale="pt"
+          theme="outline"
+          size="large"
+        />
+      )}
     </div>
   );
 };

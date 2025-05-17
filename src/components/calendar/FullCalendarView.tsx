@@ -9,6 +9,7 @@ import { fetchCalendarEvents } from "@/lib/googleCalendar";
 import { useAuthStore } from "@/lib/auth";
 import { CalendarTaskCard } from "./CalendarTaskCard";
 import { Badge } from "@/components/ui/badge";
+import { AlertCircle } from "lucide-react";
 
 interface FullCalendarViewProps {
   selectedDate: Date;
@@ -29,6 +30,7 @@ export function FullCalendarView({ selectedDate, onSelectDate, tasks, projects }
   const { googleToken } = useAuthStore();
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   
   // Get tasks for the selected date
   const tasksForSelectedDate = tasks.filter(task => {
@@ -65,10 +67,14 @@ export function FullCalendarView({ selectedDate, onSelectDate, tasks, projects }
   // Fetch Google Calendar events
   useEffect(() => {
     const fetchEvents = async () => {
-      if (!googleToken) return;
+      if (!googleToken) {
+        setSyncError(null); // Não é um erro se não tiver token
+        return;
+      }
       
       try {
         setIsLoading(true);
+        setSyncError(null);
         
         // Calculate month range
         const startDate = new Date(selectedDate);
@@ -83,6 +89,8 @@ export function FullCalendarView({ selectedDate, onSelectDate, tasks, projects }
         }
       } catch (error) {
         console.error("Error fetching calendar events:", error);
+        setSyncError("Não foi possível sincronizar com o Google Calendar");
+        setCalendarEvents([]); // Limpa eventos em caso de erro
       } finally {
         setIsLoading(false);
       }
@@ -125,14 +133,29 @@ export function FullCalendarView({ selectedDate, onSelectDate, tasks, projects }
       {/* Tasks and Events for Selected Date */}
       <Card className="md:col-span-4">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <h3 className="font-medium text-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium text-lg flex items-center gap-2">
               {format(selectedDate, "PPP", { locale: ptBR })}
               {isToday(selectedDate) && (
                 <Badge variant="outline" className="ml-2">Hoje</Badge>
               )}
             </h3>
           </div>
+          
+          {/* Mensagem de erro de sincronização, se houver */}
+          {syncError && (
+            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-200 rounded-md flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                  {syncError}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Você ainda pode adicionar e visualizar tarefas no calendário local.
+                </p>
+              </div>
+            </div>
+          )}
           
           {(tasksForSelectedDate.length === 0 && eventsForSelectedDate.length === 0) ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
