@@ -1,115 +1,99 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { v4 as uuidv4 } from "uuid";
-import { 
-  createTaskActions, 
-  createProjectActions, 
-  createTagActions, 
-  createPomodoroActions,
-  createMiscActions,
-  createCalendarActions
-} from "./storeActions";
-import { Task, Project, Tag, PomodoroSession, DailyPriority, UserProfile, AppSettings, CalendarEvent, Analytics } from "./types";
-
-// Define the full store state type
 export interface AppState {
-  // State
-  tasks: Task[];
-  projects: Project[];
-  tags: Tag[];
-  pomodoroSessions: PomodoroSession[];
-  dailyPriorities: DailyPriority[];
-  profile: UserProfile;
-  settings: AppSettings;
-  calendarEvents: CalendarEvent[];
-  analytics: Analytics;
+  // User preferences
+  theme: 'light' | 'dark' | 'system';
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
   
-  // Actions from task actions
-  addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => Task;
-  updateTask: (task: Task) => void;
-  completeTask: (id: string) => void;
-  toggleTaskCompletion: (id: string) => void;
-  deleteTask: (id: string) => void;
+  // Sidebar state
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
   
-  // Actions from project actions
-  addProject: (projectData: Omit<Project, "id" | "createdAt" | "updatedAt" | "tasks">) => Project;
-  updateProject: (project: Project) => void;
-  deleteProject: (id: string) => void;
+  // Notifications
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
   
-  // Actions from tag actions
-  addTag: (tagData: Omit<Tag, "id">) => Tag;
-  updateTag: (tag: Tag) => void;
-  deleteTag: (id: string) => void;
+  // Pomodoro settings
+  pomodoroSettings: {
+    workDuration: number;
+    shortBreakDuration: number;
+    longBreakDuration: number;
+    longBreakInterval: number;
+    autoStartBreaks: boolean;
+    autoStartPomodoros: boolean;
+    alarmSound: string;
+    alarmVolume: number;
+  };
+  updatePomodoroSettings: (settings: Partial<AppState['pomodoroSettings']>) => void;
   
-  // Actions from pomodoro actions
-  startPomodoroSession: (taskId?: string, projectId?: string) => PomodoroSession;
-  completePomodoroSession: (id: string) => void;
-  
-  // Actions from misc actions
-  setDailyPriorities: (date: string, taskIds: string[]) => void;
-  updateProfile: (profileUpdate: Partial<UserProfile>) => void;
-  updateSettings: (settingsUpdate: Partial<AppSettings>) => void;
-  
-  // Actions from calendar actions
-  addCalendarEvent: (eventData: Omit<CalendarEvent, "id">) => CalendarEvent;
-  updateCalendarEvent: (event: CalendarEvent) => void;
-  deleteCalendarEvent: (id: string) => void;
-  getCalendarEventsInRange: (startDate: Date, endDate: Date) => CalendarEvent[];
+  // Spotify stubs
+  spotifyAuth: any | null;
+  setSpotifyAuth: (auth: any) => void;
+  clearSpotifyAuth: () => void;
+  getCurrentTrack: () => any;
+  playTrack: (trackId: string) => void;
+  pauseTrack: () => void;
+  nextTrack: () => void;
+  previousTrack: () => void;
+  getUserPlaylists: () => any[];
+  playPlaylist: (playlistId: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      tasks: [],
-      projects: [],
-      tags: [
-        { id: uuidv4(), name: "Urgente", color: "#EF4444" },
-        { id: uuidv4(), name: "Criativo", color: "#8B5CF6" },
-        { id: uuidv4(), name: "Financeiro", color: "#10B981" },
-      ],
-      pomodoroSessions: [],
-      dailyPriorities: [],
-      calendarEvents: [],
-      profile: {
-        name: "Usuário",
-        points: 0,
-        streak: 0,
-        lastActivity: new Date().toISOString(),
-        totalTasksCompleted: 0,
-        totalPomodorosCompleted: 0,
-      },
-      settings: {
-        pomodoroDuration: 25,
+      // Theme
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
+      
+      // Sidebar
+      sidebarOpen: true,
+      setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+      
+      // Notifications
+      notificationsEnabled: true,
+      setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+      
+      // Pomodoro settings
+      pomodoroSettings: {
+        workDuration: 25,
         shortBreakDuration: 5,
         longBreakDuration: 15,
-        theme: "system",
-        notificationsEnabled: true,
+        longBreakInterval: 4,
+        autoStartBreaks: true,
+        autoStartPomodoros: true,
+        alarmSound: 'bell',
+        alarmVolume: 0.5,
       },
-      analytics: {
-        completedTasks: {
-          daily: {},
-          weekly: {},
-          monthly: {}
-        },
-        tasksByProject: {},
-        tasksByTag: {},
-        pomodoros: {
-          daily: {},
-          weekly: {},
-          monthly: {}
-        }
-      },
+      updatePomodoroSettings: (settings) => 
+        set((state) => ({ 
+          pomodoroSettings: { ...state.pomodoroSettings, ...settings } 
+        })),
       
-      ...createTaskActions(set, get),
-      ...createProjectActions(set, get),
-      ...createTagActions(set),
-      ...createPomodoroActions(set, get),
-      ...createMiscActions(set),
-      ...createCalendarActions(set, get)
+      // Spotify stubs
+      spotifyAuth: null,
+      setSpotifyAuth: (auth) => set({ spotifyAuth: auth }),
+      clearSpotifyAuth: () => set({ spotifyAuth: null }),
+      getCurrentTrack: () => null,
+      playTrack: () => {},
+      pauseTrack: () => {},
+      nextTrack: () => {},
+      previousTrack: () => {},
+      getUserPlaylists: () => [],
+      playPlaylist: () => {},
     }),
     {
-      name: "flocus-app-storage",
+      name: 'flocus-app-storage',
+      partialize: (state) => ({
+        theme: state.theme,
+        sidebarOpen: state.sidebarOpen,
+        notificationsEnabled: state.notificationsEnabled,
+        pomodoroSettings: state.pomodoroSettings,
+        spotifyAuth: state.spotifyAuth,
+      }),
     }
   )
 );

@@ -1,137 +1,114 @@
-
-import { Task } from "@/lib/types";
-import { useAppStore } from "@/lib/store";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Calendar, CheckCircle2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { Task } from '@/types/task';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { CalendarIcon, Clock } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface KanbanTaskProps {
   task: Task;
-  onDragStart: () => void;
-  onDragEnd: () => void;
+  index: number;
+  columnId: string;
+  isDragging?: boolean;
 }
 
-export const KanbanTask = ({ task, onDragStart, onDragEnd }: KanbanTaskProps) => {
-  const { tags, toggleTaskCompletion } = useAppStore();
-  
-  const getTaskTags = task.tags.map(tagId => 
-    tags.find(tag => tag.id === tagId)
-  ).filter(Boolean);
+export const KanbanTask = ({ task, index, columnId, isDragging }: KanbanTaskProps) => {
+  const formattedDate = task.dueDate
+    ? formatDistanceToNow(new Date(task.dueDate), {
+        addSuffix: true,
+        locale: ptBR,
+      })
+    : null;
 
-  const handleToggleTaskCompletion = () => {
-    toggleTaskCompletion(task.id);
-    
-    if (!task.completed) {
-      toast.success(`Tarefa "${task.title}" concluída!`, {
-        className: "toast-success",
-        position: "bottom-right"
-      });
-    } else {
-      toast.info(`Tarefa "${task.title}" reaberta!`, {
-        className: "toast-info",
-        position: "bottom-right"
-      });
+  const handleDragStart = (event: React.PointerEvent) => {
+    if ('dataTransfer' in event && event.dataTransfer) {
+      event.dataTransfer.setData('taskId', task.id);
+      event.dataTransfer.setData('sourceColumnId', columnId);
+      event.dataTransfer.effectAllowed = 'move';
     }
   };
 
-  // Define prioridades com cores correspondentes
   const priorityColors = {
-    alta: "border-l-4 border-l-red-500",
-    media: "border-l-4 border-l-yellow-500",
-    baixa: "border-l-4 border-l-green-500"
-  };
-
-  // Use standard DOM drag events instead of framer-motion drag
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.effectAllowed = "move";
-    // This is important for Firefox and other browsers
-    e.dataTransfer.setData('text/plain', task.id);
-    onDragStart();
+    high: 'bg-red-500',
+    medium: 'bg-yellow-500',
+    low: 'bg-green-500',
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      layout
+      layoutId={task.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="touch-none"
-      draggable={true}
+      drag
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragStart={handleDragStart}
-      onDragEnd={onDragEnd}
+      className={cn(
+        'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-50 shadow-md'
+      )}
     >
-      <Card 
-        className={cn(
-          "cursor-grab active:cursor-grabbing mb-3 group",
-          task.completed ? "bg-muted/20" : "",
-          task.priority ? priorityColors[task.priority] : "",
-          "hover:shadow-md transition-all duration-200",
-          "rounded-xl"
-        )}
-      >
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0 mr-4">
-              <h3 className={`font-medium text-sm mb-1 ${task.completed ? "line-through text-muted-foreground" : ""}`}>
-                {task.title}
-              </h3>
-              
-              {task.description && (
-                <p className={`text-xs ${task.completed ? "text-muted-foreground/70" : "text-muted-foreground"} line-clamp-2 mb-2`}>
-                  {task.description}
-                </p>
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-start">
+          <span className="font-medium text-sm">{task.title}</span>
+          {task.priority && (
+            <div
+              className={cn(
+                'w-2 h-2 rounded-full',
+                priorityColors[task.priority as keyof typeof priorityColors]
               )}
-              
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {task.isQuick && (
-                  <Badge variant="outline" className="bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-800/40 text-[10px] px-1.5 py-0 h-4 rounded-full">
-                    ⚡ Rápida
-                  </Badge>
-                )}
-                
-                {task.dueDate && (
-                  <Badge variant="outline" className="bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-800/40 text-[10px] px-1.5 py-0 h-4 rounded-full flex items-center gap-1">
-                    <Calendar className="h-2.5 w-2.5" />
-                    {new Date(task.dueDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                  </Badge>
-                )}
-                
-                {getTaskTags?.map(tag => tag && (
-                  <Badge 
-                    key={tag.id} 
-                    className="text-[10px] px-1.5 py-0 h-4 rounded-full"
-                    style={{ 
-                      backgroundColor: `${tag.color}20`, 
-                      color: tag.color,
-                      borderColor: `${tag.color}50`
-                    }}
-                    variant="outline"
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleToggleTaskCompletion}
-              className={`h-6 w-6 p-0 rounded-full opacity-90 group-hover:opacity-100 ${
-                task.completed 
-                ? 'text-success-500 hover:text-success-600 hover:bg-success-50 dark:hover:bg-success-900/20' 
-                : 'text-muted-foreground hover:text-primary hover:bg-primary-50 dark:hover:bg-primary-900/20'
-              }`}
-            >
-              {task.completed ? <CheckCircle2 className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
-            </Button>
+            />
+          )}
+        </div>
+
+        {task.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
+        )}
+
+        <div className="flex flex-wrap gap-1 mt-1">
+          {task.tags?.map((tag) => (
+            <Badge key={tag} variant="outline" className="text-xs px-1 py-0">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+
+        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1">
+            {formattedDate && (
+              <>
+                <CalendarIcon className="w-3 h-3" />
+                <span>{formattedDate}</span>
+              </>
+            )}
           </div>
-        </CardContent>
-      </Card>
+
+          {task.estimatedTime && (
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              <span>{task.estimatedTime}h</span>
+            </div>
+          )}
+        </div>
+
+        {task.assignee && (
+          <div className="flex justify-end mt-1">
+            <Avatar className="w-6 h-6">
+              <AvatarImage src={task.assignee.avatar} alt={task.assignee.name} />
+              <AvatarFallback className="text-xs">
+                {task.assignee.name.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };
+
+export default KanbanTask;
