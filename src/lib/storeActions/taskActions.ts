@@ -17,16 +17,24 @@ export const createTaskActions = (set: any, get: any) => ({
       tasks: [...state.tasks, newTask],
     }));
     
+    // If the task belongs to a project, add it to the project's task list
     if (taskData.projectId) {
-      const project = get().projects.find((p: Project) => p.id === taskData.projectId);
-      if (project) {
-        const updatedProject = {
-          ...project,
-          tasks: [...project.tasks, newTask.id],
-          updatedAt: new Date().toISOString(),
+      set((state: any) => {
+        const updatedProjects = state.projects.map((project: Project) => {
+          if (project.id === taskData.projectId) {
+            return {
+              ...project,
+              tasks: [...project.tasks, newTask.id],
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return project;
+        });
+        
+        return {
+          projects: updatedProjects,
         };
-        get().updateProject(updatedProject);
-      }
+      });
     }
     
     return newTask;

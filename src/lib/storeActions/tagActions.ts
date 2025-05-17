@@ -2,6 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Tag } from "../types";
 
+// Predefined tag colors with nice contrast for both dark/light themes
 const predefinedColors = [
   "#9b87f5", // Primary Purple
   "#F97316", // Bright Orange
@@ -48,4 +49,5 @@ export const createTagActions = (set: any) => ({
       };
     });
   },
+  getPredefinedColors: () => predefinedColors,
 });

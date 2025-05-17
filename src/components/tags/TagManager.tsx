@@ -26,6 +26,20 @@ export const TagManager = ({ triggerComponent }: TagManagerProps) => {
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState("#6366f1");
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  
+  // Predefined colors for tags
+  const predefinedColors = [
+    "#9b87f5", // Primary Purple
+    "#F97316", // Bright Orange
+    "#0EA5E9", // Ocean Blue
+    "#D946EF", // Magenta Pink
+    "#8B5CF6", // Vivid Purple
+    "#EC4899", // Pink
+    "#10B981", // Green
+    "#EF4444", // Red
+    "#F59E0B", // Amber
+    "#6366F1", // Indigo
+  ];
 
   const handleAddTag = () => {
     if (!newTagName.trim()) return;
@@ -45,7 +59,7 @@ export const TagManager = ({ triggerComponent }: TagManagerProps) => {
     }
 
     setNewTagName("");
-    setNewTagColor("#6366f1");
+    setNewTagColor(predefinedColors[0]);
   };
 
   const handleEdit = (tag: Tag) => {
@@ -57,7 +71,7 @@ export const TagManager = ({ triggerComponent }: TagManagerProps) => {
   const handleCancel = () => {
     setEditingTag(null);
     setNewTagName("");
-    setNewTagColor("#6366f1");
+    setNewTagColor(predefinedColors[0]);
   };
 
   return (
@@ -90,13 +104,27 @@ export const TagManager = ({ triggerComponent }: TagManagerProps) => {
                 className="flex-1"
                 autoComplete="off"
               />
-              <input
-                type="color"
-                value={newTagColor}
-                onChange={(e) => setNewTagColor(e.target.value)}
-                className="w-12 h-10 rounded-md cursor-pointer border"
-              />
             </div>
+            
+            {/* Color selection */}
+            <div>
+              <Label className="mb-2 block">Escolha uma cor</Label>
+              <div className="flex flex-wrap gap-2">
+                {predefinedColors.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`w-8 h-8 rounded-full transition-all ${
+                      color === newTagColor ? 'ring-2 ring-offset-2 ring-primary scale-110' : 'hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setNewTagColor(color)}
+                    aria-label={`Cor ${color}`}
+                  />
+                ))}
+              </div>
+            </div>
+            
             <div className="flex gap-2 justify-end">
               {editingTag && (
                 <Button variant="outline" onClick={handleCancel}>

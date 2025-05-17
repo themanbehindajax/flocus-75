@@ -33,33 +33,55 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDragOverColumn(status);
   };
   
-  const handleDrop = (status: TaskStatus) => {
-    if (!draggedTask) return;
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
+    e.preventDefault();
+    
+    // Try to get the data from dataTransfer first
+    let taskData;
+    try {
+      const dataStr = e.dataTransfer.getData('application/json');
+      if (dataStr) {
+        taskData = JSON.parse(dataStr);
+      }
+    } catch (err) {
+      console.error("Error parsing drag data:", err);
+    }
+    
+    // Fall back to the state if dataTransfer doesn't work
+    const taskId = taskData?.taskId || (draggedTask?.id || null);
+    if (!taskId) return;
+    
+    // Find the task by ID
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    // Reset drag state
     setIsDragging(false);
     setDragOverColumn(null);
+    setDraggedTask(null);
     
-    if (draggedTask.status !== status) {
+    if (task.status !== status) {
       // Update the task status
       const updatedTask = {
-        ...draggedTask,
-        status: status,
+        ...task,
+        status,
         updatedAt: new Date().toISOString(),
       };
       
       updateTask(updatedTask);
       
       // If moving to "done" status and not already completed, mark as completed
-      if (status === "done" && !draggedTask.completed) {
-        toggleTaskCompletion(draggedTask.id);
-        toast.success(`Tarefa "${draggedTask.title}" concluída!`, {
+      if (status === "done" && !task.completed) {
+        toggleTaskCompletion(task.id);
+        toast.success(`Tarefa "${task.title}" concluída!`, {
           className: "animate-fade-in",
           duration: 2000
         });
       }
       // If moving from "done" to another status and is completed, unmark completion
-      else if (draggedTask.status === "done" && status !== "done" && draggedTask.completed) {
-        toggleTaskCompletion(draggedTask.id);
-        toast.info(`Tarefa "${draggedTask.title}" reaberta!`, {
+      else if (task.status === "done" && status !== "done" && task.completed) {
+        toggleTaskCompletion(task.id);
+        toast.info(`Tarefa "${task.title}" reaberta!`, {
           className: "animate-fade-in",
           duration: 2000
         });
@@ -74,9 +96,6 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         });
       }
     }
-    
-    // Reset the dragged task state
-    setDraggedTask(null);
   };
 
   const handleDragEnd = () => {
@@ -114,7 +133,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         status="todo"
         onDragStart={handleDragStart}
         onDragOver={(e) => handleDragOver(e, "todo")}
-        onDrop={() => handleDrop("todo")}
+        onDrop={(e) => handleDrop(e, "todo")}
         onDragEnd={handleDragEnd}
         isDraggingOver={isDragging && dragOverColumn === "todo"}
       />
@@ -125,7 +144,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         status="doing"
         onDragStart={handleDragStart}
         onDragOver={(e) => handleDragOver(e, "doing")}
-        onDrop={() => handleDrop("doing")}
+        onDrop={(e) => handleDrop(e, "doing")}
         onDragEnd={handleDragEnd}
         isDraggingOver={isDragging && dragOverColumn === "doing"}
       />
@@ -136,7 +155,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         status="done"
         onDragStart={handleDragStart}
         onDragOver={(e) => handleDragOver(e, "done")}
-        onDrop={() => handleDrop("done")}
+        onDrop={(e) => handleDrop(e, "done")}
         onDragEnd={handleDragEnd}
         isDraggingOver={isDragging && dragOverColumn === "done"}
       />

@@ -44,15 +44,16 @@ export const KanbanTask = ({
     .map(tagId => tags.find(tag => tag.id === tagId))
     .filter(Boolean);
 
-  // Native drag handler for HTML5 Drag and Drop API
-  const handleNativeDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+  // Improved drag handler for HTML5 Drag and Drop API
+  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     if (event.dataTransfer) {
-      event.dataTransfer.setData('taskId', task.id);
-      if (columnId) {
-        event.dataTransfer.setData('sourceColumnId', columnId);
-      }
+      event.dataTransfer.setData('application/json', JSON.stringify({
+        taskId: task.id,
+        sourceColumnId: columnId
+      }));
       event.dataTransfer.effectAllowed = 'move';
     }
+    
     if (onDragStart) onDragStart();
   };
 
@@ -71,9 +72,7 @@ export const KanbanTask = ({
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
       draggable="true"
-      // Don't use framer-motion's onDragStart - it has different event signatures
-      // Use the drag attribute "draggable" and React's native onDragStart instead
-      onDragStart={handleNativeDragStart as any}
+      onDragStart={handleDragStart}
       onDragEnd={() => onDragEnd && onDragEnd()}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
@@ -102,15 +101,22 @@ export const KanbanTask = ({
             <Badge 
               key={tag.id} 
               variant="outline" 
-              className="text-xs px-1 py-0 text-white"
-              style={{ backgroundColor: tag.color }}
+              className="text-xs px-1.5 py-0.5 flex items-center justify-center text-white"
+              style={{ 
+                backgroundColor: tag.color, 
+                borderColor: 'transparent',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+              }}
             >
               {tag.name}
             </Badge>
           ))}
           
           {project && (
-            <Badge variant="outline" className="text-xs px-1 py-0 bg-primary/10 text-primary">
+            <Badge 
+              variant="outline" 
+              className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary border-transparent"
+            >
               {project.name}
             </Badge>
           )}

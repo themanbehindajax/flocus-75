@@ -10,16 +10,17 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-gradient-to-r from-primary to-primary-600 text-primary-foreground",
+          "border-transparent bg-gradient-to-r from-primary to-primary-600 text-primary-foreground shadow-sm",
         secondary:
           "border-transparent bg-gradient-to-r from-secondary/90 to-secondary text-secondary-foreground",
         destructive:
           "border-transparent bg-gradient-to-r from-destructive to-red-600 text-destructive-foreground",
-        outline: "text-foreground",
-        success: "border-transparent bg-gradient-to-r from-green-500 to-emerald-600 text-white",
-        warning: "border-transparent bg-gradient-to-r from-amber-500 to-amber-600 text-white",
-        info: "border-transparent bg-gradient-to-r from-blue-500 to-blue-600 text-white",
+        outline: "text-foreground border-muted",
+        success: "border-transparent bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-sm",
+        warning: "border-transparent bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm",
+        info: "border-transparent bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm",
         premium: "border-transparent bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-[0_2px_5px_rgba(79,70,229,0.3)]",
+        tag: "border-transparent text-white shadow-sm",
       },
     },
     defaultVariants: {

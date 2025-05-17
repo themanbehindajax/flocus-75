@@ -11,7 +11,7 @@ interface KanbanColumnProps {
   status: TaskStatus;
   onDragStart: (task: Task) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDrop: () => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
   isDraggingOver: boolean;
 }
@@ -42,16 +42,14 @@ export const KanbanColumn = ({
           e.preventDefault();
           onDragOver(e);
         }}
-        onDrop={(e) => {
-          e.preventDefault();
-          onDrop();
-        }}
+        onDrop={onDrop}
       >
         <div className="space-y-2">
           {tasks.map(task => (
             <KanbanTask 
               key={task.id} 
               task={task} 
+              columnId={status}
               onDragStart={() => onDragStart(task)} 
               onDragEnd={onDragEnd}
             />
