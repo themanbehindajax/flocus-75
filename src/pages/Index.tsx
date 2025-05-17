@@ -3,12 +3,10 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
 import {
-  ArrowRight,
   Calendar,
   CheckCircle,
   Clock,
   FolderKanban,
-  ListChecks,
   ListTodo,
   Trophy,
   Zap,
@@ -17,19 +15,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
+import { TodayPriorities } from "@/components/home/TodayPriorities";
+import { requestNotificationPermission } from "@/lib/notifications";
 
 const Index = () => {
   const {
     tasks,
     projects,
     profile,
-    settings,
-    dailyPriorities,
     pomodoroSessions,
     updateProfile,
   } = useAppStore();
 
-  const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
   const [quickTasks, setQuickTasks] = useState<string[]>([]);
 
   useEffect(() => {
@@ -41,14 +38,8 @@ const Index = () => {
       }
     }
 
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0];
-    
-    // Find today's priorities
-    const todaysPriorityList = dailyPriorities.find(dp => dp.date === today);
-    if (todaysPriorityList) {
-      setTodaysPriorities(todaysPriorityList.taskIds);
-    }
+    // Request notification permission
+    requestNotificationPermission();
 
     // Find quick tasks (2-minute rule)
     const quickTaskIds = tasks
@@ -62,7 +53,7 @@ const Index = () => {
       .map(task => task.id);
     
     setQuickTasks(quickTaskIds);
-  }, [dailyPriorities, tasks, profile.name, updateProfile]); // Include profile.name instead of the entire profile object
+  }, [tasks, profile.name, updateProfile]); 
 
   // Statistics
   const totalTasks = tasks.length;
@@ -163,52 +154,8 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Ivy Lee Method */}
           <div className="space-y-6 lg:col-span-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Prioridades de Hoje</h2>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/ivy-lee">
-                  Gerenciar
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            
-            <Card>
-              <CardContent className="p-6">
-                {todaysPriorities.length > 0 ? (
-                  <ul className="space-y-4">
-                    {todaysPriorities.map((taskId) => {
-                      const task = tasks.find(t => t.id === taskId);
-                      if (!task) return null;
-                      
-                      return (
-                        <li key={task.id} className="flex items-center space-x-3">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${
-                            task.completed ? "bg-primary border-primary" : "border-muted"
-                          }`}>
-                            {task.completed && <CheckCircle className="h-4 w-4 text-white" />}
-                          </div>
-                          <span className={`flex-1 ${task.completed ? "line-through text-muted-foreground" : ""}`}>
-                            {task.title}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="text-center py-10">
-                    <ListChecks className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                    <h3 className="font-medium text-lg">Sem prioridades definidas</h3>
-                    <p className="text-muted-foreground mt-1">
-                      Defina até 6 tarefas prioritárias para o dia
-                    </p>
-                    <Button variant="outline" className="mt-4" asChild>
-                      <Link to="/ivy-lee">Definir prioridades</Link>
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Today's Priorities - Enhanced Version */}
+            <TodayPriorities />
             
             {/* Quick Tasks Section */}
             <div>
@@ -278,7 +225,7 @@ const Index = () => {
                         </div>
                         <Button size="sm" variant="ghost" asChild>
                           <Link to={`/projects/${project.id}`}>
-                            <ArrowRight className="h-4 w-4" />
+                            <Calendar className="h-4 w-4" />
                           </Link>
                         </Button>
                       </div>

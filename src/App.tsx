@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth";
+import { useEffect } from "react";
+import { requestNotificationPermission } from "@/lib/notifications";
+import { PomodoroMiniWidget } from "@/components/pomodoro/PomodoroMiniWidget";
 import Index from "./pages/Index";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
@@ -32,6 +35,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
+  useEffect(() => {
+    // Request notification permission when app loads
+    requestNotificationPermission();
+  }, []);
+
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -98,6 +106,11 @@ const App = () => {
               
               <Route path="*" element={<NotFound />} />
             </Routes>
+            
+            {/* Pomodoro mini widget will show on all protected routes */}
+            <ProtectedRoute>
+              <PomodoroMiniWidget />
+            </ProtectedRoute>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
   Card,
@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { usePomodoro } from "@/hooks/usePomodoro";
 import { TimerDisplay } from "@/components/pomodoro/TimerDisplay";
 import { TimerControls } from "@/components/pomodoro/TimerControls";
 import { TimerModeSelector } from "@/components/pomodoro/TimerModeSelector";
@@ -17,14 +16,16 @@ import { TaskSelection } from "@/components/pomodoro/TaskSelection";
 import { PomodoroTips } from "@/components/pomodoro/PomodoroTips";
 import { SpotifyPlayer } from "@/components/spotify/SpotifyPlayer";
 import { SpotifyPlaylists } from "@/components/spotify/SpotifyPlaylists";
+import { usePomodoroStore } from "@/hooks/usePomodoroStore";
+import { useAppStore } from "@/lib/store";
 
 const Pomodoro = () => {
   const {
-    timerState,
+    isActive,
+    isPaused,
     timerMode,
     timeRemaining,
     pomodoroCount,
-    progress,
     selectedTaskId,
     selectedProjectId,
     setSelectedTaskId,
@@ -32,8 +33,45 @@ const Pomodoro = () => {
     startTimer,
     pauseTimer,
     resetTimer,
-    handleModeChange
-  } = usePomodoro();
+    setTimerMode
+  } = usePomodoroStore();
+
+  const { settings } = useAppStore();
+  
+  // Calculate the progress based on current time and total duration
+  const getDuration = () => {
+    switch (timerMode) {
+      case "pomodoro": return settings.pomodoroDuration * 60;
+      case "shortBreak": return settings.shortBreakDuration * 60;
+      case "longBreak": return settings.longBreakDuration * 60;
+      default: return settings.pomodoroDuration * 60;
+    }
+  };
+  
+  const progress = 1 - timeRemaining / getDuration();
+  
+  // Set document title to show the timer
+  useEffect(() => {
+    const formatTimeForTitle = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs < 10 ? '0' + secs : secs}`;
+    };
+    
+    if (isActive && !isPaused) {
+      document.title = `${formatTimeForTitle(timeRemaining)} - ${timerMode === 'pomodoro' ? '🍅' : '☕️'} Flocus`;
+    } else {
+      document.title = 'Flocus - Pomodoro Timer';
+    }
+    
+    return () => {
+      document.title = 'Flocus';
+    };
+  }, [timeRemaining, isActive, isPaused, timerMode]);
+
+  const timerState = isActive 
+    ? (isPaused ? "paused" : "running") 
+    : (timeRemaining === 0 ? "completed" : "idle");
 
   return (
     <AppLayout>
@@ -50,7 +88,7 @@ const Pomodoro = () => {
               </CardDescription>
               <TimerModeSelector 
                 currentMode={timerMode}
-                onModeChange={handleModeChange}
+                onModeChange={setTimerMode}
               />
             </CardHeader>
             <CardContent>
@@ -88,11 +126,11 @@ const Pomodoro = () => {
               </CardHeader>
               <CardContent>
                 <TaskSelection 
-                  selectedTaskId={selectedTaskId}
-                  selectedProjectId={selectedProjectId}
-                  onTaskChange={setSelectedTaskId}
-                  onProjectChange={setSelectedProjectId}
-                  disabled={timerState === "running"}
+                  selectedTaskId={selectedTaskId || ""}
+                  selectedProjectId={selectedProjectId || ""}
+                  onTaskChange={(id) => setSelectedTaskId(id || null)}
+                  onProjectChange={(id) => setSelectedProjectId(id || null)}
+                  disabled={isActive && !isPaused}
                 />
               </CardContent>
             </Card>

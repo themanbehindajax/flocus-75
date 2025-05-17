@@ -61,16 +61,28 @@ export const syncCalendarToTasks = async (
     );
     
     if (calendarData && calendarData.items) {
+      const existingTasks = useAppStore.getState().tasks;
+      const existingCalendarIds = new Set(existingTasks
+        .filter(task => task.calendarEventId)
+        .map(task => task.calendarEventId));
+      
       for (const event of calendarData.items) {
         // Check if event has necessary data
-        if (event.summary && event.start && event.start.dateTime) {
+        if (event.summary && event.start && (event.start.dateTime || event.start.date)) {
+          // Skip if we already have this calendar event as a task
+          if (existingCalendarIds.has(event.id)) {
+            continue;
+          }
+          
           // Create a task from the calendar event
+          const startTime = event.start.dateTime || `${event.start.date}T12:00:00Z`;
+          
           addTaskFunction({
             title: event.summary,
             description: event.description || "",
             priority: "media",
             status: "todo",
-            dueDate: new Date(event.start.dateTime).toISOString(),
+            dueDate: new Date(startTime).toISOString(),
             tags: [],
             subtasks: [],
             calendarEventId: event.id // Store reference to calendar event ID

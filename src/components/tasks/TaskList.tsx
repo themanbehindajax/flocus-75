@@ -6,9 +6,10 @@ import { toast } from "sonner";
 
 interface TaskListProps {
   tasks: Task[];
+  variant?: "default" | "compact";
 }
 
-export const TaskList = ({ tasks }: TaskListProps) => {
+export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
   const { completeTask, updateTask } = useAppStore();
 
   const handleCompleteTask = (task: Task) => {
@@ -30,12 +31,13 @@ export const TaskList = ({ tasks }: TaskListProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className={`grid grid-cols-1 ${variant === "compact" ? "gap-2" : "gap-4"}`}>
       {tasks.map((task) => (
         <TaskCard 
           key={task.id} 
           task={task} 
           onComplete={() => handleCompleteTask(task)}
+          variant={variant}
         />
       ))}
     </div>

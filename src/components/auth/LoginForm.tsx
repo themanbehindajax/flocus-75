@@ -7,18 +7,44 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GoogleLogin } from "./GoogleLogin";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { AtSign, KeyRound, User } from "lucide-react";
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  isSignUp?: boolean;
+}
+
+export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
   const { login } = useAuthStore();
   const { profile, updateProfile } = useAppStore();
   const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      toast.error("Por favor, insira seu nome");
-      return;
+    
+    if (isSignUp) {
+      if (!name.trim() || !email.trim() || !password.trim()) {
+        toast.error("Por favor, preencha todos os campos");
+        return;
+      }
+      
+      if (password.length < 6) {
+        toast.error("A senha deve ter pelo menos 6 caracteres");
+        return;
+      }
+      
+      if (!email.includes('@')) {
+        toast.error("Por favor, insira um email válido");
+        return;
+      }
+    } else {
+      if (!name.trim()) {
+        toast.error("Por favor, insira seu nome");
+        return;
+      }
     }
     
     setIsLoading(true);
@@ -34,6 +60,7 @@ export const LoginForm = () => {
     
     // Save profile in local storage for persistence
     localStorage.setItem("username", name);
+    if (email) localStorage.setItem("useremail", email);
     
     // Update profile in store
     updateProfile({ name });
@@ -42,20 +69,17 @@ export const LoginForm = () => {
     login(user, "local");
     
     setIsLoading(false);
-    toast.success("Login realizado com sucesso!");
+    toast.success(isSignUp ? "Cadastro realizado com sucesso!" : "Login realizado com sucesso!");
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">Bem-vindo</h1>
-        <p className="text-gray-500 dark:text-gray-400">
-          Entre para acessar seu painel de produtividade
-        </p>
-      </div>
-      
-      <form onSubmit={handleLogin} className="space-y-4">
+    <div className="w-full max-w-md mx-auto space-y-6">      
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <User className="w-4 h-4 text-muted-foreground" />
+            <Label htmlFor="name">Nome</Label>
+          </div>
           <Input
             id="name"
             placeholder="Seu nome"
@@ -67,10 +91,57 @@ export const LoginForm = () => {
           />
         </div>
         
+        {isSignUp && (
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <AtSign className="w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="email">Email</Label>
+              </div>
+              <Input
+                id="email"
+                placeholder="seu.email@exemplo.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <KeyRound className="w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="password">Senha</Label>
+              </div>
+              <Input
+                id="password"
+                placeholder="••••••••"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete={isSignUp ? "new-password" : "current-password"}
+              />
+            </div>
+          </>
+        )}
+        
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Entrando..." : "Entrar"}
+          {isLoading ? "Processando..." : isSignUp ? "Cadastrar" : "Entrar"}
         </Button>
       </form>
+      
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            ou continue com
+          </span>
+        </div>
+      </div>
       
       <GoogleLogin />
     </div>
