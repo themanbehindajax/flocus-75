@@ -2,6 +2,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const ThemeToggle = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -72,14 +73,23 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleTheme}
-      className="rounded-full"
-      aria-label="Alternar tema"
-    >
-      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-    </Button>
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="p-3 text-sm font-medium rounded-md transition-colors hover:bg-white/10"
+            aria-label="Alternar tema"
+          >
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>Alternar tema</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
