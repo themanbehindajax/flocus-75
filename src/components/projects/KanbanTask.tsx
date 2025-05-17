@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -44,7 +44,7 @@ export const KanbanTask = ({
     .map(tagId => tags.find(tag => tag.id === tagId))
     .filter(Boolean);
 
-  // Improved drag handler for HTML5 Drag and Drop API
+  // HTML5 Drag and Drop handler
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/json', JSON.stringify({
@@ -55,6 +55,11 @@ export const KanbanTask = ({
     }
     
     if (onDragStart) onDragStart();
+  };
+
+  // Handler for when drag ends
+  const handleDragEnd = () => {
+    if (onDragEnd) onDragEnd();
   };
 
   const priorityColors = {
@@ -73,11 +78,13 @@ export const KanbanTask = ({
       transition={{ duration: 0.2 }}
       draggable="true"
       onDragStart={handleDragStart}
-      onDragEnd={onDragEnd}
+      // Remove the direct onDragEnd prop from motion.div since it expects a different type
+      // We'll use the native DOM event instead
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md'
       )}
+      onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start">
