@@ -134,7 +134,7 @@ const Pomodoro = () => {
                 </motion.div>
                 
                 {/* Contador de pomodoros */}
-                <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-white">
+                <div className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-white">
                   Pomodoros completados hoje: {pomodoroCount}
                 </div>
               </motion.div>
@@ -144,7 +144,7 @@ const Pomodoro = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="backdrop-blur-xl bg-white/10 border border-white/20 p-6 rounded-3xl w-full md:w-1/2 shadow-xl"
+                className="backdrop-blur-xl bg-white/5 border border-white/20 p-6 rounded-3xl w-full md:w-1/2 shadow-xl"
               >
                 <div className="mb-6">
                   <h2 className="text-xl font-bold mb-4 text-white">Escolha seu foco</h2>
@@ -166,7 +166,7 @@ const Pomodoro = () => {
                   <div className="mb-6">
                     <h3 className="text-lg font-medium mb-3 flex items-center text-white">
                       <span>Tarefas do projeto</span>
-                      <span className="ml-2 bg-white/20 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
+                      <span className="ml-2 bg-white/10 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
                     </h3>
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
                       {projectTasks.map(task => (
@@ -174,7 +174,7 @@ const Pomodoro = () => {
                           key={task.id}
                           className={`p-3 rounded-lg transition-all flex justify-between items-center ${
                             selectedTaskId === task.id 
-                              ? 'bg-white/20 shadow-inner' 
+                              ? 'bg-white/10 shadow-inner' 
                               : 'bg-white/5 hover:bg-white/10'
                           }`}
                         >
@@ -200,7 +200,7 @@ const Pomodoro = () => {
                 
                 {/* Tarefa atual selecionada */}
                 {selectedTaskId && selectedTask && (
-                  <div className="mb-6 p-3 rounded-xl bg-white/15 backdrop-blur-md">
+                  <div className="mb-6 p-3 rounded-xl bg-white/5 backdrop-blur-md">
                     <h3 className="text-sm font-medium text-white mb-1">Tarefa atual</h3>
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-white">{selectedTask.title}</p>
@@ -240,7 +240,7 @@ const Pomodoro = () => {
               <Button
                 size="icon"
                 variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-full"
+                className="bg-white/5 border-white/20 text-white hover:bg-white/10 rounded-full"
                 onClick={() => {
                   if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();

@@ -41,7 +41,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
           onValueChange={onProjectChange}
           disabled={disabled}
         >
-          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+          <SelectTrigger className="bg-white/5 border-white/20 text-white">
             <SelectValue placeholder="Selecione um projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -62,7 +62,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
           onValueChange={onTaskChange}
           disabled={disabled}
         >
-          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+          <SelectTrigger className="bg-white/5 border-white/20 text-white">
             <SelectValue placeholder="Selecione uma tarefa" />
           </SelectTrigger>
           <SelectContent>
