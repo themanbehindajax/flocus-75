@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Task } from '@/types/task';
+import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarIcon, Clock } from 'lucide-react';
@@ -10,12 +11,21 @@ import { ptBR } from 'date-fns/locale';
 
 interface KanbanTaskProps {
   task: Task;
-  index: number;
-  columnId: string;
+  index?: number;
+  columnId?: string;
   isDragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
-export const KanbanTask = ({ task, index, columnId, isDragging }: KanbanTaskProps) => {
+export const KanbanTask = ({ 
+  task, 
+  index, 
+  columnId, 
+  isDragging,
+  onDragStart,
+  onDragEnd 
+}: KanbanTaskProps) => {
   const formattedDate = task.dueDate
     ? formatDistanceToNow(new Date(task.dueDate), {
         addSuffix: true,
@@ -23,18 +33,21 @@ export const KanbanTask = ({ task, index, columnId, isDragging }: KanbanTaskProp
       })
     : null;
 
-  const handleDragStart = (event: React.PointerEvent) => {
-    if ('dataTransfer' in event && event.dataTransfer) {
+  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+    if (event.dataTransfer) {
       event.dataTransfer.setData('taskId', task.id);
-      event.dataTransfer.setData('sourceColumnId', columnId);
+      if (columnId) {
+        event.dataTransfer.setData('sourceColumnId', columnId);
+      }
       event.dataTransfer.effectAllowed = 'move';
     }
+    if (onDragStart) onDragStart();
   };
 
   const priorityColors = {
-    high: 'bg-red-500',
-    medium: 'bg-yellow-500',
-    low: 'bg-green-500',
+    alta: 'bg-red-500',
+    media: 'bg-yellow-500',
+    baixa: 'bg-green-500',
   };
 
   return (
@@ -45,9 +58,9 @@ export const KanbanTask = ({ task, index, columnId, isDragging }: KanbanTaskProp
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
-      drag
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      draggable="true"
       onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md'

@@ -1,5 +1,15 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { 
+  Task, 
+  PomodoroSession, 
+  Project, 
+  Tag, 
+  DailyPriority,
+  UserProfile,
+  CalendarEvent
+} from './types';
 
 export interface AppState {
   // User preferences
@@ -15,6 +25,45 @@ export interface AppState {
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
   
+  // Tasks
+  tasks: Task[];
+  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateTask: (task: Task) => void;
+  deleteTask: (taskId: string) => void;
+  completeTask: (taskId: string) => void;
+  toggleTaskCompletion: (taskId: string) => void;
+  
+  // Projects
+  projects: Project[];
+  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'tasks'>) => void;
+  updateProject: (project: Project) => void;
+  deleteProject: (projectId: string) => void;
+  
+  // Tags
+  tags: Tag[];
+  addTag: (tag: Omit<Tag, 'id'>) => void;
+  updateTag: (tag: Tag) => void;
+  deleteTag: (tagId: string) => void;
+  
+  // Daily Priorities
+  dailyPriorities: DailyPriority[];
+  setDailyPriorities: (priorities: DailyPriority) => void;
+  
+  // Pomodoro sessions
+  pomodoroSessions: PomodoroSession[];
+  startPomodoroSession: (taskId?: string, projectId?: string) => PomodoroSession;
+  completePomodoroSession: (sessionId: string) => void;
+  
+  // User profile
+  profile: UserProfile;
+  updateProfile: (profile: Partial<UserProfile>) => void;
+  
+  // Calendar events
+  calendarEvents: CalendarEvent[];
+  addCalendarEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+  updateCalendarEvent: (event: CalendarEvent) => void;
+  deleteCalendarEvent: (eventId: string) => void;
+  
   // Pomodoro settings
   pomodoroSettings: {
     workDuration: number;
@@ -27,6 +76,17 @@ export interface AppState {
     alarmVolume: number;
   };
   updatePomodoroSettings: (settings: Partial<AppState['pomodoroSettings']>) => void;
+  
+  // App settings
+  settings: {
+    pomodoroDuration: number;
+    shortBreakDuration: number;
+    longBreakDuration: number;
+    theme: 'light' | 'dark' | 'system';
+    notificationsEnabled: boolean;
+    spotifyAuth?: any;
+  };
+  updateSettings: (settings: Partial<AppState['settings']>) => void;
   
   // Spotify stubs
   spotifyAuth: any | null;
@@ -57,6 +117,146 @@ export const useAppStore = create<AppState>()(
       notificationsEnabled: true,
       setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
       
+      // Tasks
+      tasks: [],
+      addTask: (task) => set((state) => ({ 
+        tasks: [...state.tasks, {
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          completed: false,
+          subtasks: [],
+          tags: task.tags || [],
+          ...task
+        }]
+      })),
+      updateTask: (updatedTask) => set((state) => ({
+        tasks: state.tasks.map(task => 
+          task.id === updatedTask.id ? { ...updatedTask, updatedAt: new Date().toISOString() } : task
+        )
+      })),
+      deleteTask: (taskId) => set((state) => ({
+        tasks: state.tasks.filter(task => task.id !== taskId)
+      })),
+      completeTask: (taskId) => set((state) => ({
+        tasks: state.tasks.map(task => 
+          task.id === taskId ? { ...task, completed: true, updatedAt: new Date().toISOString() } : task
+        )
+      })),
+      toggleTaskCompletion: (taskId) => set((state) => ({
+        tasks: state.tasks.map(task => 
+          task.id === taskId ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() } : task
+        )
+      })),
+      
+      // Projects
+      projects: [],
+      addProject: (project) => set((state) => ({
+        projects: [...state.projects, {
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          tasks: [],
+          ...project
+        }]
+      })),
+      updateProject: (updatedProject) => set((state) => ({
+        projects: state.projects.map(project => 
+          project.id === updatedProject.id ? { ...updatedProject, updatedAt: new Date().toISOString() } : project
+        )
+      })),
+      deleteProject: (projectId) => set((state) => ({
+        projects: state.projects.filter(project => project.id !== projectId)
+      })),
+      
+      // Tags
+      tags: [],
+      addTag: (tag) => set((state) => ({
+        tags: [...state.tags, { id: crypto.randomUUID(), ...tag }]
+      })),
+      updateTag: (updatedTag) => set((state) => ({
+        tags: state.tags.map(tag => 
+          tag.id === updatedTag.id ? updatedTag : tag
+        )
+      })),
+      deleteTag: (tagId) => set((state) => ({
+        tags: state.tags.filter(tag => tag.id !== tagId)
+      })),
+      
+      // Daily Priorities
+      dailyPriorities: [],
+      setDailyPriorities: (priorities) => set((state) => {
+        const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
+        if (dateIndex >= 0) {
+          return {
+            dailyPriorities: state.dailyPriorities.map((p, i) => 
+              i === dateIndex ? priorities : p
+            )
+          };
+        } else {
+          return { 
+            dailyPriorities: [...state.dailyPriorities, priorities] 
+          };
+        }
+      }),
+      
+      // Pomodoro sessions
+      pomodoroSessions: [],
+      startPomodoroSession: (taskId, projectId) => {
+        const newSession = {
+          id: crypto.randomUUID(),
+          startTime: new Date().toISOString(),
+          completed: false,
+          taskId,
+          projectId
+        };
+        set((state) => ({
+          pomodoroSessions: [...state.pomodoroSessions, newSession]
+        }));
+        return newSession;
+      },
+      completePomodoroSession: (sessionId) => set((state) => ({
+        pomodoroSessions: state.pomodoroSessions.map(session => 
+          session.id === sessionId 
+            ? { 
+                ...session, 
+                completed: true, 
+                endTime: new Date().toISOString(),
+                duration: session.startTime ? 
+                  Math.round((new Date().getTime() - new Date(session.startTime).getTime()) / 1000 / 60) : 
+                  undefined
+              } 
+            : session
+        )
+      })),
+      
+      // User profile
+      profile: {
+        name: 'Usuário',
+        points: 0,
+        streak: 0,
+        lastActivity: new Date().toISOString(),
+        totalTasksCompleted: 0,
+        totalPomodorosCompleted: 0
+      },
+      updateProfile: (updates) => set((state) => ({
+        profile: { ...state.profile, ...updates }
+      })),
+      
+      // Calendar events
+      calendarEvents: [],
+      addCalendarEvent: (event) => set((state) => ({
+        calendarEvents: [...state.calendarEvents, { id: crypto.randomUUID(), ...event }]
+      })),
+      updateCalendarEvent: (updatedEvent) => set((state) => ({
+        calendarEvents: state.calendarEvents.map(event => 
+          event.id === updatedEvent.id ? updatedEvent : event
+        )
+      })),
+      deleteCalendarEvent: (eventId) => set((state) => ({
+        calendarEvents: state.calendarEvents.filter(event => event.id !== eventId)
+      })),
+      
       // Pomodoro settings
       pomodoroSettings: {
         workDuration: 25,
@@ -72,6 +272,18 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ 
           pomodoroSettings: { ...state.pomodoroSettings, ...settings } 
         })),
+      
+      // App settings
+      settings: {
+        pomodoroDuration: 25,
+        shortBreakDuration: 5,
+        longBreakDuration: 15,
+        theme: 'system',
+        notificationsEnabled: true,
+      },
+      updateSettings: (updates) => set((state) => ({
+        settings: { ...state.settings, ...updates }
+      })),
       
       // Spotify stubs
       spotifyAuth: null,
@@ -93,6 +305,14 @@ export const useAppStore = create<AppState>()(
         notificationsEnabled: state.notificationsEnabled,
         pomodoroSettings: state.pomodoroSettings,
         spotifyAuth: state.spotifyAuth,
+        tasks: state.tasks,
+        projects: state.projects,
+        tags: state.tags,
+        dailyPriorities: state.dailyPriorities,
+        pomodoroSessions: state.pomodoroSessions,
+        profile: state.profile,
+        calendarEvents: state.calendarEvents,
+        settings: state.settings
       }),
     }
   )
