@@ -13,29 +13,32 @@ export const createTaskActions = (set: any, get: any) => ({
       updatedAt: new Date().toISOString(),
     };
     
+    // Adiciona a tarefa à lista global de tarefas
     set((state: any) => ({
       tasks: [...state.tasks, newTask],
     }));
     
-    // Se a tarefa pertence a um projeto, adiciona ao projeto
+    // Se a tarefa pertence a um projeto, adiciona-a ao projeto
     if (taskData.projectId) {
-      set((state: any) => {
-        const updatedProjects = state.projects.map((project: Project) => {
-          if (project.id === taskData.projectId) {
-            console.log(`Adicionando tarefa ${newTask.id} ao projeto ${project.id}`);
-            return {
-              ...project,
-              tasks: [...project.tasks, newTask.id],
-              updatedAt: new Date().toISOString(),
-            };
-          }
-          return project;
-        });
-        
-        return {
-          projects: updatedProjects,
+      // Busca o projeto atual
+      const currentState = get();
+      const project = currentState.projects.find((p: Project) => p.id === taskData.projectId);
+      
+      if (project) {
+        // Atualiza o projeto com a nova tarefa
+        const updatedProject = {
+          ...project,
+          tasks: [...project.tasks, newTask.id],
+          updatedAt: new Date().toISOString(),
         };
-      });
+        
+        // Atualiza o estado com o projeto modificado
+        set((state: any) => ({
+          projects: state.projects.map((p: Project) => 
+            p.id === taskData.projectId ? updatedProject : p
+          ),
+        }));
+      }
     }
     
     return newTask;

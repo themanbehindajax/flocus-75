@@ -33,8 +33,8 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       };
       
       // Adiciona a tarefa e obtém a referência da tarefa criada
-      const createdTask = addTask(newTask);
-
+      addTask(newTask);
+      
       if (isQuickTask) {
         toast(`Tarefa rápida "${taskTitle}" adicionada`);
       } else {
@@ -44,7 +44,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       setTaskTitle("");
       setIsQuickTask(false);
       
-      // Chama o callback para atualizar a interface
+      // Chama o callback para atualizar a interface se fornecido
       if (onTaskAdded) {
         onTaskAdded();
       }

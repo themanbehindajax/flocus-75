@@ -26,10 +26,10 @@ const ProjectDetails = () => {
   // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
   useEffect(() => {
     if (project) {
-      const filteredTasks = tasks.filter(task => project.tasks.includes(task.id));
-      setProjectTasks(filteredTasks);
+      const currentTasks = tasks.filter(task => task.projectId === projectId);
+      setProjectTasks(currentTasks);
     }
-  }, [project, tasks]);
+  }, [project, tasks, projectId]);
 
   if (!project) {
     return (
@@ -58,6 +58,10 @@ const ProjectDetails = () => {
   const handleTaskCreated = () => {
     // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
+    
+    // Força a atualização das tarefas do projeto
+    const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
+    setProjectTasks(currentTasks);
     
     // Notifica o usuário sobre a criação da tarefa
     toast({
