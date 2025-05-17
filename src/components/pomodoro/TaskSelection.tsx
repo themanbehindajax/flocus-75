@@ -35,36 +35,13 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-2">
-        <label className="text-sm font-medium">Tarefa</label>
-        <Select
-          value={selectedTaskId || "none"}
-          onValueChange={onTaskChange}
-          disabled={disabled}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione uma tarefa" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">Sem tarefa específica</SelectItem>
-            {tasks
-              .filter(task => !task.completed)
-              .map(task => (
-                <SelectItem key={task.id} value={task.id}>
-                  {task.title}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="space-y-2">
         <label className="text-sm font-medium">Projeto</label>
         <Select
           value={selectedProjectId || "none"}
           onValueChange={onProjectChange}
           disabled={disabled}
         >
-          <SelectTrigger>
+          <SelectTrigger className="bg-white/10 border-white/20 text-white">
             <SelectValue placeholder="Selecione um projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -74,6 +51,29 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
                 {project.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Tarefa</label>
+        <Select
+          value={selectedTaskId || "none"}
+          onValueChange={onTaskChange}
+          disabled={disabled}
+        >
+          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+            <SelectValue placeholder="Selecione uma tarefa" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Sem tarefa específica</SelectItem>
+            {tasks
+              .filter(task => !task.completed && (!selectedProjectId || task.projectId === selectedProjectId))
+              .map(task => (
+                <SelectItem key={task.id} value={task.id}>
+                  {task.title}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       </div>

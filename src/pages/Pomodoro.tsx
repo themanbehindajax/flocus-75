@@ -8,13 +8,11 @@ import { TimerModeSelector } from "@/components/pomodoro/TimerModeSelector";
 import { usePomodoroStore } from "@/hooks/usePomodoroStore";
 import { useAppStore } from "@/lib/store";
 import { formatTime } from "@/hooks/usePomodoro";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TaskSelection } from "@/components/pomodoro/TaskSelection";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
-import { useNavigate } from "react-router-dom";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const Pomodoro = () => {
-  const navigate = useNavigate();
   const { projects, tasks } = useAppStore();
   const [projectTasks, setProjectTasks] = useState<any[]>([]);
   const {
@@ -82,22 +80,8 @@ const Pomodoro = () => {
           
           {/* Conteúdo centralizado */}
           <div className="relative z-10 w-full max-w-5xl mx-auto text-white">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center text-center mb-8 md:mb-12"
-            >
-              <h1 className="text-3xl md:text-5xl font-bold mb-2">
-                Foco no que importa
-              </h1>
-              <p className="text-lg md:text-xl opacity-80 max-w-md">
-                "É na concentração das horas mais produtivas que nascem as maiores conquistas"
-              </p>
-            </motion.div>
-            
             {/* Layout em duas colunas para desktop */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start mt-4">
               {/* Coluna da esquerda - Timer */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -221,64 +205,26 @@ const Pomodoro = () => {
                 <div className="mb-6">
                   <h2 className="text-xl font-bold mb-4">Escolha seu foco</h2>
                   
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium opacity-80">Projeto</label>
-                      <Select
-                        value={selectedProjectId || "none"}
-                        onValueChange={(value) => {
-                          setSelectedProjectId(value === "none" ? null : value);
-                          setSelectedTaskId(null); // Reset task selection
-                        }}
-                        disabled={isActive && !isPaused}
-                      >
-                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                          <SelectValue placeholder="Selecione um projeto" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">Sem projeto específico</SelectItem>
-                          {projects.map(project => (
-                            <SelectItem key={project.id} value={project.id}>
-                              {project.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {selectedProjectId && (
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium opacity-80">Tarefa</label>
-                        <Select
-                          value={selectedTaskId || "none"}
-                          onValueChange={(value) => setSelectedTaskId(value === "none" ? null : value)}
-                          disabled={isActive && !isPaused}
-                        >
-                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                            <SelectValue placeholder="Selecione uma tarefa" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Sem tarefa específica</SelectItem>
-                            {projectTasks.map(task => (
-                              <SelectItem key={task.id} value={task.id}>
-                                {task.title}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </div>
+                  <TaskSelection
+                    selectedTaskId={selectedTaskId}
+                    selectedProjectId={selectedProjectId}
+                    onTaskChange={(value) => setSelectedTaskId(value === "none" ? null : value)}
+                    onProjectChange={(value) => {
+                      setSelectedProjectId(value === "none" ? null : value);
+                      setSelectedTaskId(null); // Reset task selection
+                    }}
+                    disabled={isActive && !isPaused}
+                  />
                 </div>
                 
-                {/* Lista de tarefas do projeto */}
+                {/* Lista de tarefas do projeto - limitada a 3 visíveis */}
                 {selectedProjectId && projectTasks.length > 0 && (
                   <div className="mb-6">
                     <h3 className="text-lg font-medium mb-3 flex items-center">
                       <span>Tarefas do projeto</span>
                       <span className="ml-2 bg-white/20 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
                     </h3>
-                    <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar rounded-xl">
+                    <div className="space-y-2 h-[120px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
                       {projectTasks.map(task => (
                         <motion.div
                           key={task.id}
