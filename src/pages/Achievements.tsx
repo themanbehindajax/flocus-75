@@ -27,9 +27,6 @@ import { ptBR } from "date-fns/locale";
 import { 
   Trophy, 
   Flame, 
-  Star, 
-  Award, 
-  TrendingUp, 
   CheckCircle2, 
   Clock,
   ChartPie,
@@ -55,18 +52,44 @@ const Achievements = () => {
   const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const completedPomodoros = pomodoroSessions.filter(session => session.completed).length;
 
-  // Generate data for analytics
+  // Generate data for weekly tasks and pomodoros
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  
   const getCurrentWeekData = () => {
-    return daysOfWeek.map(day => ({
-      name: day,
-      tasks: Math.floor(Math.random() * 8),
-      pomodoros: Math.floor(Math.random() * 5),
-    }));
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - currentDay); // Set to start of week (Sunday)
+    
+    return daysOfWeek.map((day, index) => {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + index);
+      const dateString = date.toISOString().split('T')[0];
+      
+      // Count tasks completed on this day
+      const dayTasks = tasks.filter(task => {
+        const taskUpdateDate = new Date(task.updatedAt).toISOString().split('T')[0];
+        return task.completed && taskUpdateDate === dateString;
+      }).length;
+      
+      // Count pomodoros completed on this day
+      const dayPomodoros = pomodoroSessions.filter(session => {
+        if (!session.endTime) return false;
+        const sessionDate = new Date(session.endTime).toISOString().split('T')[0];
+        return session.completed && sessionDate === dateString;
+      }).length;
+      
+      return {
+        name: day,
+        tasks: dayTasks,
+        pomodoros: dayPomodoros,
+      };
+    });
   };
 
   const weeklyData = getCurrentWeekData();
 
+  // Project distribution with actual data
   const projectDistribution = projects.map(project => {
     const projectTasks = tasks.filter(task => task.projectId === project.id);
     const completedProjectTasks = projectTasks.filter(task => task.completed);
@@ -77,23 +100,32 @@ const Achievements = () => {
       completed: completedProjectTasks.length,
       color: project.color || "#0EA5E9"
     };
-  });
+  }).filter(project => project.value > 0);
 
+  // Tag distribution with actual data
   const tagDistribution = tags.map(tag => {
     const taggedTasks = tasks.filter(task => task.tags.includes(tag.id));
     
     return {
       name: tag.name,
       value: taggedTasks.length,
-      color: tag.color
+      color: tag.color || "#3B82F6"
+    };
+  }).filter(tag => tag.value > 0);
+
+  // Task completion by day of week with actual data
+  const tasksByDayOfWeek = daysOfWeek.map((day, index) => {
+    const completedTasksByDay = tasks.filter(task => {
+      if (!task.completed) return false;
+      const taskDate = new Date(task.updatedAt);
+      return taskDate.getDay() === index;
+    }).length;
+    
+    return {
+      name: day,
+      completed: completedTasksByDay,
     };
   });
-
-  // Task completion by day of week
-  const tasksByDayOfWeek = daysOfWeek.map(day => ({
-    name: day,
-    completed: Math.floor(Math.random() * 10),
-  }));
 
   // Chart configs
   const weeklyChartConfig = {
@@ -129,13 +161,13 @@ const Achievements = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
                     <Trophy className="mr-2 h-5 w-5 text-blue-500" />
@@ -158,7 +190,7 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="overflow-hidden border border-purple-100/40 dark:border-purple-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden border border-purple-100/40 dark:border-purple-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-900/70 dark:text-purple-300/90 flex items-center text-xl">
                     <Flame className="mr-2 h-5 w-5 text-purple-500" />
@@ -181,7 +213,7 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card className="overflow-hidden border border-cyan-100/40 dark:border-cyan-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden border border-cyan-100/40 dark:border-cyan-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-cyan-900/70 dark:text-cyan-300/90 flex items-center text-xl">
                     <CheckCircle2 className="mr-2 h-5 w-5 text-cyan-500" />
@@ -204,7 +236,7 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
+              <Card className="h-full overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
                     <Clock className="mr-2 h-5 w-5 text-blue-500" />
@@ -414,7 +446,7 @@ const Achievements = () => {
               <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
-                    <Star className="mr-2 h-5 w-5 text-blue-500" />
+                    <ChartPie className="mr-2 h-5 w-5 text-blue-500" />
                     Distribuição por Tag
                   </CardTitle>
                   <CardDescription>
