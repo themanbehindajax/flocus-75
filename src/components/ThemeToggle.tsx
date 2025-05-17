@@ -6,13 +6,50 @@ import { Button } from "@/components/ui/button";
 export const ThemeToggle = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
 
-  useEffect(() => {
-    // Initialize based on system preference or stored preference
-    const isDarkMode = localStorage.getItem("theme") === "dark" || 
-      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  // Função para verificar se deve usar o tema escuro com base no horário de São Paulo
+  const shouldUseDarkTheme = () => {
+    // Cria uma data usando o fuso horário de São Paulo (GMT-3)
+    const date = new Date();
     
-    setIsDark(isDarkMode);
-    updateTheme(isDarkMode);
+    // Ajusta para o fuso horário de São Paulo
+    // Isso funcionará independentemente do fuso horário do usuário
+    const options = { timeZone: 'America/Sao_Paulo' };
+    const spTime = new Date(date.toLocaleString('en-US', options));
+    
+    const hour = spTime.getHours();
+    
+    // Das 18h (6PM) às 8h, usar tema escuro
+    return hour >= 18 || hour < 8;
+  };
+
+  useEffect(() => {
+    // Inicializa baseado na preferência do sistema ou preferência armazenada
+    const storedTheme = localStorage.getItem("theme");
+    
+    if (storedTheme) {
+      // Se o usuário definiu manualmente um tema, respeitamos sua preferência
+      setIsDark(storedTheme === "dark");
+      updateTheme(storedTheme === "dark");
+    } else {
+      // Caso contrário, verificamos o horário para definir automaticamente
+      const darkMode = shouldUseDarkTheme();
+      setIsDark(darkMode);
+      updateTheme(darkMode);
+    }
+    
+    // Configura um intervalo para verificar a hora e atualizar o tema automaticamente
+    const themeInterval = setInterval(() => {
+      // Só atualiza automaticamente se o usuário não definiu manualmente
+      if (!localStorage.getItem("theme")) {
+        const darkMode = shouldUseDarkTheme();
+        if (darkMode !== isDark) {
+          setIsDark(darkMode);
+          updateTheme(darkMode);
+        }
+      }
+    }, 60000); // Verifica a cada minuto
+    
+    return () => clearInterval(themeInterval);
   }, []);
 
   const updateTheme = (darkMode: boolean) => {
@@ -29,6 +66,9 @@ export const ThemeToggle = () => {
     const newMode = !isDark;
     setIsDark(newMode);
     updateTheme(newMode);
+    
+    // Quando o usuário clica manualmente, guardamos a preferência
+    localStorage.setItem("theme", newMode ? "dark" : "light");
   };
 
   return (
@@ -37,7 +77,7 @@ export const ThemeToggle = () => {
       size="icon"
       onClick={toggleTheme}
       className="rounded-full"
-      aria-label="Toggle theme"
+      aria-label="Alternar tema"
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>

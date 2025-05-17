@@ -36,15 +36,15 @@ export const KanbanTask = ({
       })
     : null;
 
-  // Find project name if this task belongs to a project
+  // Encontra o nome do projeto se esta tarefa pertencer a um projeto
   const project = task.projectId ? projects.find(p => p.id === task.projectId) : null;
   
-  // Find tag objects for this task's tag IDs
+  // Encontra objetos de tag para os IDs de tag desta tarefa
   const taskTags = task.tags
     .map(tagId => tags.find(tag => tag.id === tagId))
     .filter(Boolean);
 
-  // HTML5 Drag and Drop handler
+  // Manipulador de HTML5 Drag and Drop - melhorado para melhor experiência
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/json', JSON.stringify({
@@ -52,13 +52,28 @@ export const KanbanTask = ({
         sourceColumnId: columnId
       }));
       event.dataTransfer.effectAllowed = 'move';
+      
+      // Adiciona uma imagem de arrastar personalizada (opcional)
+      const dragImage = document.createElement('div');
+      dragImage.classList.add('hidden');
+      document.body.appendChild(dragImage);
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
+      setTimeout(() => {
+        document.body.removeChild(dragImage);
+      }, 0);
     }
+    
+    // Adiciona uma classe ao elemento que está sendo arrastado
+    event.currentTarget.classList.add('opacity-50');
     
     if (onDragStart) onDragStart();
   };
 
-  // Handler for when drag ends
+  // Manipulador para quando o arrastar termina
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
+    // Remove a classe adicionada ao elemento que estava sendo arrastado
+    event.currentTarget.classList.remove('opacity-50');
+    
     if (onDragEnd) onDragEnd();
   };
 
@@ -75,8 +90,20 @@ export const KanbanTask = ({
       onDragEnd={handleDragEnd}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
-        isDragging && 'opacity-50 shadow-md'
+        isDragging && 'opacity-50 shadow-md',
+        'hover:border-primary/50 hover:shadow-md transition-all duration-150'
       )}
+      role="button"
+      aria-roledescription="draggable item"
+      aria-grabbed="false"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        // Acessibilidade: permite mover tarefas com o teclado (exemplo simples)
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (onDragStart) onDragStart();
+        }
+      }}
     >
       <motion.div
         layout
@@ -89,7 +116,7 @@ export const KanbanTask = ({
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
-              <div className="cursor-grab active:cursor-grabbing p-1 hover:text-primary transition-colors">
+              <div className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted/50 rounded-md hover:text-primary transition-colors">
                 <GripVertical size={14} />
               </div>
               <span className="font-medium text-sm">{task.title}</span>

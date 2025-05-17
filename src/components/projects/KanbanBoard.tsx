@@ -33,10 +33,11 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDragOverColumn(status);
   };
   
+  // Melhorado: Função handleDrop mais robusta e tolerante a erros
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
     e.preventDefault();
     
-    // Try to get the data from dataTransfer first
+    // Tenta obter os dados do dataTransfer primeiro
     let taskData;
     try {
       const dataStr = e.dataTransfer.getData('application/json');
@@ -44,24 +45,24 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         taskData = JSON.parse(dataStr);
       }
     } catch (err) {
-      console.error("Error parsing drag data:", err);
+      console.error("Erro ao processar dados de arrastar:", err);
     }
     
-    // Fall back to the state if dataTransfer doesn't work
+    // Usa o estado se os dados do dataTransfer não funcionarem
     const taskId = taskData?.taskId || (draggedTask?.id || null);
     if (!taskId) return;
     
-    // Find the task by ID
+    // Encontra a tarefa pelo ID
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
     
-    // Reset drag state
+    // Reseta o estado do drag
     setIsDragging(false);
     setDragOverColumn(null);
     setDraggedTask(null);
     
     if (task.status !== status) {
-      // Update the task status
+      // Atualiza o status da tarefa
       const updatedTask = {
         ...task,
         status,
@@ -70,7 +71,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       
       updateTask(updatedTask);
       
-      // If moving to "done" status and not already completed, mark as completed
+      // Se movido para o status "done" e não estiver concluído, marca como concluído
       if (status === "done" && !task.completed) {
         toggleTaskCompletion(task.id);
         toast.success(`Tarefa "${task.title}" concluída!`, {
@@ -78,7 +79,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
           duration: 2000
         });
       }
-      // If moving from "done" to another status and is completed, unmark completion
+      // Se movido do "done" para outro status e estiver concluído, desmarca conclusão
       else if (task.status === "done" && status !== "done" && task.completed) {
         toggleTaskCompletion(task.id);
         toast.info(`Tarefa "${task.title}" reaberta!`, {
@@ -104,7 +105,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDragOverColumn(null);
   };
 
-  // Improve accessibility with keyboard shortcuts
+  // Melhoria de acessibilidade com atalhos de teclado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!draggedTask) return;
