@@ -1,173 +1,131 @@
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, CheckCircle, Target, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
-import { usePomodoroStore } from "@/hooks/usePomodoroStore";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { ListChecks, ArrowRight, CheckCircle, Trophy } from "lucide-react";
+import { TaskCardCompact } from "../tasks/TaskCardCompact";
 import { Progress } from "@/components/ui/progress";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-// Helper function to get greeting based on time of day
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Bom dia";
-  if (hour < 18) return "Boa tarde";
-  return "Boa noite";
-};
-
-// Frases motivacionais
-const motivationalPhrases = [
-  "Foco no processo, não no resultado.",
-  "Pequenos progressos levam a grandes conquistas.",
-  "Uma tarefa por vez, um pomodoro por vez.",
-  "A produtividade começa com propósito.",
-  "Organize seu dia, simplifique sua vida.",
-  "Clareza precede o sucesso.",
-  "Não evite tarefas difíceis, comece por elas.",
-  "Celebre cada pequena vitória.",
-  "Consistência supera intensidade."
-];
+import { toast } from "sonner";
 
 export const TodayPriorities = () => {
-  const { profile, tasks } = useAppStore();
-  const { pomodoroCount } = usePomodoroStore();
-  const navigate = useNavigate();
-  const [motivationalPhrase, setMotivationalPhrase] = useState("");
+  const { tasks, dailyPriorities, toggleTaskCompletion } = useAppStore();
+  const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
   
-  // Randomly select a motivational phrase
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * motivationalPhrases.length);
-    setMotivationalPhrase(motivationalPhrases[randomIndex]);
-  }, []);
-  
-  // Get tasks for today using a filter instead of a non-existent function
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const tasksToday = tasks.filter(task => {
-    if (!task.dueDate) return false;
-    const dueDate = new Date(task.dueDate);
-    dueDate.setHours(0, 0, 0, 0);
-    return dueDate.getTime() === today.getTime();
-  });
-  
-  const completedTasksToday = tasksToday.filter(task => task.completed);
-  
-  const taskCompletionRate = tasksToday.length > 0
-    ? Math.round((completedTasksToday.length / tasksToday.length) * 100)
-    : 0;
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
     
-  // Use pomodoroCount from the store instead of totalSessionsToday
-  const totalSessionsToday = pomodoroCount;
+    // Find today's priorities
+    const todaysPriorityList = dailyPriorities.find(dp => dp.date === today);
+    if (todaysPriorityList) {
+      setTodaysPriorities(todaysPriorityList.taskIds);
+    } else {
+      setTodaysPriorities([]);
+    }
+  }, [dailyPriorities]);
   
-  const MotionCardContent = motion(CardContent);
+  // Get the priority tasks
+  const priorityTasks = tasks.filter(task => todaysPriorities.includes(task.id));
   
+  // Calculate completion percentage
+  const completedTasks = priorityTasks.filter(task => task.completed).length;
+  const totalTasks = priorityTasks.length;
+  const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Handle task completion toggle
+  const handleToggleTaskCompletion = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      toggleTaskCompletion(taskId);
+      
+      // Show toast notification based on the new state (opposite of the current state)
+      if (!task.completed) {
+        toast.success(`Tarefa "${task.title}" concluída!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
+      } else {
+        toast.info(`Tarefa "${task.title}" reaberta!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
+      }
+    }
+  };
+
+  if (priorityTasks.length === 0) {
+    return (
+      <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in">
+        <CardContent className="text-center py-12 px-4">
+          <ListChecks className="h-12 w-12 mx-auto mb-4 text-muted-foreground/70" />
+          <h3 className="font-medium text-lg mb-1">Sem prioridades definidas</h3>
+          <p className="text-muted-foreground mt-1 mb-6 max-w-md mx-auto">
+            Defina até 6 tarefas prioritárias para o dia
+          </p>
+          <Button variant="default" size="lg" className="gap-2" asChild>
+            <Link to="/ivy-lee">
+              Definir prioridades
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="rounded-2xl border-border shadow-sm transition-all hover:shadow-md">
-      <CardHeader className="pb-3">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl font-medium">
-              {getGreeting()}, <span className="text-primary">{profile.name}</span>
-            </CardTitle>
-          </div>
-          <CardDescription className="mt-1.5 text-muted-foreground">
-            {motivationalPhrase}
-          </CardDescription>
-        </motion.div>
+    <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in">
+      <CardHeader className="flex flex-row items-center justify-between pb-3 border-b">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold leading-none tracking-tight inline-flex items-center gap-2">
+            Prioridades de Hoje
+            {completionPercentage === 100 && (
+              <Trophy className="h-5 w-5 text-amber-500 animate-pulse-light" />
+            )}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {completedTasks} de {totalTasks} tarefas concluídas
+          </p>
+        </div>
+        <Button variant="ghost" size="sm" className="gap-1.5 hover:bg-primary/10 transition-colors" asChild>
+          <Link to="/ivy-lee">
+            Gerenciar
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
       </CardHeader>
       
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }} 
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.4 }}
-      >
-        <MotionCardContent 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          className="grid gap-4 pt-2"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Tarefas do dia */}
-            <div className="space-y-2 bg-background/40 rounded-xl p-4 border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Tarefas de hoje</span>
-                </div>
-                <span className="text-2xl font-semibold">{completedTasksToday.length}/{tasksToday.length}</span>
-              </div>
-              
-              <Progress 
-                value={taskCompletionRate} 
-                className="h-2 rounded-full bg-primary/20" 
-              />
-            </div>
-            
-            {/* Pomodoros */}
-            <div className="space-y-2 bg-background/40 rounded-xl p-4 border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Pomodoros</span>
-                </div>
-                <span className="text-2xl font-semibold">{totalSessionsToday}</span>
-              </div>
-              
-              <Progress 
-                value={Math.min(totalSessionsToday * 10, 100)} 
-                className="h-2 rounded-full bg-primary/20" 
-              />
-            </div>
-            
-            {/* Pontuação */}
-            <div className="space-y-2 bg-background/40 rounded-xl p-4 border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Pontos</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-2xl font-semibold">{profile.points}</span>
-                  <div className={cn(
-                    "text-xs px-1.5 py-0.5 rounded-full",
-                    "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400",
-                    "flex items-center"
-                  )}>
-                    <Calendar className="w-3 h-3 mr-0.5" />
-                    {profile.streak}d
-                  </div>
-                </div>
-              </div>
-              
-              <Progress 
-                value={Math.min(profile.points / 10, 100)} 
-                className="h-2 rounded-full bg-primary/20" 
-              />
-            </div>
+      <CardContent className="pt-4">
+        <div className="mb-5">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+            <span>Progresso</span>
+            <span className="font-medium">{completionPercentage}%</span>
           </div>
-        </MotionCardContent>
+          <Progress 
+            value={completionPercentage} 
+            className={cn(
+              "h-2 transition-all duration-500",
+              completionPercentage === 100 ? "bg-muted/30" : "bg-muted/20"
+            )}
+            indicatorClassName={cn(
+              completionPercentage === 100 ? "bg-green-500" : ""
+            )}
+          />
+        </div>
         
-        <CardFooter className="pt-3 pb-6">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full mt-2" 
-            onClick={() => navigate('/tasks')}
-          >
-            Ver todas as tarefas
-            <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
-        </CardFooter>
-      </motion.div>
+        <div className="space-y-2.5">
+          {priorityTasks.map((task) => (
+            <TaskCardCompact
+              key={task.id}
+              task={task}
+              onComplete={() => handleToggleTaskCompletion(task.id)}
+            />
+          ))}
+        </div>
+      </CardContent>
     </Card>
   );
 };

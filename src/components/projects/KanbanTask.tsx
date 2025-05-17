@@ -51,7 +51,7 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
       transition={{ duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -2 }}
       draggable
-      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+      onDragStart={(e) => {
         e.dataTransfer.effectAllowed = "move";
         onDragStart();
       }}
