@@ -6,10 +6,9 @@ import { UserProfile } from "./types";
 interface AuthState {
   isAuthenticated: boolean;
   user: UserProfile | null;
-  googleToken: string | null;
   
   // Auth actions
-  login: (user: UserProfile, token: string) => void;
+  login: (user: UserProfile, source: string) => void;
   logout: () => void;
   updateUser: (user: Partial<UserProfile>) => void;
 }
@@ -19,13 +18,11 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       isAuthenticated: false,
       user: null,
-      googleToken: null,
       
-      login: (user: UserProfile, token: string) => {
+      login: (user: UserProfile, source: string) => {
         set({
           isAuthenticated: true,
           user,
-          googleToken: token
         });
       },
       
@@ -33,7 +30,6 @@ export const useAuthStore = create<AuthState>()(
         set({
           isAuthenticated: false,
           user: null,
-          googleToken: null
         });
       },
       

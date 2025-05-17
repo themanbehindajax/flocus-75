@@ -9,10 +9,11 @@ import { motion } from "framer-motion";
 interface TaskListProps {
   tasks: Task[];
   variant?: "default" | "compact";
+  showProjectName?: boolean;
 }
 
-export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
-  const { toggleTaskCompletion } = useAppStore();
+export const TaskList = ({ tasks, variant = "default", showProjectName = false }: TaskListProps) => {
+  const { toggleTaskCompletion, projects, tags } = useAppStore();
 
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
@@ -49,6 +50,21 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
     show: { opacity: 1, y: 0 }
   };
 
+  // Função para buscar o projeto pelo ID
+  const getProjectName = (projectId?: string) => {
+    if (!projectId) return null;
+    const project = projects.find(p => p.id === projectId);
+    return project ? project.name : null;
+  };
+
+  // Função para obter as tags pelo ID
+  const getTaskTags = (tagIds: string[]) => {
+    return tagIds.map(id => {
+      const tag = tags.find(t => t.id === id);
+      return tag || null;
+    }).filter(tag => tag !== null);
+  };
+
   return (
     <motion.div 
       initial="hidden"
@@ -73,7 +89,11 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
               />
             ) : (
               <TaskCard
-                task={task}
+                task={{
+                  ...task,
+                  projectName: showProjectName ? getProjectName(task.projectId) : undefined,
+                  tagObjects: getTaskTags(task.tags)
+                }}
                 onComplete={() => handleToggleTaskCompletion(task)}
               />
             )}

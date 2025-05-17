@@ -36,7 +36,7 @@ const Projects = () => {
   const handleCreateProject = (projectData: Parameters<typeof addProject>[0]) => {
     const newProject = addProject(projectData);
     toast.success(`Projeto "${newProject.name}" criado com sucesso`);
-    setIsAddDialogOpen(false);
+    setIsAddDialogOpen(false); // Fechar o diálogo após criar o projeto
   };
   
   const handleEditProject = (project: typeof projects[0]) => {

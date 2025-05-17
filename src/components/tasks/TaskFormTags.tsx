@@ -57,8 +57,8 @@ export const TaskFormTags = ({ tags, selected, setSelected }: TaskFormTagsProps)
         return (
           <Badge 
             key={tag.id}
-            className="px-2 py-1 rounded-full text-xs flex items-center gap-1 animate-fade-in"
-            style={{ backgroundColor: tag.color + '20', color: tag.color }}
+            className="px-2 py-1 rounded-full text-xs flex items-center gap-1 animate-fade-in text-white"
+            style={{ backgroundColor: tag.color }}
           >
             {tag.name}
             <button

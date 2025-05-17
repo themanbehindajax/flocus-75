@@ -1,14 +1,11 @@
 
-// I can't modify this file directly as it's in the read-only list.
-// Instead, I'll create a wrapper component that can be used instead:
-
 import { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Clock, Check, Calendar as CalendarIcon, AlertTriangle, Edit, Trash2, MoreVertical, CheckCircle, CheckCircle2 } from "lucide-react";
-import { Task } from "@/lib/types";
+import { Clock, Check, Calendar as CalendarIcon, AlertTriangle, Edit, Trash2, MoreVertical, CheckCircle, CheckCircle2, Folder } from "lucide-react";
+import { Task, Tag } from "@/lib/types";
 import { AddToCalendarButton } from './AddToCalendarButton';
 import { useAppStore } from '@/lib/store';
 import {
@@ -39,13 +36,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
-// This is a wrapper component that can be used instead of the original TaskCard
-// to fix the title attribute issue
+// Estendendo a interface Task para incluir dados adicionais que precisamos mostrar
+interface ExtendedTask extends Task {
+  projectName?: string | null;
+  tagObjects?: (Tag | null)[];
+}
+
+// Este é um componente wrapper que pode ser usado no lugar do TaskCard original
 export const TaskCardWrapper = ({ task, onComplete }: { 
-  task: Task, 
+  task: ExtendedTask, 
   onComplete?: () => void 
 }) => {
-  const { deleteTask, completeTask } = useAppStore();
+  const { deleteTask, completeTask, tags } = useAppStore();
   const { toast } = useToast();
   const [showAddToCalendar, setShowAddToCalendar] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -74,9 +76,19 @@ export const TaskCardWrapper = ({ task, onComplete }: {
       });
     }
   };
+
+  // Obter objetos de tag pelos IDs
+  const getTagObjects = () => {
+    if (task.tagObjects) return task.tagObjects;
+    
+    return task.tags.map(tagId => {
+      const foundTag = tags.find(t => t.id === tagId);
+      return foundTag || null;
+    }).filter(t => t !== null);
+  };
   
-  // Pass the task to the original TaskCard component
-  // But add handling for the Google Calendar integration
+  const tagObjects = getTagObjects();
+  
   return (
     <div 
       className="group relative"
@@ -108,10 +120,10 @@ export const TaskCardWrapper = ({ task, onComplete }: {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <CalendarIcon className="h-4 w-4" aria-label="Due Date" />
+                    <CalendarIcon className="h-4 w-4" aria-label="Data de vencimento" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Due: {new Date(task.dueDate).toLocaleDateString()}</TooltipContent>
+                <TooltipContent>Vence em: {new Date(task.dueDate).toLocaleDateString()}</TooltipContent>
               </Tooltip>
             )}
             
@@ -119,10 +131,10 @@ export const TaskCardWrapper = ({ task, onComplete }: {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <AlertTriangle className="h-4 w-4 text-destructive" aria-label="High Priority" />
+                    <AlertTriangle className="h-4 w-4 text-destructive" aria-label="Alta Prioridade" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>High Priority</TooltipContent>
+                <TooltipContent>Alta Prioridade</TooltipContent>
               </Tooltip>
             )}
             
@@ -189,14 +201,32 @@ export const TaskCardWrapper = ({ task, onComplete }: {
         
         {task.description && <p className="text-muted-foreground text-sm line-clamp-2 mb-3 ml-8">{task.description}</p>}
         
-        <div className="flex flex-wrap gap-2 ml-8">
-          {task.tags?.map((tag, i) => (
-            <Badge key={i} variant="secondary" className="text-xs">{tag}</Badge>
-          ))}
-          
-          {task.isQuick && (
-            <Badge variant="outline" className="text-xs px-1.5">⚡ Rápida</Badge>
+        <div className="space-y-2 ml-8">
+          {task.projectName && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Folder className="h-3 w-3" />
+              <span>{task.projectName}</span>
+            </div>
           )}
+          
+          <div className="flex flex-wrap gap-2">
+            {tagObjects.map((tag, i) => (
+              tag && (
+                <Badge 
+                  key={i} 
+                  variant="secondary" 
+                  className="text-xs text-white"
+                  style={{ backgroundColor: tag.color }}
+                >
+                  {tag.name}
+                </Badge>
+              )
+            ))}
+            
+            {task.isQuick && (
+              <Badge variant="outline" className="text-xs px-1.5">⚡ Rápida</Badge>
+            )}
+          </div>
         </div>
         
         {showAddToCalendar && task.dueDate && (

@@ -1,20 +1,15 @@
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { LoginForm } from "@/components/auth/LoginForm";
 import { useAuthStore } from "@/lib/auth";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OnboardingForm } from "@/components/auth/OnboardingForm";
 import { motion } from "framer-motion";
-
-// Use the client ID provided by the user
-const GOOGLE_CLIENT_ID = "803068792420-t0ndpse3ju98b7smatl9jmphp6udhkk7.apps.googleusercontent.com";
 
 const Login = () => {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>("login");
   
   useEffect(() => {
     if (isAuthenticated) {
@@ -54,45 +49,7 @@ const Login = () => {
             </motion.p>
           </div>
           
-          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="mt-6">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login" className="rounded-lg text-sm">Login</TabsTrigger>
-              <TabsTrigger value="signup" className="rounded-lg text-sm">Cadastro</TabsTrigger>
-            </TabsList>
-            
-            <motion.div 
-              key={activeTab}
-              initial={{ opacity: 0, x: activeTab === "login" ? -20 : 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <TabsContent value="login" className="space-y-4 mt-2">
-                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                  <LoginForm />
-                </GoogleOAuthProvider>
-              </TabsContent>
-              
-              <TabsContent value="signup" className="space-y-4 mt-2">
-                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                  <LoginForm isSignUp={true} />
-                </GoogleOAuthProvider>
-              </TabsContent>
-            </motion.div>
-          </Tabs>
-          
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>
-              {activeTab === "login" 
-                ? "Não tem uma conta? " 
-                : "Já tem uma conta? "}
-              <button 
-                onClick={() => setActiveTab(activeTab === "login" ? "signup" : "login")}
-                className="text-primary hover:underline font-medium transition-colors"
-              >
-                {activeTab === "login" ? "Cadastre-se" : "Faça login"}
-              </button>
-            </p>
-          </div>
+          <OnboardingForm />
         </div>
       </motion.div>
     </div>

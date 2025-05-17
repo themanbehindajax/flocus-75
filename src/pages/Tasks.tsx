@@ -115,7 +115,7 @@ const Tasks = () => {
         {/* Tasks Grid */}
         {filteredTasks.length > 0 ? (
           view === "list" ? (
-            <TaskList tasks={filteredTasks} />
+            <TaskList tasks={filteredTasks} showProjectName={true} />
           ) : (
             <KanbanBoard tasks={filteredTasks} projectId="" />
           )
