@@ -23,6 +23,7 @@ export interface Task {
   updatedAt: string;
   subtasks: SubTask[];
   isQuick?: boolean;
+  calendarEventId?: string; // Adding missing property
 }
 
 export interface Project {
@@ -33,6 +34,8 @@ export interface Project {
   tasks: string[];
   createdAt: string;
   updatedAt: string;
+  goal?: string; // Adding missing property
+  dueDate?: string; // Adding missing property
 }
 
 export interface Tag {
@@ -48,6 +51,7 @@ export interface PomodoroSession {
   taskId?: string;
   projectId?: string;
   completed: boolean;
+  duration?: number; // Adding missing property
 }
 
 export interface DailyPriority {
@@ -57,6 +61,7 @@ export interface DailyPriority {
 
 export interface UserProfile {
   name: string;
+  avatar?: string; // Adding missing property
   points: number;
   streak: number;
   lastActivity: string;

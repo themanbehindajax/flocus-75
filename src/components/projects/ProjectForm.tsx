@@ -29,20 +29,18 @@ export const ProjectForm = ({
   initialProject = {},
   submitButtonText = "Criar Projeto"
 }: ProjectFormProps) => {
-  const [project, setProject] = useState({
-    name: initialProject.name || "",
-    goal: initialProject.goal || "",
-    dueDate: initialProject.dueDate || "",
-  });
+  const [name, setName] = useState(initialProject.name || "");
+  const [goal, setGoal] = useState(initialProject.goal || "");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     initialProject.dueDate ? new Date(initialProject.dueDate) : undefined
   );
 
   const handleSubmit = () => {
-    if (project.name.trim()) {
+    if (name.trim()) {
       onSubmit({
-        name: project.name.trim(),
-        goal: project.goal.trim(),
+        name: name.trim(),
+        description: "",
+        goal: goal,
         dueDate: selectedDate ? selectedDate.toISOString() : undefined,
       });
     }
@@ -55,8 +53,8 @@ export const ProjectForm = ({
         <Input
           id="name"
           placeholder="Insira o nome do projeto"
-          value={project.name}
-          onChange={(e) => setProject({ ...project, name: e.target.value })}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
       </div>
       <div className="space-y-2">
@@ -64,8 +62,8 @@ export const ProjectForm = ({
         <Textarea
           id="goal"
           placeholder="Qual é o objetivo deste projeto?"
-          value={project.goal}
-          onChange={(e) => setProject({ ...project, goal: e.target.value })}
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
         />
       </div>
       <div className="space-y-2">

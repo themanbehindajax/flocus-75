@@ -34,6 +34,11 @@ export const showNotification = (title: string, body: string, icon?: string) => 
   return null;
 };
 
+// Adding the missing function
+export const sendPomodoroNotification = (title: string, message: string) => {
+  showNotification(title, message, '/favicon.ico');
+};
+
 // Scheduled notifications manager
 interface PendingNotification {
   id: string;

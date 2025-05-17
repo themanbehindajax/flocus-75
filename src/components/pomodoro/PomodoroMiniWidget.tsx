@@ -6,7 +6,7 @@ import { X, Maximize2, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { sendPomodoroNotification } from '@/lib/notifications';
+import { showNotification } from '@/lib/notifications';
 import { usePomodoroStore } from '@/hooks/usePomodoroStore';
 
 export const PomodoroMiniWidget = () => {
@@ -35,7 +35,7 @@ export const PomodoroMiniWidget = () => {
       const title = timerMode === 'pomodoro' ? 'Pomodoro concluído!' : 'Pausa concluída!';
       const message = timerMode === 'pomodoro' ? 'Hora de fazer uma pausa.' : 'Hora de voltar ao trabalho.';
       
-      sendPomodoroNotification(title, message);
+      showNotification(title, message);
     }
   }, [timeRemaining, isActive, timerMode]);
 

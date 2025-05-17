@@ -52,7 +52,7 @@ export const KanbanTask = ({ task, onDragStart, onDragEnd }: KanbanTaskProps) =>
       transition={{ duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -2 }}
       draggable={true}
-      onDragStart={(e) => {
+      onDragStart={(e: React.DragEvent) => {
         e.dataTransfer.effectAllowed = "move";
         // This is important for Firefox
         e.dataTransfer.setData('text/plain', task.id);

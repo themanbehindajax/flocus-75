@@ -126,7 +126,6 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
-              events={calendarEvents}
               onAddEvent={handleAddEvent}
               onEditEvent={(event) => {
                 setEditingEvent(event);
@@ -141,7 +140,6 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
-              events={calendarEvents}
               onAddEvent={handleAddEvent}
               onEditEvent={(event) => {
                 setEditingEvent(event);
@@ -155,7 +153,6 @@ const Calendar = () => {
               selectedDate={selectedDate}
               tasks={tasks}
               projects={projects}
-              events={calendarEvents}
               onAddEvent={handleAddEvent}
               onEditEvent={(event) => {
                 setEditingEvent(event);
