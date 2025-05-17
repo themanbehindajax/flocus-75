@@ -12,7 +12,7 @@ export const syncTasksToCalendar = async (
 ): Promise<void> => {
   try {
     // Filter tasks that have due dates
-    const tasksWithDueDates = tasks.filter(task => task.dueDate);
+    const tasksWithDueDates = tasks.filter(task => task.dueDate && !task.calendarEventId);
     
     // Add each task to Google Calendar
     for (const task of tasksWithDueDates) {
@@ -27,13 +27,27 @@ export const syncTasksToCalendar = async (
       // Set end time to 1 hour after start time
       const endDateTime = new Date(taskDate.getTime() + 60 * 60 * 1000).toISOString();
       
-      await addTaskToCalendar(
-        token,
-        task.title,
-        task.description || "",
-        startDateTime,
-        endDateTime
-      );
+      try {
+        const event = await addTaskToCalendar(
+          token,
+          task.title,
+          task.description || "",
+          startDateTime,
+          endDateTime
+        );
+        
+        if (event && event.id) {
+          // Update task with calendar event ID
+          const { updateTask } = useAppStore.getState();
+          updateTask({
+            ...task,
+            calendarEventId: event.id,
+            updatedAt: new Date().toISOString()
+          });
+        }
+      } catch (error) {
+        console.error(`Error syncing task ${task.id} to calendar:`, error);
+      }
     }
   } catch (error) {
     console.error("Error syncing tasks to calendar:", error);
@@ -51,13 +65,14 @@ export const syncCalendarToTasks = async (
   try {
     // Fetch events from Google Calendar
     const now = new Date();
-    const oneMonthFromNow = new Date();
-    oneMonthFromNow.setMonth(now.getMonth() + 1);
+    // Get events for next 3 months
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(now.getMonth() + 3);
     
     const calendarData = await fetchCalendarEvents(
       token,
       now.toISOString(),
-      oneMonthFromNow.toISOString()
+      threeMonthsFromNow.toISOString()
     );
     
     if (calendarData && calendarData.items) {

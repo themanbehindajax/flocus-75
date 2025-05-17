@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -10,16 +10,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { format, isSameDay, isToday } from "date-fns";
+import { format, isSameDay, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks } from "date-fns";
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { CalendarTaskCard } from "@/components/calendar/CalendarTaskCard";
 import { SyncCalendarButton } from "@/components/calendar/SyncCalendarButton";
+import { Button } from "@/components/ui/button";
+import { FullCalendarView } from "@/components/calendar/FullCalendarView";
+import { WeekCalendarView } from "@/components/calendar/WeekCalendarView";
+import { DayCalendarView } from "@/components/calendar/DayCalendarView";
+import { useAuthStore } from "@/lib/auth";
+import { toast } from "sonner";
 
 const Calendar = () => {
   const { tasks, projects } = useAppStore();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [view, setView] = useState<"day" | "week" | "month">("month");
+  const [isLoading, setIsLoading] = useState(false);
+  const { googleToken } = useAuthStore();
   
   // Get tasks for the selected date
   const tasksForSelectedDate = tasks.filter(task => {
@@ -32,6 +42,33 @@ const Calendar = () => {
     .filter(task => task.dueDate)
     .map(task => new Date(task.dueDate as string));
   
+  // Navigation functions
+  const goToToday = () => setSelectedDate(new Date());
+  
+  const navigatePrevious = () => {
+    if (view === "day") {
+      setSelectedDate(subDays(selectedDate, 1));
+    } else if (view === "week") {
+      setSelectedDate(subWeeks(selectedDate, 1));
+    } else {
+      const prevMonth = new Date(selectedDate);
+      prevMonth.setMonth(prevMonth.getMonth() - 1);
+      setSelectedDate(prevMonth);
+    }
+  };
+  
+  const navigateNext = () => {
+    if (view === "day") {
+      setSelectedDate(addDays(selectedDate, 1));
+    } else if (view === "week") {
+      setSelectedDate(addWeeks(selectedDate, 1));
+    } else {
+      const nextMonth = new Date(selectedDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      setSelectedDate(nextMonth);
+    }
+  };
+  
   return (
     <AppLayout>
       <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -40,78 +77,67 @@ const Calendar = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Calendário</h1>
             <p className="text-muted-foreground mt-1">
-              Visualize suas tarefas em formato de calendário
+              Visualize suas tarefas e eventos do Google Calendar
             </p>
           </div>
-          <SyncCalendarButton />
+          <div className="flex items-center gap-2">
+            <SyncCalendarButton />
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Calendar Column */}
-          <Card className="md:col-span-1">
-            <CardHeader>
-              <CardTitle className="text-lg">Calendário</CardTitle>
-              <CardDescription>
-                Selecione uma data para ver as tarefas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                className="rounded-md border"
-                locale={ptBR}
-                modifiers={{
-                  hasTasks: (date) => daysWithTasks.some(taskDate => isSameDay(date, taskDate)),
-                }}
-                modifiersClassNames={{
-                  hasTasks: "bg-primary/10 font-bold",
-                }}
-                components={{
-                  DayContent: ({ date }) => (
-                    <div className="relative flex h-8 w-8 items-center justify-center">
-                      {format(date, "d")}
-                      {daysWithTasks.some(taskDate => isSameDay(date, taskDate)) && (
-                        <div className="absolute bottom-1 h-1 w-1 rounded-full bg-primary"></div>
-                      )}
-                    </div>
-                  ),
-                }}
-              />
-            </CardContent>
-          </Card>
+        {/* Calendar Navigation */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={navigatePrevious}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={navigateNext}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={goToToday}>Hoje</Button>
+            <h2 className="text-xl font-semibold ml-2">
+              {view === "day" && format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+              {view === "week" && `${format(startOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM", { locale: ptBR })} - ${format(endOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM", { locale: ptBR })}`}
+              {view === "month" && format(selectedDate, "MMMM yyyy", { locale: ptBR })}
+            </h2>
+          </div>
           
-          {/* Tasks for Selected Date */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5" />
-                Tarefas para {format(selectedDate, "PPP", { locale: ptBR })}
-              </CardTitle>
-              <CardDescription>
-                {isToday(selectedDate) ? "Hoje" : ""} 
-                {tasksForSelectedDate.length === 0 
-                  ? " - Nenhuma tarefa agendada para esta data" 
-                  : ` - ${tasksForSelectedDate.length} tarefa(s) agendada(s)`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {tasksForSelectedDate.length > 0 ? (
-                <div className="space-y-4">
-                  {tasksForSelectedDate.map(task => (
-                    <CalendarTaskCard key={task.id} task={task} projects={projects} />
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <p className="text-muted-foreground">
-                    Não há tarefas agendadas para esta data.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="month" value={view} onValueChange={(v) => setView(v as "day" | "week" | "month")}>
+            <TabsList>
+              <TabsTrigger value="day">Dia</TabsTrigger>
+              <TabsTrigger value="week">Semana</TabsTrigger>
+              <TabsTrigger value="month">Mês</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {/* Calendar Views */}
+        <div>
+          {view === "month" && (
+            <FullCalendarView 
+              selectedDate={selectedDate} 
+              onSelectDate={setSelectedDate}
+              tasks={tasks}
+              projects={projects}
+            />
+          )}
+          
+          {view === "week" && (
+            <WeekCalendarView 
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              tasks={tasks}
+              projects={projects}
+            />
+          )}
+          
+          {view === "day" && (
+            <DayCalendarView 
+              selectedDate={selectedDate}
+              tasks={tasks}
+              projects={projects}
+            />
+          )}
         </div>
       </div>
     </AppLayout>

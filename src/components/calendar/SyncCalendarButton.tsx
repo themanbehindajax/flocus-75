@@ -23,6 +23,8 @@ export const SyncCalendarButton = () => {
       
       // Two-way sync: First push tasks to calendar, then pull events from calendar
       await syncTasksToCalendar(googleToken, tasks);
+      
+      // After pushing tasks, fetch new events from Google Calendar
       await syncCalendarToTasks(googleToken, addTask);
       
       toast.success("Calendário sincronizado com sucesso!");
@@ -40,7 +42,7 @@ export const SyncCalendarButton = () => {
       size="sm"
       onClick={handleSync}
       disabled={isLoading || !googleToken}
-      className="flex items-center gap-1"
+      className="flex items-center gap-2"
       title="Sincronizar com Google Calendar"
     >
       {isLoading ? (

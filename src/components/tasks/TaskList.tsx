@@ -37,7 +37,8 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
           key={task.id} 
           task={task} 
           onComplete={() => handleCompleteTask(task)}
-          variant={variant}
+          // Only pass variant if it's provided in props
+          {...(variant ? { variant } : {})}
         />
       ))}
     </div>
