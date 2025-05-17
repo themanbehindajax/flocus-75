@@ -78,13 +78,9 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
 
   const handleSaveTask = () => {
     if (newTask.title.trim()) {
-      const isAutomaticallyQuick = 
-        !newTask.isQuick &&
-        newTask.description.length < 50 &&
-        newTask.subtasks.length === 0 &&
-        (newTask.dueDate === undefined || 
-          (new Date(newTask.dueDate).getTime() - new Date().getTime()) < 86400000);
-
+      // Only auto-detect quick tasks if user hasn't explicitly set it
+      let isQuickTask = newTask.isQuick;
+      
       const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => {
         if (editTask) {
           const existingSubtask = editTask.subtasks.find(st => st.title === title);
@@ -106,7 +102,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         projectId: newTask.projectId,
         dueDate: date ? date.toISOString().split("T")[0] : undefined,
         subtasks: formattedSubtasks,
-        isQuick: newTask.isQuick || isAutomaticallyQuick,
+        isQuick: isQuickTask,
       };
 
       if (editTask) {
@@ -152,6 +148,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
       setNewSubtask("");
     }
   };
+  
   const handleRemoveSubtask = (index: number) => {
     const updatedSubtasks = [...newTask.subtasks];
     updatedSubtasks.splice(index, 1);

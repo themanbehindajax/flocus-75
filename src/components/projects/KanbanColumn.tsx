@@ -2,6 +2,8 @@
 import { Task, TaskStatus } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { KanbanTask } from "./KanbanTask";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface KanbanColumnProps {
   title: string;
@@ -10,6 +12,8 @@ interface KanbanColumnProps {
   onDragStart: (task: Task) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: () => void;
+  onDragEnd: () => void;
+  isDraggingOver: boolean;
 }
 
 export const KanbanColumn = ({ 
@@ -18,20 +22,27 @@ export const KanbanColumn = ({
   status, 
   onDragStart, 
   onDragOver, 
-  onDrop 
+  onDrop,
+  onDragEnd,
+  isDraggingOver
 }: KanbanColumnProps) => {
   return (
     <Card className="h-full">
       <CardHeader className="pb-2 bg-muted/50">
-        <CardTitle className="text-lg font-medium">
-          {title} 
-          <span className="ml-2 text-sm text-muted-foreground">({tasks.length})</span>
+        <CardTitle className="text-lg font-medium flex justify-between">
+          <span>{title} <span className="ml-2 text-sm text-muted-foreground">({tasks.length})</span></span>
         </CardTitle>
       </CardHeader>
       <CardContent 
-        className="p-2 min-h-[200px]" 
+        className={cn(
+          "p-2 min-h-[300px] transition-colors duration-200",
+          isDraggingOver ? "bg-muted/40" : ""
+        )}
         onDragOver={onDragOver}
-        onDrop={onDrop}
+        onDrop={(e) => {
+          e.preventDefault();
+          onDrop();
+        }}
       >
         <div className="space-y-2">
           {tasks.map(task => (
@@ -39,11 +50,15 @@ export const KanbanColumn = ({
               key={task.id} 
               task={task} 
               onDragStart={() => onDragStart(task)} 
+              onDragEnd={onDragEnd}
             />
           ))}
           {tasks.length === 0 && (
-            <div className="flex items-center justify-center h-24 border border-dashed rounded-md text-muted-foreground">
-              Sem tarefas
+            <div className={cn(
+              "flex items-center justify-center h-24 border border-dashed rounded-md text-muted-foreground transition-all duration-200",
+              isDraggingOver ? "border-primary/50 bg-primary/5" : ""
+            )}>
+              {isDraggingOver ? "Solte aqui" : "Sem tarefas"}
             </div>
           )}
         </div>

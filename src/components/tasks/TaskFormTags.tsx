@@ -7,8 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, Tag as TagIcon, PlusCircle } from "lucide-react";
 import { Tag } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { TagManager } from "@/components/tags/TagManager";
 
 interface TaskFormTagsProps {
   tags: Tag[];
@@ -18,7 +21,15 @@ interface TaskFormTagsProps {
 
 export const TaskFormTags = ({ tags, selected, setSelected }: TaskFormTagsProps) => (
   <div className="space-y-2">
-    <Label>Tags</Label>
+    <div className="flex justify-between items-center">
+      <Label>Tags</Label>
+      <TagManager triggerComponent={
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
+          <PlusCircle className="h-3.5 w-3.5 mr-1" />
+          Gerenciar tags
+        </Button>
+      } />
+    </div>
     <Select 
       onValueChange={(value) => {
         if (!selected.includes(value)) {
@@ -31,7 +42,10 @@ export const TaskFormTags = ({ tags, selected, setSelected }: TaskFormTagsProps)
       <SelectContent>
         {tags.map((tag) => (
           <SelectItem key={tag.id} value={tag.id}>
-            {tag.name}
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tag.color }}></div>
+              {tag.name}
+            </div>
           </SelectItem>
         ))}
       </SelectContent>
@@ -41,19 +55,20 @@ export const TaskFormTags = ({ tags, selected, setSelected }: TaskFormTagsProps)
         const tag = tags.find(t => t.id === tagId);
         if (!tag) return null;
         return (
-          <span 
+          <Badge 
             key={tag.id}
-            className="px-2 py-1 rounded-full text-xs flex items-center gap-1"
+            className="px-2 py-1 rounded-full text-xs flex items-center gap-1 animate-fade-in"
             style={{ backgroundColor: tag.color + '20', color: tag.color }}
           >
             {tag.name}
             <button
               type="button"
               onClick={() => setSelected(selected.filter(id => id !== tagId))}
+              className="opacity-70 hover:opacity-100 transition-opacity"
             >
               <X className="h-3 w-3" />
             </button>
-          </span>
+          </Badge>
         );
       })}
     </div>

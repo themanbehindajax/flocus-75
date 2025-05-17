@@ -12,9 +12,10 @@ import { motion } from "framer-motion";
 interface KanbanTaskProps {
   task: Task;
   onDragStart: () => void;
+  onDragEnd: () => void;
 }
 
-export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
+export const KanbanTask = ({ task, onDragStart, onDragEnd }: KanbanTaskProps) => {
   const { tags, toggleTaskCompletion } = useAppStore();
   
   const getTaskTags = task.tags.map(tagId => 
@@ -50,13 +51,14 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -2 }}
-      draggable="true"
+      draggable={true}
       onDragStart={(e) => {
-        // Cast the DOM event to React DragEvent
-        const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
-        dragEvent.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.effectAllowed = "move";
+        // This is important for Firefox
+        e.dataTransfer.setData('text/plain', task.id);
         onDragStart();
       }}
+      onDragEnd={onDragEnd}
       className="touch-none"
     >
       <Card 

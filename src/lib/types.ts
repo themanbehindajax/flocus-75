@@ -1,13 +1,7 @@
 
+// If types.ts doesn't exist yet, we'll create it
 export type PriorityLevel = "baixa" | "media" | "alta";
-
 export type TaskStatus = "todo" | "doing" | "done";
-
-export interface Tag {
-  id: string;
-  name: string;
-  color: string;
-}
 
 export interface SubTask {
   id: string;
@@ -19,65 +13,94 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: TaskStatus;
   priority: PriorityLevel;
-  dueDate?: string; // ISO date string
-  tags: string[]; // tag ids
+  status: TaskStatus;
+  dueDate?: string;
   projectId?: string;
-  subtasks: SubTask[];
+  tags: string[];
   completed: boolean;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  isQuick?: boolean; // for 2-minute rule tasks
-  calendarEventId?: string; // ID of the associated Google Calendar event
+  createdAt: string;
+  updatedAt: string;
+  subtasks: SubTask[];
+  isQuick?: boolean;
 }
 
 export interface Project {
   id: string;
   name: string;
-  goal: string;
-  dueDate?: string; // ISO date string
-  tasks: string[]; // task ids
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  description?: string;
+  color?: string;
+  tasks: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
 }
 
 export interface PomodoroSession {
   id: string;
+  startTime: string;
+  endTime?: string;
   taskId?: string;
   projectId?: string;
-  startTime: string; // ISO date string
-  endTime: string; // ISO date string
-  duration: number; // in minutes
   completed: boolean;
 }
 
 export interface DailyPriority {
-  id: string;
-  date: string; // ISO date string (YYYY-MM-DD)
-  taskIds: string[]; // max 6 task ids (Ivy Lee method)
+  date: string;
+  taskIds: string[];
 }
 
 export interface UserProfile {
   name: string;
-  avatar?: string;
   points: number;
   streak: number;
-  lastActivity: string; // ISO date string
+  lastActivity: string;
   totalTasksCompleted: number;
   totalPomodorosCompleted: number;
 }
 
-export interface SpotifyAuth {
-  accessToken?: string;
-  refreshToken?: string;
-  expiresAt?: number;
+export interface AppSettings {
+  pomodoroDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  theme: "light" | "dark" | "system";
+  spotifyAuth?: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+  };
+  notificationsEnabled?: boolean;
 }
 
-export interface AppSettings {
-  pomodoroDuration: number; // in minutes
-  shortBreakDuration: number; // in minutes
-  longBreakDuration: number; // in minutes
-  theme: "light" | "dark" | "system";
-  spotifyAuth?: SpotifyAuth;
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate?: string;
+  allDay: boolean;
+  repeat?: "daily" | "weekly" | "monthly" | "yearly" | "none";
+  repeatUntil?: string;
+  reminder?: number; // minutes before
+  color?: string;
+}
+
+export interface Analytics {
+  completedTasks: {
+    daily: Record<string, number>;
+    weekly: Record<string, number>;
+    monthly: Record<string, number>;
+  };
+  tasksByProject: Record<string, number>;
+  tasksByTag: Record<string, number>;
+  pomodoros: {
+    daily: Record<string, number>;
+    weekly: Record<string, number>;
+    monthly: Record<string, number>;
+  };
 }

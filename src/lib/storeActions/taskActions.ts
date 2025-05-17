@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -129,16 +130,28 @@ export const createTaskActions = (set: any, get: any) => ({
       if (!task) return state;
       
       const newCompletedState = !task.completed;
-      const updatedTasks = state.tasks.map((t: Task) =>
-        t.id === id 
-        ? { 
-            ...t, 
-            completed: newCompletedState, 
-            status: newCompletedState ? "done" : t.status === "done" ? "todo" : t.status,
-            updatedAt: new Date().toISOString() 
-          } 
-        : t
-      );
+      
+      const updatedTasks = state.tasks.map((t: Task) => {
+        if (t.id !== id) return t;
+        
+        // Update both completion status and task status if needed
+        const updatedTask = { 
+          ...t, 
+          completed: newCompletedState, 
+          updatedAt: new Date().toISOString() 
+        };
+        
+        // If completing the task, set status to done
+        if (newCompletedState) {
+          updatedTask.status = "done";
+        }
+        // If uncompleting and status was done, set to todo
+        else if (t.status === "done") {
+          updatedTask.status = "todo";  
+        }
+        
+        return updatedTask;
+      });
       
       const updatedProfile = { ...state.profile };
       

@@ -8,9 +8,9 @@ import {
   createTagActions, 
   createPomodoroActions,
   createMiscActions,
-  createSpotifyActions
+  createCalendarActions
 } from "./storeActions";
-import { Task, Project, Tag, PomodoroSession, DailyPriority, UserProfile, AppSettings } from "./types";
+import { Task, Project, Tag, PomodoroSession, DailyPriority, UserProfile, AppSettings, CalendarEvent, Analytics } from "./types";
 
 // Define the full store state type
 export interface AppState {
@@ -22,6 +22,8 @@ export interface AppState {
   dailyPriorities: DailyPriority[];
   profile: UserProfile;
   settings: AppSettings;
+  calendarEvents: CalendarEvent[];
+  analytics: Analytics;
   
   // Actions from task actions
   addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => Task;
@@ -49,16 +51,11 @@ export interface AppState {
   updateProfile: (profileUpdate: Partial<UserProfile>) => void;
   updateSettings: (settingsUpdate: Partial<AppSettings>) => void;
   
-  // Actions from spotify actions
-  setSpotifyAuth: (auth: { accessToken: string; refreshToken: string; expiresAt: number }) => void;
-  clearSpotifyAuth: () => void;
-  getCurrentTrack: () => Promise<any | null>;
-  playTrack: (uri: string) => Promise<void>;
-  pauseTrack: () => Promise<void>;
-  nextTrack: () => Promise<void>;
-  previousTrack: () => Promise<void>;
-  getUserPlaylists: () => Promise<any[]>;
-  playPlaylist: (playlistUri: string) => Promise<void>;
+  // Actions from calendar actions
+  addCalendarEvent: (eventData: Omit<CalendarEvent, "id">) => CalendarEvent;
+  updateCalendarEvent: (event: CalendarEvent) => void;
+  deleteCalendarEvent: (id: string) => void;
+  getCalendarEventsInRange: (startDate: Date, endDate: Date) => CalendarEvent[];
 }
 
 export const useAppStore = create<AppState>()(
@@ -73,6 +70,7 @@ export const useAppStore = create<AppState>()(
       ],
       pomodoroSessions: [],
       dailyPriorities: [],
+      calendarEvents: [],
       profile: {
         name: "Usuário",
         points: 0,
@@ -86,6 +84,21 @@ export const useAppStore = create<AppState>()(
         shortBreakDuration: 5,
         longBreakDuration: 15,
         theme: "system",
+        notificationsEnabled: true,
+      },
+      analytics: {
+        completedTasks: {
+          daily: {},
+          weekly: {},
+          monthly: {}
+        },
+        tasksByProject: {},
+        tasksByTag: {},
+        pomodoros: {
+          daily: {},
+          weekly: {},
+          monthly: {}
+        }
       },
       
       ...createTaskActions(set, get),
@@ -93,7 +106,7 @@ export const useAppStore = create<AppState>()(
       ...createTagActions(set),
       ...createPomodoroActions(set, get),
       ...createMiscActions(set),
-      ...createSpotifyActions(set, get),
+      ...createCalendarActions(set, get),
     }),
     {
       name: "flocus-app-storage",

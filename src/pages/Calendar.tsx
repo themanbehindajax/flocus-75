@@ -14,22 +14,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks } from "date-fns";
 import { ptBR } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
 import { CalendarTaskCard } from "@/components/calendar/CalendarTaskCard";
-import { SyncCalendarButton } from "@/components/calendar/SyncCalendarButton";
 import { Button } from "@/components/ui/button";
 import { FullCalendarView } from "@/components/calendar/FullCalendarView";
 import { WeekCalendarView } from "@/components/calendar/WeekCalendarView";
 import { DayCalendarView } from "@/components/calendar/DayCalendarView";
-import { useAuthStore } from "@/lib/auth";
 import { toast } from "sonner";
+import { CalendarEventForm } from "@/components/calendar/CalendarEventForm";
 
 const Calendar = () => {
-  const { tasks, projects } = useAppStore();
+  const { tasks, projects, calendarEvents } = useAppStore();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [view, setView] = useState<"day" | "week" | "month">("month");
-  const [isLoading, setIsLoading] = useState(false);
-  const { googleToken } = useAuthStore();
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<any>(null);
   
   // Get tasks for the selected date
   const tasksForSelectedDate = tasks.filter(task => {
@@ -68,6 +67,11 @@ const Calendar = () => {
       setSelectedDate(nextMonth);
     }
   };
+
+  const handleAddEvent = () => {
+    setEditingEvent(null);
+    setIsEventFormOpen(true);
+  };
   
   return (
     <AppLayout>
@@ -77,11 +81,14 @@ const Calendar = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Calendário</h1>
             <p className="text-muted-foreground mt-1">
-              Visualize suas tarefas e eventos do Google Calendar
+              Visualize suas tarefas e eventos
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <SyncCalendarButton />
+            <Button onClick={handleAddEvent}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Novo Evento
+            </Button>
           </div>
         </div>
         
@@ -119,6 +126,12 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
+              events={calendarEvents}
+              onAddEvent={handleAddEvent}
+              onEditEvent={(event) => {
+                setEditingEvent(event);
+                setIsEventFormOpen(true);
+              }}
             />
           )}
           
@@ -128,6 +141,12 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
+              events={calendarEvents}
+              onAddEvent={handleAddEvent}
+              onEditEvent={(event) => {
+                setEditingEvent(event);
+                setIsEventFormOpen(true);
+              }}
             />
           )}
           
@@ -136,9 +155,23 @@ const Calendar = () => {
               selectedDate={selectedDate}
               tasks={tasks}
               projects={projects}
+              events={calendarEvents}
+              onAddEvent={handleAddEvent}
+              onEditEvent={(event) => {
+                setEditingEvent(event);
+                setIsEventFormOpen(true);
+              }}
             />
           )}
         </div>
+
+        {/* Event Form Dialog */}
+        <CalendarEventForm 
+          open={isEventFormOpen} 
+          onOpenChange={setIsEventFormOpen} 
+          selectedDate={selectedDate} 
+          editEvent={editingEvent}
+        />
       </div>
     </AppLayout>
   );

@@ -1,12 +1,8 @@
 
-/**
- * Handles browser notifications
- */
-
-// Request notification permission
-export const requestNotificationPermission = async (): Promise<boolean> => {
+// Check if browser supports notifications
+export const requestNotificationPermission = async () => {
   if (!("Notification" in window)) {
-    console.log("This browser does not support notifications");
+    console.log("Este navegador não suporta notificações desktop");
     return false;
   }
   
@@ -22,46 +18,79 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
   return false;
 };
 
-// Send a browser notification
-export const sendNotification = (title: string, options?: NotificationOptions): Notification | null => {
-  if (!("Notification" in window) || Notification.permission !== "granted") {
+export const showNotification = (title: string, body: string, icon?: string) => {
+  if (Notification.permission === "granted") {
+    const notification = new Notification(title, {
+      body,
+      icon: icon || "/favicon.ico",
+    });
+    
+    // Auto close after 5 seconds
+    setTimeout(() => notification.close(), 5000);
+    
+    return notification;
+  }
+  
+  return null;
+};
+
+// Scheduled notifications manager
+interface PendingNotification {
+  id: string;
+  title: string;
+  body: string;
+  scheduledTime: Date;
+  timeoutId: number;
+}
+
+const pendingNotifications: PendingNotification[] = [];
+
+export const scheduleNotification = (
+  title: string,
+  body: string,
+  scheduledTime: Date
+) => {
+  const now = new Date();
+  if (scheduledTime <= now) {
+    // If the scheduled time is in the past, show notification immediately
+    showNotification(title, body);
     return null;
   }
   
-  const notification = new Notification(title, options);
-  return notification;
-};
-
-// Send a task due notification
-export const sendTaskDueNotification = (task: { title: string; description?: string }) => {
-  return sendNotification(`Tarefa: ${task.title}`, {
-    body: task.description || "Esta tarefa está prestes a vencer.",
-    icon: "/favicon.ico",
-    tag: `task-${Date.now()}`,
-  });
-};
-
-// Send a pomodoro notification
-export const sendPomodoroNotification = (title: string, message: string) => {
-  return sendNotification(title, {
-    body: message,
-    icon: "/favicon.ico",
-    tag: `pomodoro-${Date.now()}`,
-  });
-};
-
-// Check for tasks due soon and send notifications
-export const checkTasksAndNotify = (tasks: any[], minutesThreshold: number = 15) => {
-  const now = new Date();
-  const soon = new Date(now.getTime() + minutesThreshold * 60 * 1000);
+  const timeUntilNotification = scheduledTime.getTime() - now.getTime();
   
-  tasks.forEach(task => {
-    if (task.dueDate && !task.completed) {
-      const dueDate = new Date(task.dueDate);
-      
-      if (dueDate > now && dueDate <= soon) {
-        sendTaskDueNotification(task);
-      }
+  const id = crypto.randomUUID();
+  const timeoutId = window.setTimeout(() => {
+    showNotification(title, body);
+    // Remove from pending
+    const index = pendingNotifications.findIndex(n => n.id === id);
+    if (index !== -1) {
+      pendingNotifications.splice(index, 1);
     }
+  }, timeUntilNotification);
+  
+  // Store the pending notification
+  pendingNotifications.push({
+    id,
+    title,
+    body,
+    scheduledTime,
+    timeoutId,
   });
+  
+  return id;
+};
+
+export const cancelScheduledNotification = (id: string) => {
+  const index = pendingNotifications.findIndex(n => n.id === id);
+  if (index !== -1) {
+    window.clearTimeout(pendingNotifications[index].timeoutId);
+    pendingNotifications.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+export const getPendingNotifications = () => {
+  return [...pendingNotifications];
 };

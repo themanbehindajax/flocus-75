@@ -1,9 +1,9 @@
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, type HTMLMotionProps } from "framer-motion"
 import { cn } from "@/lib/utils"
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag'> {
   animate?: boolean;
 }
 
@@ -11,23 +11,36 @@ const Card = React.forwardRef<
   HTMLDivElement,
   CardProps
 >(({ className, animate = false, ...props }, ref) => {
-  const CardComponent = animate ? motion.div : "div";
-  
-  const animateProps = animate ? {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.3 },
-    whileHover: { y: -2, transition: { duration: 0.2 } }
-  } : {};
+  if (animate) {
+    const CardComponent = motion.div;
+    
+    const animateProps = {
+      initial: { opacity: 0, y: 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.3 },
+      whileHover: { y: -2, transition: { duration: 0.2 } }
+    };
+    
+    return (
+      <CardComponent
+        ref={ref}
+        className={cn(
+          "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300",
+          className
+        )}
+        {...animateProps}
+        {...props as any}
+      />
+    );
+  }
   
   return (
-    <CardComponent
+    <div
       ref={ref}
       className={cn(
         "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300",
         className
       )}
-      {...animateProps}
       {...props}
     />
   );

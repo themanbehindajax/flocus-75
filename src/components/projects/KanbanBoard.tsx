@@ -1,9 +1,10 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, TaskStatus } from "@/lib/types";
 import { KanbanColumn } from "./KanbanColumn";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -13,6 +14,7 @@ interface KanbanBoardProps {
 export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   const { updateTask, toggleTaskCompletion } = useAppStore();
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   // Group tasks by status
   const todoTasks = tasks.filter(task => task.status === "todo");
@@ -21,14 +23,17 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   
   const handleDragStart = (task: Task) => {
     setDraggedTask(task);
+    setIsDragging(true);
   };
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
   };
   
   const handleDrop = (status: TaskStatus) => {
     if (!draggedTask) return;
+    setIsDragging(false);
     
     if (draggedTask.status !== status) {
       // Update the task status
@@ -70,9 +75,19 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     // Reset the dragged task state
     setDraggedTask(null);
   };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggedTask(null);
+  };
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 animate-fade-in">
+    <motion.div 
+      className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 animate-fade-in"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <KanbanColumn 
         title="A Fazer" 
         tasks={todoTasks}
@@ -80,6 +95,8 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={() => handleDrop("todo")}
+        onDragEnd={handleDragEnd}
+        isDraggingOver={isDragging && draggedTask?.status !== "todo"}
       />
       
       <KanbanColumn 
@@ -89,6 +106,8 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={() => handleDrop("doing")}
+        onDragEnd={handleDragEnd}
+        isDraggingOver={isDragging && draggedTask?.status !== "doing"}
       />
       
       <KanbanColumn 
@@ -98,7 +117,9 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={() => handleDrop("done")}
+        onDragEnd={handleDragEnd}
+        isDraggingOver={isDragging && draggedTask?.status !== "done"}
       />
-    </div>
+    </motion.div>
   );
 };
