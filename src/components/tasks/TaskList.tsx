@@ -14,10 +14,9 @@ export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
   const { toggleTaskCompletion } = useAppStore();
 
   const handleToggleTaskCompletion = (task: Task) => {
-    // First toggle the task completion
     toggleTaskCompletion(task.id);
     
-    // Show toast notification based on the NEW completion state (opposite of current)
+    // Show toast notification
     if (task.completed) {
       toast(`Tarefa "${task.title}" reaberta!`);
     } else {
