@@ -10,9 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
+  LineChart,
+  Line,
   BarChart,
   Bar,
   PieChart,
@@ -22,12 +21,29 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Trophy, Flame, Star, Award, TrendingUp, CheckCircle2, Clock } from "lucide-react";
+import { 
+  Trophy, 
+  Flame, 
+  Star, 
+  Award, 
+  TrendingUp, 
+  CheckCircle2, 
+  Clock,
+  ChartPie,
+  ChartBar,
+  ChartLine
+} from "lucide-react";
 import { motion } from "framer-motion";
+import { 
+  ChartContainer, 
+  ChartTooltip, 
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent
+} from "@/components/ui/chart";
 
 const Achievements = () => {
   const { profile, tasks, projects, tags, pomodoroSessions } = useAppStore();
@@ -39,7 +55,7 @@ const Achievements = () => {
   const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const completedPomodoros = pomodoroSessions.filter(session => session.completed).length;
 
-  // Generate random analytics data (for the UI demonstration)
+  // Generate data for analytics
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   const getCurrentWeekData = () => {
     return daysOfWeek.map(day => ({
@@ -73,27 +89,35 @@ const Achievements = () => {
     };
   });
 
-  // Color palettes for charts
-  const BLUE_COLORS = [
-    "#0ea5e9",
-    "#38bdf8",
-    "#7dd3fc",
-    "#bae6fd",
-    "#e0f2fe",
-    "#3b82f6",
-    "#60a5fa",
-  ];
-
   // Task completion by day of week
   const tasksByDayOfWeek = daysOfWeek.map(day => ({
     name: day,
     completed: Math.floor(Math.random() * 10),
   }));
 
+  // Chart configs
+  const weeklyChartConfig = {
+    tasks: { 
+      label: "Tarefas", 
+      theme: { light: "#0EA5E9", dark: "#38BDF8" }
+    },
+    pomodoros: { 
+      label: "Pomodoros", 
+      theme: { light: "#3B82F6", dark: "#60A5FA" }
+    }
+  };
+
+  const tasksByDayConfig = {
+    completed: { 
+      label: "Concluídas", 
+      theme: { light: "#0EA5E9", dark: "#38BDF8" }
+    }
+  };
+
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="space-y-8">
+      <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <div className="space-y-6">
           {/* Header */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
@@ -105,16 +129,15 @@ const Achievements = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <Card className="overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center">
+                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
                     <Trophy className="mr-2 h-5 w-5 text-blue-500" />
                     Pontos
                   </CardTitle>
@@ -123,7 +146,7 @@ const Achievements = () => {
                   <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
                     {profile.points}
                   </div>
-                  <p className="text-sm text-blue-700/70 dark:text-blue-400/70 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Ganho com tarefas concluídas
                   </p>
                 </CardContent>
@@ -135,10 +158,9 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="overflow-hidden border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <Card className="overflow-hidden border border-purple-100/40 dark:border-purple-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-900/70 dark:text-purple-300/90 flex items-center">
+                  <CardTitle className="text-purple-900/70 dark:text-purple-300/90 flex items-center text-xl">
                     <Flame className="mr-2 h-5 w-5 text-purple-500" />
                     Streak Atual
                   </CardTitle>
@@ -147,7 +169,7 @@ const Achievements = () => {
                   <div className="text-3xl font-bold text-purple-700 dark:text-purple-400">
                     {profile.streak} dias
                   </div>
-                  <p className="text-sm text-purple-700/70 dark:text-purple-400/70 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Última atividade: {formatDistanceToNow(new Date(profile.lastActivity), { locale: ptBR, addSuffix: true })}
                   </p>
                 </CardContent>
@@ -159,10 +181,9 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card className="overflow-hidden border-0 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950/30 dark:to-cyan-900/20">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <Card className="overflow-hidden border border-cyan-100/40 dark:border-cyan-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-cyan-900/70 dark:text-cyan-300/90 flex items-center">
+                  <CardTitle className="text-cyan-900/70 dark:text-cyan-300/90 flex items-center text-xl">
                     <CheckCircle2 className="mr-2 h-5 w-5 text-cyan-500" />
                     Tarefas Concluídas
                   </CardTitle>
@@ -171,7 +192,7 @@ const Achievements = () => {
                   <div className="text-3xl font-bold text-cyan-700 dark:text-cyan-400">
                     {completedTasks}
                   </div>
-                  <p className="text-sm text-cyan-700/70 dark:text-cyan-400/70 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Taxa de conclusão: {completionRate.toFixed(0)}%
                   </p>
                 </CardContent>
@@ -183,10 +204,9 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <Card className="overflow-hidden border border-blue-100/40 dark:border-blue-900/30 shadow-sm hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center">
+                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center text-xl">
                     <Clock className="mr-2 h-5 w-5 text-blue-500" />
                     Pomodoros
                   </CardTitle>
@@ -195,7 +215,7 @@ const Achievements = () => {
                   <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
                     {completedPomodoros}
                   </div>
-                  <p className="text-sm text-blue-700/70 dark:text-blue-400/70 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Total de sessões concluídas
                   </p>
                 </CardContent>
@@ -210,58 +230,60 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
-                    <TrendingUp className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
+                    <ChartLine className="mr-2 h-5 w-5 text-blue-500" />
                     Progresso Semanal
                   </CardTitle>
                   <CardDescription>
                     Tarefas e pomodoros concluídos por dia
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
+                <CardContent className="h-72">
+                  <ChartContainer config={weeklyChartConfig}>
+                    <LineChart
                       data={weeklyData}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#888" strokeOpacity={0.2} />
-                      <XAxis dataKey="name" stroke="#888" fontSize={12} />
-                      <YAxis stroke="#888" fontSize={12} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          backdropFilter: "blur(8px)",
-                          borderRadius: "8px",
-                          border: "1px solid rgba(59, 130, 246, 0.2)"
-                        }} 
+                      <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} vertical={false} />
+                      <XAxis 
+                        dataKey="name" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 12 }} 
                       />
-                      <Legend />
-                      <Area
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false}
+                        tick={{ fontSize: 12 }} 
+                      />
+                      <ChartTooltip 
+                        content={<ChartTooltipContent />}
+                      />
+                      <ChartLegend 
+                        content={<ChartLegendContent />} 
+                        verticalAlign="top" 
+                        align="right"
+                      />
+                      <Line
                         type="monotone"
                         dataKey="tasks"
-                        name="Tarefas"
-                        stroke="#0ea5e9"
-                        fill="#0ea5e9"
-                        fillOpacity={0.6}
-                        activeDot={{ r: 8 }}
+                        stroke="var(--color-tasks)"
+                        strokeWidth={2}
+                        dot={{ r: 4, strokeWidth: 2 }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
                       />
-                      <Area
+                      <Line
                         type="monotone"
                         dataKey="pomodoros"
-                        name="Pomodoros"
-                        stroke="#3b82f6"
-                        fill="#3b82f6"
-                        fillOpacity={0.4}
+                        stroke="var(--color-pomodoros)"
+                        strokeWidth={2}
+                        dot={{ r: 4, strokeWidth: 2 }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
                       />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                    </LineChart>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </motion.div>
@@ -271,52 +293,50 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
-                    <Award className="mr-2 h-5 w-5 text-blue-500" />
-                    Produtividade por Dia da Semana
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
+                    <ChartBar className="mr-2 h-5 w-5 text-blue-500" />
+                    Produtividade por Dia
                   </CardTitle>
                   <CardDescription>
                     Número de tarefas concluídas por dia
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
+                <CardContent className="h-72">
+                  <ChartContainer config={tasksByDayConfig}>
                     <BarChart
                       data={tasksByDayOfWeek}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#888" strokeOpacity={0.2} />
-                      <XAxis dataKey="name" stroke="#888" fontSize={12} />
-                      <YAxis stroke="#888" fontSize={12} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          backdropFilter: "blur(8px)",
-                          borderRadius: "8px",
-                          border: "1px solid rgba(59, 130, 246, 0.2)"
-                        }}
+                      <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} horizontal={true} vertical={false} />
+                      <XAxis 
+                        dataKey="name" 
+                        axisLine={false} 
+                        tickLine={false}
+                        tick={{ fontSize: 12 }} 
+                      />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false}
+                        tick={{ fontSize: 12 }} 
+                      />
+                      <ChartTooltip
+                        content={<ChartTooltipContent />}
+                      />
+                      <ChartLegend 
+                        content={<ChartLegendContent />} 
+                        verticalAlign="top" 
+                        align="right" 
                       />
                       <Bar 
                         dataKey="completed" 
-                        name="Tarefas Concluídas" 
+                        fill="var(--color-completed)"
                         radius={[4, 4, 0, 0]}
-                      >
-                        {tasksByDayOfWeek.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={BLUE_COLORS[index % BLUE_COLORS.length]} 
-                          />
-                        ))}
-                      </Bar>
+                        barSize={24}
+                      />
                     </BarChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </motion.div>
@@ -329,10 +349,10 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
-                    <Star className="mr-2 h-5 w-5 text-blue-500" />
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
+                    <ChartPie className="mr-2 h-5 w-5 text-blue-500" />
                     Distribuição por Projeto
                   </CardTitle>
                   <CardDescription>
@@ -341,37 +361,40 @@ const Achievements = () => {
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
                   {projectDistribution.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={projectDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                          nameKey="name"
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        >
-                          {projectDistribution.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={entry.color || BLUE_COLORS[index % BLUE_COLORS.length]} 
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value) => [`${value} tarefas`, ""]}
-                          contentStyle={{ 
-                            backgroundColor: "rgba(255, 255, 255, 0.8)",
-                            backdropFilter: "blur(8px)",
-                            borderRadius: "8px",
-                            border: "1px solid rgba(59, 130, 246, 0.2)"
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <PieChart width={300} height={280}>
+                      <Pie
+                        data={projectDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={100}
+                        innerRadius={60}
+                        fill="#8884d8"
+                        dataKey="value"
+                        nameKey="name"
+                        paddingAngle={2}
+                      >
+                        {projectDistribution.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color} 
+                            stroke="rgba(255,255,255,0.2)"
+                            strokeWidth={2}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value} tarefas`, ""]}
+                        contentStyle={{ 
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          backdropFilter: "blur(8px)",
+                          borderRadius: "0.5rem",
+                          border: "1px solid rgba(59, 130, 246, 0.1)",
+                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+                          padding: "0.75rem"
+                        }}
+                      />
+                    </PieChart>
                   ) : (
                     <div className="text-center p-8">
                       <p className="text-muted-foreground">
@@ -388,9 +411,9 @@ const Achievements = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/20 border border-blue-100/20 dark:border-blue-900/20 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100 text-xl">
                     <Star className="mr-2 h-5 w-5 text-blue-500" />
                     Distribuição por Tag
                   </CardTitle>
@@ -400,34 +423,40 @@ const Achievements = () => {
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
                   {tagDistribution.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={tagDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                          nameKey="name"
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        >
-                          {tagDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value) => [`${value} tarefas`, ""]}
-                          contentStyle={{ 
-                            backgroundColor: "rgba(255, 255, 255, 0.8)",
-                            backdropFilter: "blur(8px)",
-                            borderRadius: "8px",
-                            border: "1px solid rgba(59, 130, 246, 0.2)"
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <PieChart width={300} height={280}>
+                      <Pie
+                        data={tagDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={100}
+                        innerRadius={60}
+                        fill="#8884d8"
+                        dataKey="value"
+                        nameKey="name"
+                        paddingAngle={2}
+                      >
+                        {tagDistribution.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color} 
+                            stroke="rgba(255,255,255,0.2)"
+                            strokeWidth={2}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value} tarefas`, ""]}
+                        contentStyle={{ 
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          backdropFilter: "blur(8px)",
+                          borderRadius: "0.5rem",
+                          border: "1px solid rgba(59, 130, 246, 0.1)",
+                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+                          padding: "0.75rem"
+                        }}
+                      />
+                    </PieChart>
                   ) : (
                     <div className="text-center p-8">
                       <p className="text-muted-foreground">
