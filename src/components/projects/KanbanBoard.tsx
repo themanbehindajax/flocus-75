@@ -11,7 +11,7 @@ interface KanbanBoardProps {
 }
 
 export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
-  const { updateTask, completeTask } = useAppStore();
+  const { updateTask, toggleTaskCompletion } = useAppStore();
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   
   // Group tasks by status
@@ -40,10 +40,15 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       
       updateTask(updatedTask);
       
-      // If moving to "done" status, also mark as completed
+      // If moving to "done" status and not already completed, mark as completed
       if (status === "done" && !draggedTask.completed) {
-        completeTask(draggedTask.id);
+        toggleTaskCompletion(draggedTask.id);
         toast(`Tarefa "${draggedTask.title}" concluída!`);
+      }
+      // If moving from "done" to another status and is completed, unmark completion
+      else if (draggedTask.status === "done" && status !== "done" && draggedTask.completed) {
+        toggleTaskCompletion(draggedTask.id);
+        toast(`Tarefa "${draggedTask.title}" reaberta!`);
       }
     }
     

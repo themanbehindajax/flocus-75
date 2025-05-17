@@ -35,7 +35,7 @@ export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
             size="icon"
             className={`h-6 w-6 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
             onClick={handleToggleTaskCompletion}
-            aria-label={task.completed ? "Tarefa concluída" : "Marcar como concluída"}
+            aria-label={task.completed ? "Desmarcar tarefa concluída" : "Marcar como concluída"}
           >
             {task.completed ? 
               <CheckCircle2 className="h-5 w-5" /> : 

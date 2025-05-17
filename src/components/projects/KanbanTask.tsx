@@ -13,7 +13,7 @@ interface KanbanTaskProps {
 }
 
 export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
-  const { tags, toggleTaskCompletion, updateTask } = useAppStore();
+  const { tags, toggleTaskCompletion } = useAppStore();
   
   const getTaskTags = task.tags.map(tagId => 
     tags.find(t => t.id === tagId)
@@ -26,10 +26,10 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
     toggleTaskCompletion(task.id);
     
     // Show toast notification based on new completion state
-    if (!task.completed) {
-      toast(`Tarefa "${task.title}" concluída!`);
-    } else {
+    if (task.completed) {
       toast(`Tarefa "${task.title}" reaberta!`);
+    } else {
+      toast(`Tarefa "${task.title}" concluída!`);
     }
   };
   

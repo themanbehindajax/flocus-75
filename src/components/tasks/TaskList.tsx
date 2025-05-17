@@ -11,16 +11,16 @@ interface TaskListProps {
 }
 
 export const TaskList = ({ tasks, variant = "default" }: TaskListProps) => {
-  const { toggleTaskCompletion, updateTask } = useAppStore();
+  const { toggleTaskCompletion } = useAppStore();
 
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
     
     // Show toast notification
-    if (!task.completed) {
-      toast(`Tarefa "${task.title}" concluída!`);
-    } else {
+    if (task.completed) {
       toast(`Tarefa "${task.title}" reaberta!`);
+    } else {
+      toast(`Tarefa "${task.title}" concluída!`);
     }
   };
 

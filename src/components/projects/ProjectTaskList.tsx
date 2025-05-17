@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ListPlus, List, Kanban, CheckCircle, CheckCircle2 } from "lucide-react";
@@ -23,21 +22,21 @@ export const ProjectTaskList = ({
   projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children,
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
-  const { toggleTaskCompletion, updateTask } = useAppStore();
+  const { toggleTaskCompletion } = useAppStore();
   
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
     
-    // Show toast notification based on new completion state
-    if (!task.completed) {
-      toast({
-        title: "Tarefa concluída",
-        description: `A tarefa "${task.title}" foi marcada como concluída.`,
-      });
-    } else {
+    // Show toast notification based on completion state after toggle
+    if (task.completed) {
       toast({
         title: "Tarefa reaberta",
         description: `A tarefa "${task.title}" foi desmarcada como concluída.`,
+      });
+    } else {
+      toast({
+        title: "Tarefa concluída",
+        description: `A tarefa "${task.title}" foi marcada como concluída.`,
       });
     }
   };

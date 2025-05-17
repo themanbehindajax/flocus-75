@@ -42,10 +42,10 @@ export const TodayPriorities = () => {
       toggleTaskCompletion(taskId);
       
       // Show toast notification
-      if (!task.completed) {
-        toast(`Tarefa "${task.title}" concluída!`);
-      } else {
+      if (task.completed) {
         toast(`Tarefa "${task.title}" reaberta!`);
+      } else {
+        toast(`Tarefa "${task.title}" concluída!`);
       }
     }
   };
