@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
@@ -41,13 +40,11 @@ const Index = () => {
     // Request notification permission
     requestNotificationPermission();
 
-    // Find quick tasks (2-minute rule)
+    // Find quick tasks (only those explicitly marked as quick)
     const quickTaskIds = tasks
       .filter(task => 
         !task.completed && 
-        (task.isQuick || 
-          (!task.subtasks.length && 
-            task.description?.length < 100))
+        task.isQuick === true
       )
       .slice(0, 5)
       .map(task => task.id);
