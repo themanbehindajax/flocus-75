@@ -8,9 +8,10 @@ import { ListChecks, ArrowRight, CheckCircle, Trophy } from "lucide-react";
 import { TaskCardCompact } from "../tasks/TaskCardCompact";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const TodayPriorities = () => {
-  const { tasks, dailyPriorities } = useAppStore();
+  const { tasks, dailyPriorities, toggleTaskCompletion } = useAppStore();
   const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
   
   useEffect(() => {
@@ -33,6 +34,21 @@ export const TodayPriorities = () => {
   const completedTasks = priorityTasks.filter(task => task.completed).length;
   const totalTasks = priorityTasks.length;
   const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Handle task completion toggle
+  const handleToggleTaskCompletion = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      toggleTaskCompletion(taskId);
+      
+      // Show toast notification
+      if (!task.completed) {
+        toast(`Tarefa "${task.title}" concluída!`);
+      } else {
+        toast(`Tarefa "${task.title}" reaberta!`);
+      }
+    }
+  };
 
   if (priorityTasks.length === 0) {
     return (
@@ -83,15 +99,13 @@ export const TodayPriorities = () => {
         </div>
         
         <div className="space-y-2">
-          {priorityTasks.map((task, index) => {
-            // Display the actual task cards
-            return (
-              <TaskCardCompact
-                key={task.id}
-                task={task}
-              />
-            );
-          })}
+          {priorityTasks.map((task) => (
+            <TaskCardCompact
+              key={task.id}
+              task={task}
+              onComplete={() => handleToggleTaskCompletion(task.id)}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>
