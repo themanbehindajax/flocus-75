@@ -196,7 +196,7 @@ const Achievements = () => {
           animate="show"
           variants={containerVariants}
         >
-          {/* Header with gradient text */}
+          {/* Header with blue gradient text */}
           <motion.div variants={itemVariants} className="text-center mb-4">
             <h1 className="text-4xl font-bold tracking-tight font-satoshi dark:title-gradient-dark title-gradient-light">
               Conquistas & Análises

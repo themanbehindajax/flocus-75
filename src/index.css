@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -268,12 +267,12 @@
     @apply dark:border-white/10 border-black/5;
   }
 
-  /* Gradientes de texto adaptados para modo claro/escuro */
+  /* Gradientes de texto adaptados para modo claro/escuro - agora usando variações de azul */
   .title-gradient-light {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent;
   }
 
   .title-gradient-dark {
-    @apply bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent;
   }
 }
