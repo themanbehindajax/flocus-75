@@ -33,7 +33,8 @@ export const KanbanTask = ({
       })
     : null;
 
-  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+  // Native drag handler for HTML5 Drag and Drop API
+  const handleNativeDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData('taskId', task.id);
       if (columnId) {
@@ -59,7 +60,7 @@ export const KanbanTask = ({
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
       draggable="true"
-      onDragStart={handleDragStart}
+      onDragStart={handleNativeDragStart}
       onDragEnd={() => onDragEnd && onDragEnd()}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
