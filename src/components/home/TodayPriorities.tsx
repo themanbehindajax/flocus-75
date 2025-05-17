@@ -32,8 +32,8 @@ const motivationalPhrases = [
 ];
 
 export const TodayPriorities = () => {
-  const { profile, tasks, getTodaysTasks, getCompletedTasksToday } = useAppStore();
-  const { totalSessionsToday } = usePomodoroStore();
+  const { profile, tasks } = useAppStore();
+  const { pomodoroCount } = usePomodoroStore();
   const navigate = useNavigate();
   const [motivationalPhrase, setMotivationalPhrase] = useState("");
   
@@ -43,13 +43,25 @@ export const TodayPriorities = () => {
     setMotivationalPhrase(motivationalPhrases[randomIndex]);
   }, []);
   
-  // Get tasks for today
-  const tasksToday = getTodaysTasks();
-  const completedTasksToday = getCompletedTasksToday();
+  // Get tasks for today using a filter instead of a non-existent function
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tasksToday = tasks.filter(task => {
+    if (!task.dueDate) return false;
+    const dueDate = new Date(task.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate.getTime() === today.getTime();
+  });
+  
+  const completedTasksToday = tasksToday.filter(task => task.completed);
   
   const taskCompletionRate = tasksToday.length > 0
     ? Math.round((completedTasksToday.length / tasksToday.length) * 100)
     : 0;
+    
+  // Use pomodoroCount from the store instead of totalSessionsToday
+  const totalSessionsToday = pomodoroCount;
   
   const MotionCardContent = motion(CardContent);
   
