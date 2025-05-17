@@ -34,18 +34,18 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full">
       <Input
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         placeholder="Adicionar nova tarefa..."
-        className="flex-grow bg-white/5 border-white/20 text-white placeholder:text-white/60"
+        className="flex-grow bg-white/5 border-white/20 text-white placeholder:text-white/60 w-full"
       />
       <Button 
         type="submit" 
         size="sm" 
         disabled={!taskTitle.trim()}
-        className="text-white"
+        className="text-white whitespace-nowrap"
       >
         <Bolt className="w-4 h-4 mr-1" />
         Adicionar

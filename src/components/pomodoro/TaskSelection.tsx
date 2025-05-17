@@ -29,19 +29,19 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
   
   return (
     <motion.div 
-      className="space-y-4"
+      className="space-y-4 w-full"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         <label className="text-sm font-medium text-white">Projeto</label>
         <Select
           value={selectedProjectId || "none"}
           onValueChange={onProjectChange}
           disabled={disabled}
         >
-          <SelectTrigger className="bg-white/5 border-white/20 text-white">
+          <SelectTrigger className="bg-white/5 border-white/20 text-white w-full">
             <SelectValue placeholder="Selecione um projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -55,14 +55,14 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
         </Select>
       </div>
       
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         <label className="text-sm font-medium text-white">Tarefa</label>
         <Select
           value={selectedTaskId || "none"}
           onValueChange={onTaskChange}
           disabled={disabled}
         >
-          <SelectTrigger className="bg-white/5 border-white/20 text-white">
+          <SelectTrigger className="bg-white/5 border-white/20 text-white w-full">
             <SelectValue placeholder="Selecione uma tarefa" />
           </SelectTrigger>
           <SelectContent>

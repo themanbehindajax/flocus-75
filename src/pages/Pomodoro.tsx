@@ -79,14 +79,10 @@ const Pomodoro = () => {
   const selectedTask = tasks.find(task => task.id === selectedTaskId);
 
   return (
-    <AppLayout>
-      <PageTransition>
-        <div className="relative min-h-screen flex flex-col overflow-hidden">
-          {/* Fundo com gradiente que vai até a extrema esquerda */}
-          <div className="absolute inset-0 -left-[100vw] right-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
-          
-          {/* Conteúdo centralizado verticalmente e horizontalmente */}
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4 py-12">
+    <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 fixed top-0 left-0">
+      <AppLayout>
+        <PageTransition>
+          <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden py-12 px-4">
             <div className="max-w-5xl w-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
               {/* Coluna da esquerda - Timer */}
               <motion.div
@@ -251,9 +247,9 @@ const Pomodoro = () => {
               </Button>
             </motion.div>
           </div>
-        </div>
-      </PageTransition>
-    </AppLayout>
+        </PageTransition>
+      </AppLayout>
+    </div>
   );
 };
 
