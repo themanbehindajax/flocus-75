@@ -17,7 +17,7 @@ const predefinedColors = [
 
 export const createTagActions = (set: any) => ({
   addTag: (tagData: Omit<Tag, "id">) => {
-    // Se não houver cor definida, pegue uma aleatória dos predefinidos
+    // If no color is defined, use a random one from predefined colors
     const tagColor = tagData.color || predefinedColors[Math.floor(Math.random() * predefinedColors.length)];
     
     const newTag: Tag = {

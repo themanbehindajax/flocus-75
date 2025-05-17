@@ -19,7 +19,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
 
   const handleCreateTask = () => {
     if (taskTitle.trim()) {
-      addTask({
+      const newTask = {
         title: taskTitle.trim(),
         description: "",
         priority: "media" as PriorityLevel,
@@ -29,7 +29,9 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         subtasks: [],
         isQuick: isQuickTask,
         completed: false,
-      });
+      };
+      
+      addTask(newTask);
 
       if (isQuickTask) {
         toast(`Tarefa rápida "${taskTitle}" adicionada`);

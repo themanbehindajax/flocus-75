@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useAppStore } from '@/lib/store';
 
 interface KanbanTaskProps {
   task: Task;
@@ -26,12 +27,22 @@ export const KanbanTask = ({
   onDragStart,
   onDragEnd 
 }: KanbanTaskProps) => {
+  const { projects, tags } = useAppStore();
+  
   const formattedDate = task.dueDate
     ? formatDistanceToNow(new Date(task.dueDate), {
         addSuffix: true,
         locale: ptBR,
       })
     : null;
+
+  // Find project name if this task belongs to a project
+  const project = task.projectId ? projects.find(p => p.id === task.projectId) : null;
+  
+  // Find tag objects for this task's tag IDs
+  const taskTags = task.tags
+    .map(tagId => tags.find(tag => tag.id === tagId))
+    .filter(Boolean);
 
   // Native drag handler for HTML5 Drag and Drop API
   const handleNativeDragStart = (event: React.DragEvent<HTMLDivElement>) => {
@@ -87,11 +98,22 @@ export const KanbanTask = ({
         )}
 
         <div className="flex flex-wrap gap-1 mt-1">
-          {task.tags?.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs px-1 py-0">
-              {tag}
+          {taskTags.map((tag: any) => (
+            <Badge 
+              key={tag.id} 
+              variant="outline" 
+              className="text-xs px-1 py-0 text-white"
+              style={{ backgroundColor: tag.color }}
+            >
+              {tag.name}
             </Badge>
           ))}
+          
+          {project && (
+            <Badge variant="outline" className="text-xs px-1 py-0 bg-primary/10 text-primary">
+              {project.name}
+            </Badge>
+          )}
         </div>
 
         <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
