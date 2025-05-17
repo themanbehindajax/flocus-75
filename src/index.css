@@ -43,33 +43,33 @@
   }
 
   .dark {
-    /* Dark mode */
-    --background: 222 47% 5%;
+    /* Dark mode - Escurecendo o background */
+    --background: 222 47% 4%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 8%;
+    --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 7%;
+    --popover: 222 47% 5%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 217 33% 15%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 33% 17%;
+    --muted: 217 33% 15%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 217 33% 17%;
+    --accent: 217 33% 15%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 16%;
+    --border: 217 33% 15%;
+    --input: 217 33% 14%;
     --ring: 224 76% 48%;
   }
 }
@@ -130,9 +130,11 @@
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-75;
   }
 
-  /* Glass effect */
+  /* Glass effect - adaptado para modo claro e escuro */
   .glass-effect {
-    @apply backdrop-blur-lg bg-white/10 dark:bg-black/30 border border-white/20 dark:border-white/5 rounded-2xl;
+    @apply backdrop-blur-lg border rounded-2xl;
+    @apply dark:bg-black/30 dark:border-white/5;
+    @apply bg-white/70 border-black/5;
   }
   
   /* Hover interactions */
@@ -161,17 +163,20 @@
     @apply hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-shadow duration-300;
   }
 
-  /* Toast styles */
+  /* Toast styles - adaptado para modo claro e escuro */
   .toast-success {
-    @apply bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50 rounded-2xl shadow-lg;
+    @apply dark:bg-emerald-950/30 border dark:border-emerald-800/50 rounded-2xl shadow-lg;
+    @apply bg-emerald-50 border-emerald-200;
   }
 
   .toast-info {
-    @apply bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50 rounded-2xl shadow-lg;
+    @apply dark:bg-blue-950/30 border dark:border-blue-800/50 rounded-2xl shadow-lg;
+    @apply bg-blue-50 border-blue-200;
   }
 
   .toast-warning {
-    @apply bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 rounded-2xl shadow-lg;
+    @apply dark:bg-amber-950/30 border dark:border-amber-800/50 rounded-2xl shadow-lg;
+    @apply bg-amber-50 border-amber-200;
   }
   
   /* Button styles */
@@ -196,9 +201,11 @@
     @apply rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out;
   }
   
-  /* Premium UI components */
+  /* Premium UI components - adaptado para modo claro e escuro */
   .premium-card {
-    @apply rounded-3xl bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300;
+    @apply rounded-3xl bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border transition-all duration-300;
+    @apply dark:border-border/50 dark:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)];
+    @apply border-border/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
   }
   
   .premium-button {
@@ -213,14 +220,30 @@
     @apply rounded-full px-3 py-1 text-xs font-medium bg-gradient-to-r;
   }
   
-  /* Glassmorphism effect */
+  /* Glassmorphism effect - adaptado para modo claro e escuro */
   .glassmorphism {
-    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg;
+    @apply backdrop-blur-xl border shadow-lg;
+    @apply dark:bg-black/20 dark:border-white/10;
+    @apply bg-white/60 border-black/5;
   }
   
   /* Gradient text */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+
+  /* Adaptações específicas para modo claro para cards de conquistas */
+  .achievement-card {
+    @apply backdrop-blur-xl border shadow-lg transition-all;
+    @apply dark:bg-white/5 dark:border-white/10 dark:text-white/90;
+    @apply bg-white/80 border-black/5 text-gray-800;
+  }
+
+  /* Background gradiente estilo conquistas - adaptado para claro e escuro */
+  .achievements-gradient {
+    @apply absolute inset-0 -z-10;
+    @apply dark:bg-gradient-to-br dark:from-blue-500/10 dark:via-blue-600/5 dark:to-purple-600/10;
+    @apply bg-gradient-to-br from-blue-100/60 via-blue-50/40 to-purple-100/50;
   }
 }
 
@@ -242,6 +265,15 @@
   }
   
   .border-premium {
-    @apply border border-white/20 dark:border-white/5;
+    @apply dark:border-white/10 border-black/5;
+  }
+
+  /* Gradientes de texto adaptados para modo claro/escuro */
+  .title-gradient-light {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  .title-gradient-dark {
+    @apply bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent;
   }
 }

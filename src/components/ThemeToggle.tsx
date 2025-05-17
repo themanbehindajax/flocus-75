@@ -76,7 +76,7 @@ export const ThemeToggle = () => {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="rounded-full text-white hover:bg-white/10"
+      className="rounded-full hover:bg-white/10 dark:text-white text-gray-700"
       aria-label="Alternar tema"
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
