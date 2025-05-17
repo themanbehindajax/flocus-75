@@ -108,9 +108,7 @@ export const TodayPriorities = () => {
             value={completionPercentage} 
             className={cn(
               "h-2 transition-all duration-500",
-              completionPercentage === 100 ? "bg-muted/30" : "bg-muted/20"
-            )}
-            indicatorClassName={cn(
+              completionPercentage === 100 ? "bg-muted/30" : "bg-muted/20",
               completionPercentage === 100 ? "bg-green-500" : ""
             )}
           />

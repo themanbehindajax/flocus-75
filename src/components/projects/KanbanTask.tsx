@@ -50,9 +50,11 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -2 }}
-      draggable
-      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-        e.dataTransfer.effectAllowed = "move";
+      draggable="true"
+      onDragStart={(e) => {
+        // Cast the DOM event to React DragEvent
+        const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+        dragEvent.dataTransfer.effectAllowed = "move";
         onDragStart();
       }}
       className="touch-none"
