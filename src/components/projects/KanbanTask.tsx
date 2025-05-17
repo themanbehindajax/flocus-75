@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { motion, PanInfo } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +58,7 @@ export const KanbanTask = ({
   };
 
   // Handler for when drag ends
-  const handleDragEnd = () => {
+  const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
     if (onDragEnd) onDragEnd();
   };
 
@@ -69,78 +69,79 @@ export const KanbanTask = ({
   };
 
   return (
-    <motion.div
-      layout
-      layoutId={task.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
+    <div
       draggable="true"
       onDragStart={handleDragStart}
-      // Remove the direct onDragEnd prop from motion.div since it expects a different type
-      // We'll use the native DOM event instead
+      onDragEnd={handleDragEnd}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md'
       )}
-      onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-start">
-          <span className="font-medium text-sm">{task.title}</span>
-          {task.priority && (
-            <div
-              className={cn(
-                'w-2 h-2 rounded-full',
-                priorityColors[task.priority as keyof typeof priorityColors]
-              )}
-            />
-          )}
-        </div>
-
-        {task.description && (
-          <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-        )}
-
-        <div className="flex flex-wrap gap-1 mt-1">
-          {taskTags.map((tag: any) => (
-            <Badge 
-              key={tag.id} 
-              variant="outline" 
-              className="text-xs px-1.5 py-0.5 flex items-center justify-center text-white"
-              style={{ 
-                backgroundColor: tag.color, 
-                borderColor: 'transparent',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              {tag.name}
-            </Badge>
-          ))}
-          
-          {project && (
-            <Badge 
-              variant="outline" 
-              className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary border-transparent"
-            >
-              {project.name}
-            </Badge>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            {formattedDate && (
-              <>
-                <CalendarIcon className="w-3 h-3" />
-                <span>{formattedDate}</span>
-              </>
+      <motion.div
+        layout
+        layoutId={task.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <span className="font-medium text-sm">{task.title}</span>
+            {task.priority && (
+              <div
+                className={cn(
+                  'w-2 h-2 rounded-full',
+                  priorityColors[task.priority as keyof typeof priorityColors]
+                )}
+              />
             )}
           </div>
+
+          {task.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
+          )}
+
+          <div className="flex flex-wrap gap-1 mt-1">
+            {taskTags.map((tag: any) => (
+              <Badge 
+                key={tag.id} 
+                variant="outline" 
+                className="text-xs px-1.5 py-0.5 flex items-center justify-center text-white"
+                style={{ 
+                  backgroundColor: tag.color, 
+                  borderColor: 'transparent',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                }}
+              >
+                {tag.name}
+              </Badge>
+            ))}
+            
+            {project && (
+              <Badge 
+                variant="outline" 
+                className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary border-transparent"
+              >
+                {project.name}
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              {formattedDate && (
+                <>
+                  <CalendarIcon className="w-3 h-3" />
+                  <span>{formattedDate}</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
