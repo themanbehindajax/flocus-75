@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TimerControlsProps {
   timerState: "idle" | "running" | "paused" | "break" | "completed";
@@ -18,22 +19,37 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
 }) => {
   return (
     <div className="flex gap-4">
-      {timerState === "running" ? (
-        <Button size="lg" onClick={onPause}>
-          <Pause className="mr-2 h-4 w-4" />
-          Pausar
-        </Button>
-      ) : (
-        <Button size="lg" onClick={onStart}>
-          <Play className="mr-2 h-4 w-4" />
-          {timerState === "paused" ? "Continuar" : "Iniciar"}
-        </Button>
-      )}
+      <motion.div whileTap={{ scale: 0.95 }}>
+        {timerState === "running" ? (
+          <Button size="lg" onClick={onPause} className="relative overflow-hidden">
+            <Pause className="mr-2 h-4 w-4" />
+            Pausar
+          </Button>
+        ) : (
+          <Button size="lg" onClick={onStart} className="relative overflow-hidden">
+            <Play className="mr-2 h-4 w-4" />
+            {timerState === "paused" ? "Continuar" : "Iniciar"}
+            <motion.div
+              className="absolute inset-0 bg-primary-600 -z-10"
+              initial={{ scale: 0, opacity: 0.5 }}
+              animate={{ scale: [0, 1.5], opacity: [0.5, 0] }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 1.5, 
+                ease: "easeOut",
+                repeatDelay: 1
+              }}
+            />
+          </Button>
+        )}
+      </motion.div>
       
-      <Button size="lg" variant="outline" onClick={onReset}>
-        <RotateCcw className="mr-2 h-4 w-4" />
-        Reiniciar
-      </Button>
+      <motion.div whileTap={{ scale: 0.95 }}>
+        <Button size="lg" variant="outline" onClick={onReset}>
+          <RotateCcw className="mr-2 h-4 w-4" />
+          Reiniciar
+        </Button>
+      </motion.div>
     </div>
   );
 };

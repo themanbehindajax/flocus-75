@@ -1,6 +1,7 @@
 
 import React from "react";
 import { formatTime } from "@/hooks/usePomodoro";
+import { motion } from "framer-motion";
 
 interface TimerDisplayProps {
   timeRemaining: number;
@@ -31,7 +32,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
         />
         
         {/* Progress circle */}
-        <circle
+        <motion.circle
           cx="50"
           cy="50"
           r="45"
@@ -45,16 +46,24 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               : "text-primary/80"
           } transition-all duration-1000`}
           strokeDasharray={circumference}
-          strokeDashoffset={dashoffset}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: dashoffset }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
           transform="rotate(-90, 50, 50)"
         />
       </svg>
       
       {/* Time display */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-4xl font-bold">
+        <motion.span 
+          key={timeRemaining}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+          className="text-4xl font-bold"
+        >
           {formatTime(timeRemaining)}
-        </span>
+        </motion.span>
       </div>
     </div>
   );
