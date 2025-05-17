@@ -81,6 +81,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv01", "cv02", "cv03";
+    letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -157,15 +158,15 @@
 
   /* Toast styles */
   .toast-success {
-    @apply bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50 rounded-2xl;
+    @apply bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50 rounded-2xl shadow-lg;
   }
 
   .toast-info {
-    @apply bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50 rounded-2xl;
+    @apply bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50 rounded-2xl shadow-lg;
   }
 
   .toast-warning {
-    @apply bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 rounded-2xl;
+    @apply bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 rounded-2xl shadow-lg;
   }
   
   /* Button styles */
@@ -188,5 +189,44 @@
   
   .progress-value {
     @apply rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out;
+  }
+  
+  /* Premium UI components */
+  .premium-card {
+    @apply rounded-3xl bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300;
+  }
+  
+  .premium-button {
+    @apply rounded-full shadow-[0_2px_10px_rgba(59,130,246,0.2)] hover:shadow-[0_4px_15px_rgba(59,130,246,0.35)] transition-all duration-300;
+  }
+  
+  .premium-input {
+    @apply bg-muted/50 border-border/40 backdrop-blur-sm focus:border-primary/40 focus:ring focus:ring-primary/20 transition-all duration-200 rounded-xl;
+  }
+  
+  .premium-badge {
+    @apply rounded-full px-3 py-1 text-xs font-medium bg-gradient-to-r;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400;
+  }
+  
+  .shadow-elegant {
+    @apply shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1),_0_5px_15px_-7.5px_rgba(0,0,0,0.05)];
+  }
+  
+  .shadow-premium {
+    @apply shadow-[0_15px_35px_-10px_rgba(14,165,233,0.15),_0_5px_20px_-5px_rgba(59,130,246,0.1)];
+  }
+  
+  .bg-premium-gradient {
+    @apply bg-gradient-to-br from-primary/5 to-primary/10;
+  }
+  
+  .border-premium {
+    @apply border border-white/20 dark:border-white/5;
   }
 }

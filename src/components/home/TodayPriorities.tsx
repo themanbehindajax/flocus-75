@@ -9,10 +9,13 @@ import { TaskCardCompact } from "../tasks/TaskCardCompact";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export const TodayPriorities = () => {
   const { tasks, dailyPriorities, toggleTaskCompletion } = useAppStore();
   const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
+  const [animateProgress, setAnimateProgress] = useState(false);
   
   useEffect(() => {
     // Get today's date in YYYY-MM-DD format
@@ -40,90 +43,167 @@ export const TodayPriorities = () => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
       toggleTaskCompletion(taskId);
+      setAnimateProgress(true);
       
       // Show toast notification based on the new state (opposite of the current state)
       if (!task.completed) {
         toast.success(`Tarefa "${task.title}" concluída!`, {
-          className: "animate-fade-in",
-          duration: 2000
+          className: "toast-success",
+          duration: 2000,
+          position: "bottom-right",
         });
       } else {
         toast.info(`Tarefa "${task.title}" reaberta!`, {
-          className: "animate-fade-in",
-          duration: 2000
+          className: "toast-info",
+          duration: 2000,
+          position: "bottom-right",
         });
       }
     }
   };
 
+  // Animation variants for Framer Motion
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
   if (priorityTasks.length === 0) {
     return (
-      <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in">
-        <CardContent className="text-center py-12 px-4">
-          <ListChecks className="h-12 w-12 mx-auto mb-4 text-muted-foreground/70" />
-          <h3 className="font-medium text-lg mb-1">Sem prioridades definidas</h3>
-          <p className="text-muted-foreground mt-1 mb-6 max-w-md mx-auto">
-            Defina até 6 tarefas prioritárias para o dia
-          </p>
-          <Button variant="default" size="lg" className="gap-2" asChild>
-            <Link to="/ivy-lee">
-              Definir prioridades
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="col-span-full shadow-elevated hover:shadow-md transition-all duration-300 bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border border-border/50 rounded-3xl overflow-hidden">
+          <CardContent className="text-center py-16 px-4">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="mb-6"
+            >
+              <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mx-auto mb-6">
+                <ListChecks className="h-10 w-10 text-primary/70" />
+              </div>
+              <h3 className="font-medium text-xl mb-2">Sem prioridades definidas</h3>
+              <p className="text-muted-foreground mt-2 mb-8 max-w-md mx-auto">
+                Defina até 6 tarefas prioritárias para o dia e aumente sua produtividade
+              </p>
+            </motion.div>
+            <Button variant="default" size="lg" className="gap-2 px-6 rounded-full shadow-[0_4px_12px_rgba(59,130,246,0.25)]" asChild>
+              <Link to="/ivy-lee">
+                Definir prioridades
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
     );
   }
 
   return (
-    <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in">
-      <CardHeader className="flex flex-row items-center justify-between pb-3 border-b">
-        <div className="space-y-1">
-          <h2 className="text-xl font-semibold leading-none tracking-tight inline-flex items-center gap-2">
-            Prioridades de Hoje
-            {completionPercentage === 100 && (
-              <Trophy className="h-5 w-5 text-amber-500 animate-pulse-light" />
-            )}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {completedTasks} de {totalTasks} tarefas concluídas
-          </p>
-        </div>
-        <Button variant="ghost" size="sm" className="gap-1.5 hover:bg-primary/10 transition-colors" asChild>
-          <Link to="/ivy-lee">
-            Gerenciar
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      </CardHeader>
-      
-      <CardContent className="pt-4">
-        <div className="mb-5">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-            <span>Progresso</span>
-            <span className="font-medium">{completionPercentage}%</span>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <Card className="col-span-full shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border border-border/50 rounded-3xl overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/30">
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold leading-none tracking-tight inline-flex items-center gap-2">
+              Prioridades de Hoje
+              {completionPercentage === 100 && (
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div>
+                      <Trophy className="h-5 w-5 text-amber-500 animate-pulse-light" />
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-60 p-3 text-sm">
+                    Parabéns! Você completou todas as tarefas prioritárias de hoje.
+                  </HoverCardContent>
+                </HoverCard>
+              )}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {completedTasks} de {totalTasks} tarefas concluídas
+            </p>
           </div>
-          <Progress 
-            value={completionPercentage} 
-            className={cn(
-              "h-2 transition-all duration-500",
-              completionPercentage === 100 ? "bg-muted/30" : "bg-muted/20",
-              completionPercentage === 100 ? "bg-green-500" : ""
-            )}
-          />
-        </div>
+          <Button variant="ghost" size="sm" className="gap-1.5 hover:bg-primary/10 hover:text-primary transition-colors rounded-full" asChild>
+            <Link to="/ivy-lee">
+              Gerenciar
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardHeader>
         
-        <div className="space-y-2.5">
-          {priorityTasks.map((task) => (
-            <TaskCardCompact
-              key={task.id}
-              task={task}
-              onComplete={() => handleToggleTaskCompletion(task.id)}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+        <CardContent className="pt-4">
+          <div className="mb-6">
+            <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+              <span>Progresso</span>
+              <motion.span 
+                key={completionPercentage}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="font-medium"
+              >
+                {completionPercentage}%
+              </motion.span>
+            </div>
+            <div className="relative h-2 overflow-hidden rounded-full bg-muted/30">
+              <motion.div 
+                className={cn(
+                  "h-full rounded-full",
+                  completionPercentage === 100 
+                    ? "bg-gradient-to-r from-green-500 to-green-400" 
+                    : "bg-gradient-to-r from-primary-600 to-primary-400"
+                )}
+                initial={{ width: "0%" }}
+                animate={{ width: `${completionPercentage}%` }}
+                transition={{ 
+                  duration: animateProgress ? 0.7 : 0.5, 
+                  ease: [0.34, 1.56, 0.64, 1]
+                }}
+                onAnimationComplete={() => setAnimateProgress(false)}
+              />
+            </div>
+          </div>
+          
+          <motion.div className="space-y-3" variants={containerVariants}>
+            {priorityTasks.map((task, index) => (
+              <motion.div
+                key={task.id}
+                variants={itemVariants}
+                custom={index}
+              >
+                <TaskCardCompact
+                  task={task}
+                  onComplete={() => handleToggleTaskCompletion(task.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };

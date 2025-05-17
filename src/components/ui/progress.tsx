@@ -1,6 +1,7 @@
+
 import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
-
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const Progress = React.forwardRef<
@@ -10,17 +11,20 @@ const Progress = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
+      "relative h-4 w-full overflow-hidden rounded-full bg-secondary/50",
       className
     )}
     {...props}
   >
-    <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all"
-      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: `${value || 0}%` }}
+      transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+      className="h-full w-full flex-1 rounded-full bg-gradient-to-r from-primary to-primary/80"
     />
   </ProgressPrimitive.Root>
 ))
+
 Progress.displayName = ProgressPrimitive.Root.displayName
 
 export { Progress }
