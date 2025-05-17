@@ -19,6 +19,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
 
   const handleCreateTask = () => {
     if (taskTitle.trim()) {
+      // Use taskActions from the store to ensure proper project task association
       const newTask = {
         title: taskTitle.trim(),
         description: "",
@@ -31,7 +32,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         completed: false,
       };
       
-      addTask(newTask);
+      const createdTask = addTask(newTask);
 
       if (isQuickTask) {
         toast(`Tarefa rápida "${taskTitle}" adicionada`);
@@ -42,6 +43,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       setTaskTitle("");
       setIsQuickTask(false);
       
+      // Trigger callback to update the parent component's state
       if (onTaskAdded) {
         onTaskAdded();
       }
