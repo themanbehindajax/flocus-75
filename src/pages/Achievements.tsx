@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -197,8 +196,8 @@ const Achievements = () => {
           animate="show"
           variants={containerVariants}
         >
-          {/* Header with gradient text - adaptado para claro/escuro */}
-          <motion.div variants={itemVariants}>
+          {/* Header with gradient text */}
+          <motion.div variants={itemVariants} className="text-center mb-4">
             <h1 className="text-4xl font-bold tracking-tight font-satoshi dark:title-gradient-dark title-gradient-light">
               Conquistas & Análises
             </h1>
@@ -207,50 +206,52 @@ const Achievements = () => {
             </p>
           </motion.div>
           
-          {/* Time range filter - adaptado para claro/escuro */}
+          {/* Time range filter - centralized and improved */}
           <motion.div variants={itemVariants} className="flex justify-center gap-2 mb-6">
-            <button 
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                selectedTimeRange === "week" 
-                  ? "bg-blue-500 text-white shadow-lg" 
-                  : "dark:bg-white/10 dark:text-white/80 bg-black/5 text-black/70 backdrop-blur-sm hover:bg-black/10 dark:hover:bg-white/20"
-              }`}
-              onClick={() => setSelectedTimeRange("week")}
-            >
-              <span className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                Semana
-              </span>
-            </button>
-            <button 
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                selectedTimeRange === "month" 
-                  ? "bg-blue-500 text-white shadow-lg" 
-                  : "dark:bg-white/10 dark:text-white/80 bg-black/5 text-black/70 backdrop-blur-sm hover:bg-black/10 dark:hover:bg-white/20"
-              }`}
-              onClick={() => setSelectedTimeRange("month")}
-            >
-              <span className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                Mês
-              </span>
-            </button>
-            <button 
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                selectedTimeRange === "all" 
-                  ? "bg-blue-500 text-white shadow-lg" 
-                  : "dark:bg-white/10 dark:text-white/80 bg-black/5 text-black/70 backdrop-blur-sm hover:bg-black/10 dark:hover:bg-white/20"
-              }`}
-              onClick={() => setSelectedTimeRange("all")}
-            >
-              <span className="flex items-center">
-                <Filter className="mr-2 h-4 w-4" />
-                Total
-              </span>
-            </button>
+            <div className="inline-flex p-1 bg-black/5 dark:bg-white/10 rounded-full backdrop-blur-sm">
+              <button 
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                  selectedTimeRange === "week" 
+                    ? "bg-blue-500 text-white shadow-lg" 
+                    : "dark:text-white/80 text-black/70 hover:bg-black/10 dark:hover:bg-white/20"
+                }`}
+                onClick={() => setSelectedTimeRange("week")}
+              >
+                <span className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Semana
+                </span>
+              </button>
+              <button 
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                  selectedTimeRange === "month" 
+                    ? "bg-blue-500 text-white shadow-lg" 
+                    : "dark:text-white/80 text-black/70 hover:bg-black/10 dark:hover:bg-white/20"
+                }`}
+                onClick={() => setSelectedTimeRange("month")}
+              >
+                <span className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Mês
+                </span>
+              </button>
+              <button 
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                  selectedTimeRange === "all" 
+                    ? "bg-blue-500 text-white shadow-lg" 
+                    : "dark:text-white/80 text-black/70 hover:bg-black/10 dark:hover:bg-white/20"
+                }`}
+                onClick={() => setSelectedTimeRange("all")}
+              >
+                <span className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Total
+                </span>
+              </button>
+            </div>
           </motion.div>
 
-          {/* Stats Cards - usando glassmorphism adaptado para claro/escuro */}
+          {/* Stats Cards - evenly sized and aligned */}
           <motion.div 
             variants={itemVariants} 
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
@@ -259,16 +260,15 @@ const Achievements = () => {
             <motion.div 
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="h-full"
             >
               <Card className="h-full overflow-hidden glassmorphism">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <Trophy className="mr-2 h-5 w-5 text-blue-400" />
                     Pontos
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col items-center justify-center text-center">
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -288,16 +288,15 @@ const Achievements = () => {
             <motion.div 
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="h-full"
             >
               <Card className="h-full overflow-hidden glassmorphism">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <Flame className="mr-2 h-5 w-5 text-orange-400" />
                     Streak Atual
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col items-center justify-center text-center">
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -317,16 +316,15 @@ const Achievements = () => {
             <motion.div 
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="h-full"
             >
               <Card className="h-full overflow-hidden glassmorphism">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <CheckCircle2 className="mr-2 h-5 w-5 text-teal-400" />
                     Tarefas Concluídas
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col items-center justify-center text-center">
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -347,16 +345,15 @@ const Achievements = () => {
             <motion.div 
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="h-full"
             >
               <Card className="h-full overflow-hidden glassmorphism">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <Clock className="mr-2 h-5 w-5 text-blue-400" />
                     Pomodoros
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col items-center justify-center text-center">
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -373,7 +370,7 @@ const Achievements = () => {
             </motion.div>
           </motion.div>
 
-          {/* Main Charts - adaptados para modo claro/escuro */}
+          {/* Main Charts - consistent sizes */}
           <motion.div 
             variants={itemVariants}
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
@@ -383,8 +380,8 @@ const Achievements = () => {
               className="h-full"
             >
               <Card className="h-full glassmorphism">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center text-xl justify-center">
                     <ChartLine className="mr-2 h-5 w-5 text-blue-400" />
                     Progresso Semanal
                   </CardTitle>
@@ -447,14 +444,14 @@ const Achievements = () => {
               </Card>
             </motion.div>
 
-            {/* Second chart - adaptado para claro/escuro */}
+            {/* Second chart */}
             <motion.div 
               whileHover={{ scale: 1.01 }}
               className="h-full"
             >
               <Card className="h-full glassmorphism">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center text-xl justify-center">
                     <ChartBar className="mr-2 h-5 w-5 text-blue-400" />
                     Produtividade por Dia
                   </CardTitle>
@@ -515,15 +512,15 @@ const Achievements = () => {
             </motion.div>
           </motion.div>
 
-          {/* Distribution Charts - adaptados para claro/escuro */}
+          {/* Distribution Charts - symmetrical layout */}
           <motion.div 
             variants={itemVariants}
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
           >
             <motion.div whileHover={{ scale: 1.01 }}>
               <Card className="glassmorphism">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center text-xl justify-center">
                     <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
                     Distribuição por Projeto
                   </CardTitle>
@@ -592,8 +589,8 @@ const Achievements = () => {
 
             <motion.div whileHover={{ scale: 1.01 }}>
               <Card className="glassmorphism">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center text-xl justify-center">
                     <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
                     Distribuição por Tag
                   </CardTitle>
@@ -661,9 +658,9 @@ const Achievements = () => {
             </motion.div>
           </motion.div>
 
-          {/* Conquistas/Badges Section - adaptado para claro/escuro */}
-          <motion.div variants={itemVariants}>
-            <h2 className="text-2xl font-bold mb-4 dark:title-gradient-dark title-gradient-light">
+          {/* Conquistas/Badges Section - centralized */}
+          <motion.div variants={itemVariants} className="text-center">
+            <h2 className="text-2xl font-bold mb-4 inline-block dark:title-gradient-dark title-gradient-light">
               Conquistas
             </h2>
             
