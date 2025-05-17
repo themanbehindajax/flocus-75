@@ -93,7 +93,7 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
   return (
     <motion.div 
       className={cn(
-        "fixed z-50 h-auto shadow-lg rounded-xl border backdrop-blur-xl",
+        "fixed z-50 h-auto shadow-lg rounded-r-xl border-r-0 border-t border-b border-r backdrop-blur-xl",
         sidebarCollapsed 
           ? "bg-blue-500/15 border-white/20" 
           : "bg-blue-500/10 border-white/15 h-screen"
@@ -106,6 +106,8 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
         top: sidebarCollapsed ? "50%" : "0",
         transform: sidebarCollapsed ? "translateY(-50%)" : "none",
         left: "0",
+        borderTopLeftRadius: "0",
+        borderBottomLeftRadius: "0",
       }}
     >
       <div className={cn("p-4 flex items-center border-b border-white/10", 

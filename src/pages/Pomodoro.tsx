@@ -12,6 +12,7 @@ import { TaskSelection } from "@/components/pomodoro/TaskSelection";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { TimerDisplay } from "@/components/pomodoro/TimerDisplay";
+import { TimerControls } from "@/components/pomodoro/TimerControls";
 
 const Pomodoro = () => {
   const { projects, tasks, completeTask, toggleTaskCompletion } = useAppStore();
@@ -82,10 +83,10 @@ const Pomodoro = () => {
       <PageTransition>
         <div className="relative min-h-screen flex flex-col overflow-hidden">
           {/* Fundo com gradiente que vai até a extrema esquerda */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
+          <div className="absolute inset-0 -left-[100vw] right-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
           
           {/* Conteúdo centralizado verticalmente e horizontalmente */}
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4">
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4 py-12">
             <div className="max-w-5xl w-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
               {/* Coluna da esquerda - Timer */}
               <motion.div
@@ -122,36 +123,14 @@ const Pomodoro = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="flex justify-center gap-4 mb-6"
+                  className="flex justify-center mb-6"
                 >
-                  {timerState === "running" ? (
-                    <Button 
-                      size="lg" 
-                      onClick={pauseTimer}
-                      variant="secondary"
-                      className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-8 rounded-full transition-all"
-                    >
-                      Pausar
-                    </Button>
-                  ) : (
-                    <Button 
-                      size="lg" 
-                      onClick={startTimer}
-                      className="bg-white text-blue-700 hover:bg-white/90 px-10 rounded-full font-medium transition-all shadow-lg"
-                    >
-                      {timerState === "paused" ? "Continuar" : "Iniciar"}
-                    </Button>
-                  )}
-                  
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    onClick={resetTimer}
-                    className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all"
-                  >
-                    <RotateCw className="mr-2 h-4 w-4" />
-                    Reiniciar
-                  </Button>
+                  <TimerControls
+                    timerState={timerState}
+                    onStart={startTimer}
+                    onPause={pauseTimer}
+                    onReset={resetTimer}
+                  />
                 </motion.div>
                 
                 {/* Contador de pomodoros */}
@@ -230,6 +209,7 @@ const Pomodoro = () => {
                         variant="ghost" 
                         className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10"
                         onClick={() => handleCompleteTask(selectedTaskId)}
+                        title="Marcar como concluída"
                       >
                         <CheckCircle2 className={`h-5 w-5 ${selectedTask.completed ? 'fill-green-500 text-white' : ''}`} />
                       </Button>

@@ -15,6 +15,8 @@ export const PomodoroMiniWidget = () => {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   
   // Get pomodoro state from store
   const { 
@@ -90,6 +92,17 @@ export const PomodoroMiniWidget = () => {
     };
   }, [timeRemaining, isActive, timerMode, navigate]);
 
+  // Allow dragging only when not minimized
+  const handleDragStart = () => {
+    if (!isMinimized) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -100,13 +113,25 @@ export const PomodoroMiniWidget = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ duration: 0.3 }}
+        drag={!isMinimized}
+        dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+        dragElastic={0.1}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className="fixed z-50"
+        style={{
+          bottom: isMinimized ? '4rem' : 'auto',
+          right: isMinimized ? '4rem' : 'auto',
+          cursor: isDragging ? 'grabbing' : (isMinimized ? 'default' : 'grab')
+        }}
       >
         <Card 
-          className="fixed bottom-4 right-4 z-50 transition-all duration-300 shadow-lg backdrop-blur-xl border-white/20 bg-blue-500/70"
+          className="transition-all duration-300 shadow-lg backdrop-blur-xl border-white/20"
           style={{
             width: isMinimized ? 'auto' : '16rem',
             padding: isMinimized ? '0.5rem' : '1rem',
-            borderRadius: '1.5rem',
+            borderRadius: '2rem',
+            backgroundColor: 'rgba(59, 130, 246, 0.7)',
             boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)'
           }}
         >

@@ -28,7 +28,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   };
 
   return (
-    <div className="relative w-64 h-64 mb-4 flex items-center justify-center">
+    <div className="relative w-64 h-64 mb-6 flex items-center justify-center">
       <svg className="w-full h-full" viewBox="0 0 100 100">
         {/* Background circle */}
         <circle
@@ -48,7 +48,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           r="45"
           fill="none"
           stroke="currentColor"
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
           className="text-white"
           strokeDasharray={circumference}

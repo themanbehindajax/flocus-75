@@ -18,15 +18,15 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
   onReset,
 }) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex justify-center gap-4">
       <motion.div whileTap={{ scale: 0.95 }}>
         {timerState === "running" ? (
-          <Button size="lg" onClick={onPause} className="relative overflow-hidden">
+          <Button size="lg" onClick={onPause} className="relative overflow-hidden bg-white text-blue-700 hover:bg-white/90 rounded-full font-medium shadow-lg">
             <Pause className="mr-2 h-4 w-4" />
             Pausar
           </Button>
         ) : (
-          <Button size="lg" onClick={onStart} className="relative overflow-hidden">
+          <Button size="lg" onClick={onStart} className="relative overflow-hidden bg-white text-blue-700 hover:bg-white/90 rounded-full font-medium shadow-lg">
             <Play className="mr-2 h-4 w-4" />
             {timerState === "paused" ? "Continuar" : "Iniciar"}
             <motion.div
@@ -45,7 +45,7 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
       </motion.div>
       
       <motion.div whileTap={{ scale: 0.95 }}>
-        <Button size="lg" variant="outline" onClick={onReset}>
+        <Button size="lg" variant="outline" onClick={onReset} className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all">
           <RotateCcw className="mr-2 h-4 w-4" />
           Reiniciar
         </Button>
