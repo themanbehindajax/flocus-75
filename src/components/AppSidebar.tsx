@@ -9,9 +9,15 @@ import {
   ListTodo,
   Settings,
   Trophy,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAppStore } from "@/lib/store";
+import { motion } from "framer-motion";
 
 type SidebarItemProps = {
   icon: React.ReactNode;
@@ -22,6 +28,30 @@ type SidebarItemProps = {
 };
 
 const SidebarItem = ({ icon, label, to, active = false, collapsed = false }: SidebarItemProps) => {
+  if (collapsed) {
+    return (
+      <TooltipProvider delayDuration={300}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to={to}
+              className={cn(
+                "flex justify-center items-center p-3 text-sm font-medium rounded-md transition-colors",
+                "hover:bg-primary/10 hover:text-primary",
+                active ? "text-primary bg-primary/10" : "text-foreground"
+              )}
+            >
+              {icon}
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{label}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
   return (
     <Link
       to={to}
@@ -33,17 +63,18 @@ const SidebarItem = ({ icon, label, to, active = false, collapsed = false }: Sid
       title={label}
     >
       {icon}
-      {!collapsed && <span>{label}</span>}
+      <span>{label}</span>
     </Link>
   );
 };
 
 type AppSidebarProps = {
   activePath: string;
-  collapsed?: boolean;
 };
 
-export function AppSidebar({ activePath, collapsed = false }: AppSidebarProps) {
+export function AppSidebar({ activePath }: AppSidebarProps) {
+  const { sidebarCollapsed, toggleSidebarCollapse } = useAppStore();
+  
   const sidebarItems = [
     { icon: <Home className="w-5 h-5" />, label: "Dashboard", to: "/" },
     { icon: <FolderKanban className="w-5 h-5" />, label: "Projetos", to: "/projects" },
@@ -54,21 +85,43 @@ export function AppSidebar({ activePath, collapsed = false }: AppSidebarProps) {
     { icon: <Trophy className="w-5 h-5" />, label: "Conquistas", to: "/achievements" },
   ];
 
+  const sidebarVariants = {
+    expanded: { width: "16rem", transition: { duration: 0.3 } },
+    collapsed: { width: "4rem", transition: { duration: 0.3 } },
+  };
+
   return (
-    <div className="h-screen flex flex-col border-r bg-card">
-      <div className={cn("p-4 flex items-center border-b", collapsed ? "justify-center" : "justify-between")}>
-        {collapsed ? (
+    <motion.div 
+      className="h-screen flex flex-col border-r bg-card"
+      variants={sidebarVariants}
+      initial={sidebarCollapsed ? "collapsed" : "expanded"}
+      animate={sidebarCollapsed ? "collapsed" : "expanded"}
+    >
+      <div className={cn("p-4 flex items-center border-b", 
+        sidebarCollapsed ? "justify-center" : "justify-between"
+      )}>
+        {sidebarCollapsed ? (
           <span className="font-bold text-xl text-primary">F</span>
         ) : (
           <>
             <h1 className="font-bold text-xl text-primary">Flocus</h1>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="ml-2 p-1 h-8 w-8" 
+                onClick={toggleSidebarCollapse}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </div>
           </>
         )}
       </div>
       
       <div className="flex-1 py-4 overflow-auto">
-        <nav className="space-y-1 px-2">
+        <nav className={cn("space-y-1", sidebarCollapsed ? "px-1" : "px-2")}>
           {sidebarItems.map((item) => (
             <SidebarItem
               key={item.to}
@@ -76,21 +129,54 @@ export function AppSidebar({ activePath, collapsed = false }: AppSidebarProps) {
               label={item.label}
               to={item.to}
               active={activePath === item.to}
-              collapsed={collapsed}
+              collapsed={sidebarCollapsed}
             />
           ))}
         </nav>
       </div>
       
-      <div className={cn("p-4 border-t", collapsed && "flex justify-center")}>
-        <SidebarItem
-          icon={<Settings className="w-5 h-5" />}
-          label="Configurações"
-          to="/settings"
-          active={activePath === "/settings"}
-          collapsed={collapsed}
-        />
+      <div className={cn("p-4 border-t", sidebarCollapsed && "flex justify-center")}>
+        {sidebarCollapsed ? (
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/settings"
+                  className={cn(
+                    "flex justify-center items-center p-2 text-sm font-medium rounded-md transition-colors",
+                    "hover:bg-primary/10 hover:text-primary",
+                    activePath === "/settings" ? "text-primary bg-primary/10" : "text-foreground"
+                  )}
+                >
+                  <Settings className="w-5 h-5" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Configurações</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <SidebarItem
+            icon={<Settings className="w-5 h-5" />}
+            label="Configurações"
+            to="/settings"
+            active={activePath === "/settings"}
+            collapsed={sidebarCollapsed}
+          />
+        )}
       </div>
-    </div>
+
+      {sidebarCollapsed && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="m-2 h-8 w-auto" 
+          onClick={toggleSidebarCollapse}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      )}
+    </motion.div>
   );
 }
