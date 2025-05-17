@@ -18,9 +18,10 @@ type SidebarItemProps = {
   label: string;
   to: string;
   active?: boolean;
+  collapsed?: boolean;
 };
 
-const SidebarItem = ({ icon, label, to, active = false }: SidebarItemProps) => {
+const SidebarItem = ({ icon, label, to, active = false, collapsed = false }: SidebarItemProps) => {
   return (
     <Link
       to={to}
@@ -29,18 +30,20 @@ const SidebarItem = ({ icon, label, to, active = false }: SidebarItemProps) => {
         "hover:bg-primary/10 hover:text-primary",
         active ? "text-primary bg-primary/10" : "text-foreground"
       )}
+      title={label}
     >
       {icon}
-      <span>{label}</span>
+      {!collapsed && <span>{label}</span>}
     </Link>
   );
 };
 
 type AppSidebarProps = {
   activePath: string;
+  collapsed?: boolean;
 };
 
-export function AppSidebar({ activePath }: AppSidebarProps) {
+export function AppSidebar({ activePath, collapsed = false }: AppSidebarProps) {
   const sidebarItems = [
     { icon: <Home className="w-5 h-5" />, label: "Dashboard", to: "/" },
     { icon: <FolderKanban className="w-5 h-5" />, label: "Projetos", to: "/projects" },
@@ -53,9 +56,15 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
 
   return (
     <div className="h-screen flex flex-col border-r bg-card">
-      <div className="p-4 flex items-center justify-between border-b">
-        <h1 className="font-bold text-xl text-primary">Flocus</h1>
-        <ThemeToggle />
+      <div className={cn("p-4 flex items-center border-b", collapsed ? "justify-center" : "justify-between")}>
+        {collapsed ? (
+          <span className="font-bold text-xl text-primary">F</span>
+        ) : (
+          <>
+            <h1 className="font-bold text-xl text-primary">Flocus</h1>
+            <ThemeToggle />
+          </>
+        )}
       </div>
       
       <div className="flex-1 py-4 overflow-auto">
@@ -67,17 +76,19 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
               label={item.label}
               to={item.to}
               active={activePath === item.to}
+              collapsed={collapsed}
             />
           ))}
         </nav>
       </div>
       
-      <div className="p-4 border-t">
+      <div className={cn("p-4 border-t", collapsed && "flex justify-center")}>
         <SidebarItem
           icon={<Settings className="w-5 h-5" />}
           label="Configurações"
           to="/settings"
           active={activePath === "/settings"}
+          collapsed={collapsed}
         />
       </div>
     </div>

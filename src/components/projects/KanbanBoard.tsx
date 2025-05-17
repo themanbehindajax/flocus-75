@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, TaskStatus } from "@/lib/types";
 import { KanbanColumn } from "./KanbanColumn";
@@ -15,6 +15,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   const { updateTask, toggleTaskCompletion } = useAppStore();
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(null);
   
   // Group tasks by status
   const todoTasks = tasks.filter(task => task.status === "todo");
@@ -26,14 +27,16 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setIsDragging(true);
   };
   
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    setDragOverColumn(status);
   };
   
   const handleDrop = (status: TaskStatus) => {
     if (!draggedTask) return;
     setIsDragging(false);
+    setDragOverColumn(null);
     
     if (draggedTask.status !== status) {
       // Update the task status
@@ -79,7 +82,24 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   const handleDragEnd = () => {
     setIsDragging(false);
     setDraggedTask(null);
+    setDragOverColumn(null);
   };
+
+  // Improve accessibility with keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!draggedTask) return;
+      
+      if (e.key === 'Escape') {
+        setDraggedTask(null);
+        setIsDragging(false);
+        setDragOverColumn(null);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [draggedTask]);
   
   return (
     <motion.div 
@@ -93,10 +113,10 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         tasks={todoTasks}
         status="todo"
         onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
+        onDragOver={(e) => handleDragOver(e, "todo")}
         onDrop={() => handleDrop("todo")}
         onDragEnd={handleDragEnd}
-        isDraggingOver={isDragging && draggedTask?.status !== "todo"}
+        isDraggingOver={isDragging && dragOverColumn === "todo"}
       />
       
       <KanbanColumn 
@@ -104,10 +124,10 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         tasks={doingTasks}
         status="doing"
         onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
+        onDragOver={(e) => handleDragOver(e, "doing")}
         onDrop={() => handleDrop("doing")}
         onDragEnd={handleDragEnd}
-        isDraggingOver={isDragging && draggedTask?.status !== "doing"}
+        isDraggingOver={isDragging && dragOverColumn === "doing"}
       />
       
       <KanbanColumn 
@@ -115,10 +135,10 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         tasks={doneTasks}
         status="done"
         onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
+        onDragOver={(e) => handleDragOver(e, "done")}
         onDrop={() => handleDrop("done")}
         onDragEnd={handleDragEnd}
-        isDraggingOver={isDragging && draggedTask?.status !== "done"}
+        isDraggingOver={isDragging && dragOverColumn === "done"}
       />
     </motion.div>
   );

@@ -1,11 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Task, Project } from "@/lib/types";
-import { fetchCalendarEvents } from "@/lib/googleCalendar";
-import { useAuthStore } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { CalendarTaskCard } from "./CalendarTaskCard";
 
@@ -26,11 +25,10 @@ interface DayEvent {
 }
 
 export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarViewProps) {
-  const { googleToken } = useAuthStore();
   const [dayEvents, setDayEvents] = useState<DayEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Convert tasks to events and fetch Google Calendar events
+  // Convert tasks to events
   useEffect(() => {
     const taskEvents: DayEvent[] = tasks
       .filter(task => task.dueDate && isSameDay(new Date(task.dueDate), selectedDate))
@@ -43,61 +41,8 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
         taskData: task,
       }));
     
-    setDayEvents(prev => {
-      // Keep only Google events
-      const googleEvents = prev.filter(event => !event.isTask);
-      return [...googleEvents, ...taskEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
-    });
-    
-    // Fetch Google Calendar events
-    const fetchEvents = async () => {
-      if (!googleToken) return;
-      
-      try {
-        setIsLoading(true);
-        
-        const startOfDay = new Date(selectedDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        
-        const endOfDay = new Date(selectedDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const calendarData = await fetchCalendarEvents(googleToken, startOfDay.toISOString(), endOfDay.toISOString());
-        
-        if (calendarData && calendarData.items) {
-          const googleEvents: DayEvent[] = calendarData.items
-            .filter(event => event.start && (event.start.dateTime || event.start.date))
-            .map(event => ({
-              id: event.id,
-              title: event.summary,
-              description: event.description,
-              start: event.start.dateTime 
-                ? new Date(event.start.dateTime) 
-                : new Date(`${event.start.date}T12:00:00`),
-              end: event.end?.dateTime 
-                ? new Date(event.end.dateTime) 
-                : event.end?.date 
-                  ? new Date(`${event.end.date}T12:00:00`) 
-                  : undefined,
-              isTask: false,
-            }));
-          
-          // Merge with task events
-          setDayEvents(prev => {
-            // Keep only task events
-            const taskEvents = prev.filter(event => event.isTask);
-            return [...taskEvents, ...googleEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching calendar events for day view:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchEvents();
-  }, [googleToken, selectedDate, tasks]);
+    setDayEvents(taskEvents);
+  }, [tasks, selectedDate]);
   
   // Get hours for the day
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -159,24 +104,7 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
                 );
               }
               
-              // If it's a Google Calendar event, render an event card
-              return (
-                <div 
-                  key={event.id}
-                  className="absolute left-2 right-2 rounded-lg p-2 bg-green-500 text-white"
-                  style={{
-                    top: `${top}px`,
-                    minHeight: "32px"
-                  }}
-                >
-                  <div className="font-medium">
-                    {format(event.start, "HH:mm")} - {event.title}
-                  </div>
-                  {event.description && (
-                    <div className="text-xs mt-1">{event.description}</div>
-                  )}
-                </div>
-              );
+              return null;
             })}
             
             {dayEvents.length === 0 && (

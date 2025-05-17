@@ -36,9 +36,12 @@ export const KanbanColumn = ({
       <CardContent 
         className={cn(
           "p-2 min-h-[300px] transition-colors duration-200",
-          isDraggingOver ? "bg-muted/40" : ""
+          isDraggingOver ? "bg-muted/40 border-2 border-dashed border-primary/40 rounded-md" : ""
         )}
-        onDragOver={onDragOver}
+        onDragOver={(e) => {
+          e.preventDefault();
+          onDragOver(e);
+        }}
         onDrop={(e) => {
           e.preventDefault();
           onDrop();
@@ -56,13 +59,15 @@ export const KanbanColumn = ({
           {tasks.length === 0 && (
             <div className={cn(
               "flex items-center justify-center h-24 border border-dashed rounded-md text-muted-foreground transition-all duration-200",
-              isDraggingOver ? "border-primary/50 bg-primary/5" : ""
+              isDraggingOver ? "border-primary/80 bg-primary/10" : ""
             )}>
-              {isDraggingOver ? "Solte aqui" : "Sem tarefas"}
+              {isDraggingOver ? 
+                <span className="font-medium text-primary">Solte aqui</span> : 
+                <span>Sem tarefas</span>}
             </div>
           )}
         </div>
       </CardContent>
     </Card>
   );
-};
+}

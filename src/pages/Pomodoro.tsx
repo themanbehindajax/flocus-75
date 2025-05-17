@@ -14,8 +14,6 @@ import { TimerControls } from "@/components/pomodoro/TimerControls";
 import { TimerModeSelector } from "@/components/pomodoro/TimerModeSelector";
 import { TaskSelection } from "@/components/pomodoro/TaskSelection";
 import { PomodoroTips } from "@/components/pomodoro/PomodoroTips";
-import { SpotifyPlayer } from "@/components/spotify/SpotifyPlayer";
-import { SpotifyPlaylists } from "@/components/spotify/SpotifyPlaylists";
 import { usePomodoroStore } from "@/hooks/usePomodoroStore";
 import { useAppStore } from "@/lib/store";
 
@@ -134,12 +132,6 @@ const Pomodoro = () => {
                 />
               </CardContent>
             </Card>
-            
-            {/* Spotify Player */}
-            <SpotifyPlayer />
-            
-            {/* Spotify Playlists */}
-            <SpotifyPlaylists />
           </div>
         </div>
         

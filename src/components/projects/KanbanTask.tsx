@@ -45,21 +45,24 @@ export const KanbanTask = ({ task, onDragStart, onDragEnd }: KanbanTaskProps) =>
     baixa: "border-l-4 border-l-green-500"
   };
 
+  // Use standard DOM drag events instead of framer-motion drag
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.effectAllowed = "move";
+    // This is important for Firefox and other browsers
+    e.dataTransfer.setData('text/plain', task.id);
+    onDragStart();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -2 }}
-      draggable={true}
-      onDragStart={(e: React.DragEvent) => {
-        e.dataTransfer.effectAllowed = "move";
-        // This is important for Firefox
-        e.dataTransfer.setData('text/plain', task.id);
-        onDragStart();
-      }}
-      onDragEnd={onDragEnd}
       className="touch-none"
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
     >
       <Card 
         className={cn(

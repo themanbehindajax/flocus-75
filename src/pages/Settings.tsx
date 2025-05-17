@@ -20,15 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { AppSettings } from "@/lib/types";
-import { SpotifyAuth } from "@/components/spotify/SpotifyAuth";
 
 const Settings = () => {
   const { settings, updateSettings, profile, updateProfile } = useAppStore();
   const [formSettings, setFormSettings] = useState<AppSettings>(settings);
   const [name, setName] = useState(profile.name);
-  const { toast } = useToast();
 
   useEffect(() => {
     setFormSettings(settings);
@@ -43,10 +41,7 @@ const Settings = () => {
       localStorage.setItem("username", name);
     }
     
-    toast({
-      title: "Configurações atualizadas",
-      description: "Suas configurações foram salvas com sucesso.",
-    });
+    toast.success("Configurações atualizadas com sucesso!");
   };
 
   return (
@@ -144,19 +139,6 @@ const Settings = () => {
           </CardContent>
         </Card>
         
-        {/* Spotify Integration */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Integração com Spotify</CardTitle>
-            <CardDescription>
-              Conecte sua conta do Spotify para tocar música durante seus pomodoros
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SpotifyAuth />
-          </CardContent>
-        </Card>
-        
         {/* Appearance Settings */}
         <Card>
           <CardHeader>
@@ -179,6 +161,25 @@ const Settings = () => {
                   <SelectItem value="light">Claro</SelectItem>
                   <SelectItem value="dark">Escuro</SelectItem>
                   <SelectItem value="system">Sistema</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notifications">Notificações</Label>
+              <Select
+                value={formSettings.notificationsEnabled ? "enabled" : "disabled"}
+                onValueChange={(value) => setFormSettings({ 
+                  ...formSettings, 
+                  notificationsEnabled: value === "enabled" 
+                })}
+              >
+                <SelectTrigger id="notifications">
+                  <SelectValue placeholder="Configurar notificações" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="enabled">Ativadas</SelectItem>
+                  <SelectItem value="disabled">Desativadas</SelectItem>
                 </SelectContent>
               </Select>
             </div>

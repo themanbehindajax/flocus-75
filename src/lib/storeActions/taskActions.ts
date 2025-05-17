@@ -131,10 +131,11 @@ export const createTaskActions = (set: any, get: any) => ({
       
       const newCompletedState = !task.completed;
       
+      // Create a new array and update the specific task
       const updatedTasks = state.tasks.map((t: Task) => {
         if (t.id !== id) return t;
         
-        // Update both completion status and task status if needed
+        // Create a new task object with updated properties
         const updatedTask = { 
           ...t, 
           completed: newCompletedState, 
@@ -160,24 +161,19 @@ export const createTaskActions = (set: any, get: any) => ({
         updatedProfile.points += 5;
         updatedProfile.totalTasksCompleted += 1;
         updatedProfile.lastActivity = new Date().toISOString();
+        
         const today = new Date().toISOString().split("T")[0];
         const lastActivityDate = new Date(state.profile.lastActivity).toISOString().split("T")[0];
         
-        if (lastActivityDate === today) {
-          // Same day activity, maintain streak
-        } else if (
-          new Date(lastActivityDate).getTime() >= new Date(new Date(today).getTime() - 86400000).getTime()
-        ) {
-          // Activity within last 24 hours, increase streak
-          updatedProfile.streak += 1;
-        } else {
-          // Activity after a break, reset streak to 1
-          updatedProfile.streak = 1;
+        if (lastActivityDate !== today) {
+          if (new Date(lastActivityDate).getTime() >= new Date(new Date(today).getTime() - 86400000).getTime()) {
+            // Activity within last 24 hours, increase streak
+            updatedProfile.streak += 1;
+          } else {
+            // Activity after a break, reset streak to 1
+            updatedProfile.streak = 1;
+          }
         }
-      } else {
-        // If uncompleting, remove points (but ensure it doesn't go below 0)
-        updatedProfile.points = Math.max(0, updatedProfile.points - 5);
-        updatedProfile.totalTasksCompleted = Math.max(0, updatedProfile.totalTasksCompleted - 1);
       }
       
       return {
@@ -189,27 +185,31 @@ export const createTaskActions = (set: any, get: any) => ({
   
   deleteTask: (id: string) => {
     set((state: any) => {
-      const task = state.tasks.find((t: Task) => t.id === id);
-      let updatedProjects = [...state.projects];
-      if (task?.projectId) {
-        updatedProjects = state.projects.map((project: Project) => {
-          if (project.id === task.projectId) {
-            return {
-              ...project,
-              tasks: project.tasks.filter(taskId => taskId !== id),
-              updatedAt: new Date().toISOString(),
-            };
-          }
-          return project;
-        });
+      const taskToDelete = state.tasks.find((t: Task) => t.id === id);
+      
+      if (!taskToDelete) return state;
+      
+      // If the task is part of a project, remove it from the project
+      if (taskToDelete.projectId) {
+        const project = state.projects.find((p: Project) => p.id === taskToDelete.projectId);
+        if (project) {
+          const updatedProject = {
+            ...project,
+            tasks: project.tasks.filter((taskId: string) => taskId !== id),
+            updatedAt: new Date().toISOString(),
+          };
+          get().updateProject(updatedProject);
+        }
       }
+      
+      // Remove task from daily priorities if present
       const updatedDailyPriorities = state.dailyPriorities.map((dp: DailyPriority) => ({
         ...dp,
-        taskIds: dp.taskIds.filter(taskId => taskId !== id),
+        taskIds: dp.taskIds.filter((taskId: string) => taskId !== id),
       }));
+      
       return {
         tasks: state.tasks.filter((t: Task) => t.id !== id),
-        projects: updatedProjects,
         dailyPriorities: updatedDailyPriorities,
       };
     });

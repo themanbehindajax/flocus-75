@@ -1,21 +1,17 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
-import { CalendarTaskCard } from "@/components/calendar/CalendarTaskCard";
 import { Button } from "@/components/ui/button";
 import { FullCalendarView } from "@/components/calendar/FullCalendarView";
 import { WeekCalendarView } from "@/components/calendar/WeekCalendarView";
@@ -29,17 +25,6 @@ const Calendar = () => {
   const [view, setView] = useState<"day" | "week" | "month">("month");
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any>(null);
-  
-  // Get tasks for the selected date
-  const tasksForSelectedDate = tasks.filter(task => {
-    if (!task.dueDate) return false;
-    return isSameDay(new Date(task.dueDate), selectedDate);
-  });
-  
-  // Calculate days with tasks for visual indicators
-  const daysWithTasks = tasks
-    .filter(task => task.dueDate)
-    .map(task => new Date(task.dueDate as string));
   
   // Navigation functions
   const goToToday = () => setSelectedDate(new Date());
@@ -70,6 +55,11 @@ const Calendar = () => {
 
   const handleAddEvent = () => {
     setEditingEvent(null);
+    setIsEventFormOpen(true);
+  };
+  
+  const handleEditEvent = (event: any) => {
+    setEditingEvent(event);
     setIsEventFormOpen(true);
   };
   
@@ -126,11 +116,6 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
-              onAddEvent={handleAddEvent}
-              onEditEvent={(event) => {
-                setEditingEvent(event);
-                setIsEventFormOpen(true);
-              }}
             />
           )}
           
@@ -140,11 +125,6 @@ const Calendar = () => {
               onSelectDate={setSelectedDate}
               tasks={tasks}
               projects={projects}
-              onAddEvent={handleAddEvent}
-              onEditEvent={(event) => {
-                setEditingEvent(event);
-                setIsEventFormOpen(true);
-              }}
             />
           )}
           
@@ -153,11 +133,6 @@ const Calendar = () => {
               selectedDate={selectedDate}
               tasks={tasks}
               projects={projects}
-              onAddEvent={handleAddEvent}
-              onEditEvent={(event) => {
-                setEditingEvent(event);
-                setIsEventFormOpen(true);
-              }}
             />
           )}
         </div>

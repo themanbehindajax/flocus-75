@@ -18,6 +18,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     if (isMobile) {
       setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
     }
   }, [isMobile]);
 
@@ -27,22 +29,16 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ x: -280 }}
-            animate={{ x: 0 }}
-            exit={{ x: -280 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={cn(
-              "fixed inset-y-0 left-0 z-20 md:relative",
-              "w-64"
-            )}
-          >
-            <AppSidebar activePath={location.pathname} />
-          </motion.div>
+      {/* Fixed sidebar that doesn't animate on page changes */}
+      <div
+        className={cn(
+          "h-screen z-20 transition-all duration-300 ease-in-out",
+          sidebarOpen ? "w-64" : "w-0 md:w-16",
+          isMobile && !sidebarOpen ? "absolute -left-full" : ""
         )}
-      </AnimatePresence>
+      >
+        <AppSidebar activePath={location.pathname} collapsed={!sidebarOpen} />
+      </div>
 
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Mobile header with menu button */}
@@ -83,16 +79,19 @@ export function AppLayout({ children }: AppLayoutProps) {
           )}
         </AnimatePresence>
 
-        {/* Main content */}
-        <motion.main 
-          key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="flex-1 overflow-auto"
-        >
-          {children}
-        </motion.main>
+        {/* Main content - only this part animates on route change */}
+        <AnimatePresence mode="wait">
+          <motion.main 
+            key={location.pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2 }}
+            className="flex-1 overflow-auto"
+          >
+            {children}
+          </motion.main>
+        </AnimatePresence>
       </div>
     </div>
   );

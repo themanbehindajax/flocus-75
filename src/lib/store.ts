@@ -56,17 +56,6 @@ export interface AppState {
   updateCalendarEvent: (event: CalendarEvent) => void;
   deleteCalendarEvent: (id: string) => void;
   getCalendarEventsInRange: (startDate: Date, endDate: Date) => CalendarEvent[];
-  
-  // Spotify-specific actions
-  setSpotifyAuth: (auth: AppSettings["spotifyAuth"]) => void;
-  clearSpotifyAuth: () => void;
-  getCurrentTrack: () => any;
-  playTrack: (trackId: string) => Promise<void>;
-  pauseTrack: () => Promise<void>;
-  nextTrack: () => Promise<void>;
-  previousTrack: () => Promise<void>;
-  getUserPlaylists: () => Promise<any[]>;
-  playPlaylist: (playlistId: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>()(
@@ -117,28 +106,7 @@ export const useAppStore = create<AppState>()(
       ...createTagActions(set),
       ...createPomodoroActions(set, get),
       ...createMiscActions(set),
-      ...createCalendarActions(set, get),
-      
-      // Spotify mock actions
-      setSpotifyAuth: (auth) => set(state => ({
-        settings: {
-          ...state.settings,
-          spotifyAuth: auth
-        }
-      })),
-      clearSpotifyAuth: () => set(state => ({
-        settings: {
-          ...state.settings,
-          spotifyAuth: undefined
-        }
-      })),
-      getCurrentTrack: () => ({}),
-      playTrack: async () => {},
-      pauseTrack: async () => {},
-      nextTrack: async () => {},
-      previousTrack: async () => {},
-      getUserPlaylists: async () => [],
-      playPlaylist: async () => {}
+      ...createCalendarActions(set, get)
     }),
     {
       name: "flocus-app-storage",

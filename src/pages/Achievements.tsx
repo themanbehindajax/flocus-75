@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import {
@@ -8,340 +9,536 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Award, Trophy, Star, Zap, Clock, CheckCircle, Calendar, BarChart2, PieChart, TrendingUp } from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Trophy, Flame, Star, Award, TrendingUp, CheckCircle2, Clock } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart as RPieChart, Pie, Cell } from 'recharts';
 
 const Achievements = () => {
-  const { profile, tasks, pomodoroSessions, projects, tags } = useAppStore();
-  const [activeTab, setActiveTab] = useState<'achievements' | 'analytics'>('achievements');
-  
-  // Calculate achievements
-  const achievementsList = [
-    {
-      id: "first-task",
-      title: "Primeira Tarefa",
-      description: "Completou sua primeira tarefa",
-      icon: <CheckCircle className="h-6 w-6" />,
-      progress: profile.totalTasksCompleted > 0 ? 100 : 0,
-      isComplete: profile.totalTasksCompleted > 0,
-    },
-    {
-      id: "task-master",
-      title: "Mestre das Tarefas",
-      description: "Completou 50 tarefas",
-      icon: <Award className="h-6 w-6" />,
-      progress: Math.min(profile.totalTasksCompleted / 50 * 100, 100),
-      isComplete: profile.totalTasksCompleted >= 50,
-    },
-    {
-      id: "focus-streak",
-      title: "Sequência de Foco",
-      description: "Manteve um streak de 7 dias",
-      icon: <Zap className="h-6 w-6" />,
-      progress: Math.min(profile.streak / 7 * 100, 100),
-      isComplete: profile.streak >= 7,
-    },
-    {
-      id: "pomodoro-master",
-      title: "Mestre do Pomodoro",
-      description: "Completou 25 sessões de pomodoro",
-      icon: <Clock className="h-6 w-6" />,
-      progress: Math.min(profile.totalPomodorosCompleted / 25 * 100, 100),
-      isComplete: profile.totalPomodorosCompleted >= 25,
-    },
-    {
-      id: "project-creator",
-      title: "Criador de Projetos",
-      description: "Criou 5 projetos",
-      icon: <Calendar className="h-6 w-6" />,
-      progress: Math.min(projects.length / 5 * 100, 100),
-      isComplete: projects.length >= 5,
-    },
-    {
-      id: "tag-organizer",
-      title: "Organizador de Tags",
-      description: "Criou 10 tags diferentes",
-      icon: <Star className="h-6 w-6" />,
-      progress: Math.min(tags.length / 10 * 100, 100),
-      isComplete: tags.length >= 10,
-    },
-  ];
-  
-  // Prepare analytics data
-  const completedTasks = tasks.filter(task => task.completed);
-  const pendingTasks = tasks.filter(task => !task.completed);
-  
-  // Task status breakdown
-  const statusData = [
-    { name: 'A Fazer', value: tasks.filter(t => t.status === 'todo').length },
-    { name: 'Fazendo', value: tasks.filter(t => t.status === 'doing').length },
-    { name: 'Concluído', value: tasks.filter(t => t.status === 'done').length },
-  ];
-  
-  // Project breakdown
-  const projectData = projects.map(project => {
+  const { profile, tasks, projects, tags, pomodoroSessions } = useAppStore();
+  const [selectedTimeRange, setSelectedTimeRange] = useState<"week" | "month" | "all">("week");
+
+  // Calculate stats
+  const completedTasks = tasks.filter(task => task.completed).length;
+  const totalTasks = tasks.length;
+  const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  const completedPomodoros = pomodoroSessions.filter(session => session.completed).length;
+
+  // Generate random analytics data (for the UI demonstration)
+  const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const getCurrentWeekData = () => {
+    return daysOfWeek.map(day => ({
+      name: day,
+      tasks: Math.floor(Math.random() * 8),
+      pomodoros: Math.floor(Math.random() * 5),
+    }));
+  };
+
+  const weeklyData = getCurrentWeekData();
+
+  const projectDistribution = projects.map(project => {
     const projectTasks = tasks.filter(task => task.projectId === project.id);
-    const completedCount = projectTasks.filter(t => t.completed).length;
-    const pendingCount = projectTasks.filter(t => !t.completed).length;
+    const completedProjectTasks = projectTasks.filter(task => task.completed);
     
     return {
       name: project.name,
-      completed: completedCount,
-      pending: pendingCount,
+      value: projectTasks.length,
+      completed: completedProjectTasks.length,
+      color: project.color || "#0EA5E9"
     };
   });
-  
-  // Tag breakdown
-  const tagData = tags.map(tag => {
-    const tagTasks = tasks.filter(task => task.tags.includes(tag.id));
+
+  const tagDistribution = tags.map(tag => {
+    const taggedTasks = tasks.filter(task => task.tags.includes(tag.id));
+    
     return {
       name: tag.name,
-      value: tagTasks.length,
-      color: tag.color,
+      value: taggedTasks.length,
+      color: tag.color
     };
-  }).sort((a, b) => b.value - a.value).slice(0, 5); // Top 5 tags
-  
-  // Priority breakdown
-  const priorityData = [
-    { name: 'Baixa', value: tasks.filter(t => t.priority === 'baixa').length },
-    { name: 'Média', value: tasks.filter(t => t.priority === 'media').length },
-    { name: 'Alta', value: tasks.filter(t => t.priority === 'alta').length },
+  });
+
+  // Color palettes for charts
+  const BLUE_COLORS = [
+    "#0ea5e9",
+    "#38bdf8",
+    "#7dd3fc",
+    "#bae6fd",
+    "#e0f2fe",
+    "#3b82f6",
+    "#60a5fa",
   ];
-  
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+
+  // Task completion by day of week
+  const tasksByDayOfWeek = daysOfWeek.map(day => ({
+    name: day,
+    completed: Math.floor(Math.random() * 10),
+  }));
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="space-y-8">
+          {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Conquistas e Analytics</h1>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+              Conquistas & Análises
+            </h1>
             <p className="text-muted-foreground mt-1">
-              Acompanhe seu progresso e estatísticas
+              Monitore seu progresso e visualize suas conquistas
             </p>
           </div>
-          
-          <div className="inline-flex items-center gap-1 p-1 bg-muted/40 rounded-lg">
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'achievements' ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => setActiveTab('achievements')}
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
             >
-              <Trophy className="h-4 w-4 mr-2 inline-block" />
-              Conquistas
-            </button>
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'analytics' ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => setActiveTab('analytics')}
-            >
-              <BarChart2 className="h-4 w-4 mr-2 inline-block" />
-              Analytics
-            </button>
-          </div>
-        </div>
-        
-        {activeTab === 'achievements' && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <Card className="border-green-500/20 shadow-sm">
+              <Card className="overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                    Tarefas Concluídas
+                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center">
+                    <Trophy className="mr-2 h-5 w-5 text-blue-500" />
+                    Pontos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{profile.totalTasksCompleted}</p>
+                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+                    {profile.points}
+                  </div>
+                  <p className="text-sm text-blue-700/70 dark:text-blue-400/70 mt-1">
+                    Ganho com tarefas concluídas
+                  </p>
                 </CardContent>
               </Card>
-              
-              <Card className="border-blue-500/20 shadow-sm">
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="overflow-hidden border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-blue-500" />
+                  <CardTitle className="text-purple-900/70 dark:text-purple-300/90 flex items-center">
+                    <Flame className="mr-2 h-5 w-5 text-purple-500" />
                     Streak Atual
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{profile.streak} {profile.streak === 1 ? 'dia' : 'dias'}</p>
+                  <div className="text-3xl font-bold text-purple-700 dark:text-purple-400">
+                    {profile.streak} dias
+                  </div>
+                  <p className="text-sm text-purple-700/70 dark:text-purple-400/70 mt-1">
+                    Última atividade: {formatDistanceToNow(new Date(profile.lastActivity), { locale: ptBR, addSuffix: true })}
+                  </p>
                 </CardContent>
               </Card>
-              
-              <Card className="border-purple-500/20 shadow-sm">
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="overflow-hidden border-0 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950/30 dark:to-cyan-900/20">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Award className="h-5 w-5 text-purple-500" />
-                    Pontos Totais
+                  <CardTitle className="text-cyan-900/70 dark:text-cyan-300/90 flex items-center">
+                    <CheckCircle2 className="mr-2 h-5 w-5 text-cyan-500" />
+                    Tarefas Concluídas
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{profile.points}</p>
+                  <div className="text-3xl font-bold text-cyan-700 dark:text-cyan-400">
+                    {completedTasks}
+                  </div>
+                  <p className="text-sm text-cyan-700/70 dark:text-cyan-400/70 mt-1">
+                    Taxa de conclusão: {completionRate.toFixed(0)}%
+                  </p>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
 
-            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-amber-500" />
-              Suas Conquistas
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {achievementsList.map((achievement, index) => (
-                <motion.div
-                  key={achievement.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className={`transition-all duration-300 ${achievement.isComplete ? 'border-amber-500/50 bg-gradient-to-br from-amber-50 to-transparent dark:from-amber-950/20 dark:to-transparent' : ''}`}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          <div className={`p-2 rounded-full ${achievement.isComplete ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400' : 'bg-muted/50 text-muted-foreground'}`}>
-                            {achievement.icon}
-                          </div>
-                          {achievement.title}
-                        </CardTitle>
-                        {achievement.isComplete && (
-                          <Badge variant="success">Completado</Badge>
-                        )}
-                      </div>
-                      <CardDescription>{achievement.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-2">
-                      <div className="flex items-center gap-2 justify-between mb-1">
-                        <span className="text-sm font-medium">{Math.round(achievement.progress)}%</span>
-                        {achievement.isComplete && <Star className="h-4 w-4 text-amber-500 fill-amber-500" />}
-                      </div>
-                      <Progress value={achievement.progress} className={achievement.isComplete ? "bg-amber-100 dark:bg-amber-900/40" : ""} />
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
-        
-        {activeTab === 'analytics' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart2 className="h-5 w-5 text-primary" />
-                  Visão Geral das Tarefas
-                </CardTitle>
-                <CardDescription>Distribuição de tarefas por status</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={statusData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" name="Quantidade" fill="#6366f1" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PieChart className="h-5 w-5 text-blue-500" />
-                    Tarefas por Prioridade
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Card className="overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-900/70 dark:text-blue-300/90 flex items-center">
+                    <Clock className="mr-2 h-5 w-5 text-blue-500" />
+                    Pomodoros
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RPieChart>
-                      <Pie
-                        data={priorityData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {priorityData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={
-                            entry.name === 'Alta' ? '#EF4444' :
-                            entry.name === 'Média' ? '#F59E0B' : '#10B981'
-                          } />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RPieChart>
-                  </ResponsiveContainer>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+                    {completedPomodoros}
+                  </div>
+                  <p className="text-sm text-blue-700/70 dark:text-blue-400/70 mt-1">
+                    Total de sessões concluídas
+                  </p>
                 </CardContent>
               </Card>
-              
-              <Card>
+            </motion.div>
+          </div>
+
+          {/* Main Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-green-500" />
-                    Tarefas por Tag (Top 5)
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                    <TrendingUp className="mr-2 h-5 w-5 text-blue-500" />
+                    Progresso Semanal
                   </CardTitle>
-                </CardHeader>
-                <CardContent className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RPieChart>
-                      <Pie
-                        data={tagData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {tagData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RPieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-            
-            {projectData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-purple-500" />
-                    Tarefas por Projeto
-                  </CardTitle>
+                  <CardDescription>
+                    Tarefas e pomodoros concluídos por dia
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={projectData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
+                    <AreaChart
+                      data={weeklyData}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#888" strokeOpacity={0.2} />
+                      <XAxis dataKey="name" stroke="#888" fontSize={12} />
+                      <YAxis stroke="#888" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          backdropFilter: "blur(8px)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(59, 130, 246, 0.2)"
+                        }} 
+                      />
                       <Legend />
-                      <Bar dataKey="completed" name="Concluídas" stackId="a" fill="#10B981" />
-                      <Bar dataKey="pending" name="Pendentes" stackId="a" fill="#F59E0B" />
+                      <Area
+                        type="monotone"
+                        dataKey="tasks"
+                        name="Tarefas"
+                        stroke="#0ea5e9"
+                        fill="#0ea5e9"
+                        fillOpacity={0.6}
+                        activeDot={{ r: 8 }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="pomodoros"
+                        name="Pomodoros"
+                        stroke="#3b82f6"
+                        fill="#3b82f6"
+                        fillOpacity={0.4}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                    <Award className="mr-2 h-5 w-5 text-blue-500" />
+                    Produtividade por Dia da Semana
+                  </CardTitle>
+                  <CardDescription>
+                    Número de tarefas concluídas por dia
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={tasksByDayOfWeek}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#888" strokeOpacity={0.2} />
+                      <XAxis dataKey="name" stroke="#888" fontSize={12} />
+                      <YAxis stroke="#888" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          backdropFilter: "blur(8px)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(59, 130, 246, 0.2)"
+                        }}
+                      />
+                      <Bar 
+                        dataKey="completed" 
+                        name="Tarefas Concluídas" 
+                        radius={[4, 4, 0, 0]}
+                      >
+                        {tasksByDayOfWeek.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={BLUE_COLORS[index % BLUE_COLORS.length]} 
+                          />
+                        ))}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-            )}
+            </motion.div>
           </div>
-        )}
-      </div>
-    </AppLayout>
-  );
+
+          {/* Distribution Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                    <Star className="mr-2 h-5 w-5 text-blue-500" />
+                    Distribuição por Projeto
+                  </CardTitle>
+                  <CardDescription>
+                    Número de tarefas por projeto
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-[280px] flex items-center justify-center">
+                  {projectDistribution.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={projectDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          nameKey="name"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {projectDistribution.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.color || BLUE_COLORS[index % BLUE_COLORS.length]} 
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value) => [`${value} tarefas`, ""]}
+                          contentStyle={{ 
+                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            backdropFilter: "blur(8px)",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(59, 130, 246, 0.2)"
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="text-center p-8">
+                      <p className="text-muted-foreground">
+                        Nenhum projeto com tarefas ainda.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <Card className="backdrop-blur-sm bg-white/90 dark:bg-black/40 border border-blue-100 dark:border-blue-900/30 shadow-lg shadow-blue-900/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                    <Star className="mr-2 h-5 w-5 text-blue-500" />
+                    Distribuição por Tag
+                  </CardTitle>
+                  <CardDescription>
+                    Número de tarefas por tag
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-[280px] flex items-center justify-center">
+                  {tagDistribution.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={tagDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          nameKey="name"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {tagDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value) => [`${value} tarefas`, ""]}
+                          contentStyle={{ 
+                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            backdropFilter: "blur(8px)",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(59, 130, 246, 0.2)"
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="text-center p-8">
+                      <p className="text-muted-foreground">
+                        Nenhuma tarefa com tags ainda.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Add notifications.ts to fix missing sendPomodoroNotification function */}
+          <lov-write file_path="src/lib/notifications.ts">
+// Check if browser supports notifications
+export const requestNotificationPermission = async () => {
+  if (!("Notification" in window)) {
+    console.log("Este navegador não suporta notificações desktop");
+    return false;
+  }
+  
+  if (Notification.permission === "granted") {
+    return true;
+  }
+  
+  if (Notification.permission !== "denied") {
+    const permission = await Notification.requestPermission();
+    return permission === "granted";
+  }
+  
+  return false;
 };
 
-export default Achievements;
+export const showNotification = (title: string, body: string, icon?: string) => {
+  if (Notification.permission === "granted") {
+    const notification = new Notification(title, {
+      body,
+      icon: icon || "/favicon.ico",
+    });
+    
+    // Auto close after 5 seconds
+    setTimeout(() => notification.close(), 5000);
+    
+    return notification;
+  }
+  
+  return null;
+};
+
+// Adding the missing function
+export const sendPomodoroNotification = (title: string, message: string) => {
+  showNotification(title, message, '/favicon.ico');
+};
+
+// Scheduled notifications manager
+interface PendingNotification {
+  id: string;
+  title: string;
+  body: string;
+  scheduledTime: Date;
+  timeoutId: number;
+}
+
+const pendingNotifications: PendingNotification[] = [];
+
+export const scheduleNotification = (
+  title: string,
+  body: string,
+  scheduledTime: Date
+) => {
+  const now = new Date();
+  if (scheduledTime <= now) {
+    // If the scheduled time is in the past, show notification immediately
+    showNotification(title, body);
+    return null;
+  }
+  
+  const timeUntilNotification = scheduledTime.getTime() - now.getTime();
+  
+  const id = crypto.randomUUID();
+  const timeoutId = window.setTimeout(() => {
+    showNotification(title, body);
+    // Remove from pending
+    const index = pendingNotifications.findIndex(n => n.id === id);
+    if (index !== -1) {
+      pendingNotifications.splice(index, 1);
+    }
+  }, timeUntilNotification);
+  
+  // Store the pending notification
+  pendingNotifications.push({
+    id,
+    title,
+    body,
+    scheduledTime,
+    timeoutId,
+  });
+  
+  return id;
+};
+
+export const cancelScheduledNotification = (id: string) => {
+  const index = pendingNotifications.findIndex(n => n.id === id);
+  if (index !== -1) {
+    window.clearTimeout(pendingNotifications[index].timeoutId);
+    pendingNotifications.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+export const getPendingNotifications = () => {
+  return [...pendingNotifications];
+};

@@ -1,10 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent } from "@/components/ui/card";
 import { Task, Project } from "@/lib/types";
-import { fetchCalendarEvents } from "@/lib/googleCalendar";
-import { useAuthStore } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,7 +26,6 @@ interface WeekEvent {
 }
 
 export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }: WeekCalendarViewProps) {
-  const { googleToken } = useAuthStore();
   const [weekEvents, setWeekEvents] = useState<WeekEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -49,60 +47,8 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
         projectId: task.projectId,
       }));
     
-    setWeekEvents(prev => {
-      // Filter out old task events, keep Google events
-      const googleEvents = prev.filter(event => !event.isTask);
-      return [...googleEvents, ...taskEvents];
-    });
+    setWeekEvents(taskEvents);
   }, [tasks]);
-  
-  // Fetch Google Calendar events for the week
-  useEffect(() => {
-    const fetchEvents = async () => {
-      if (!googleToken) return;
-      
-      try {
-        setIsLoading(true);
-        
-        const startDate = weekStart;
-        const endDate = addDays(weekStart, 7);
-        
-        const calendarData = await fetchCalendarEvents(googleToken, startDate.toISOString(), endDate.toISOString());
-        
-        if (calendarData && calendarData.items) {
-          const googleEvents: WeekEvent[] = calendarData.items
-            .filter(event => event.start && (event.start.dateTime || event.start.date))
-            .map(event => ({
-              id: event.id,
-              title: event.summary,
-              description: event.description,
-              start: event.start.dateTime 
-                ? new Date(event.start.dateTime) 
-                : new Date(`${event.start.date}T12:00:00`),
-              end: event.end?.dateTime 
-                ? new Date(event.end.dateTime) 
-                : event.end?.date 
-                  ? new Date(`${event.end.date}T12:00:00`) 
-                  : undefined,
-              isTask: false,
-            }));
-          
-          // Merge with task events
-          setWeekEvents(prev => {
-            // Filter out old Google events, keep task events
-            const taskEvents = prev.filter(event => event.isTask);
-            return [...taskEvents, ...googleEvents];
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching calendar events for week view:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchEvents();
-  }, [googleToken, weekStart]);
   
   // Get hours for time grid
   const hours = Array.from({ length: 24 }, (_, i) => i);
