@@ -78,6 +78,10 @@
     @apply bg-background text-foreground font-sans;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+  }
+
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -106,7 +110,7 @@
   }
   
   .project-card {
-    @apply p-5 rounded-xl bg-card shadow-sm border hover:shadow-md transition-all;
+    @apply p-5 rounded-xl bg-card shadow-sm hover:shadow-md transition-all duration-200;
   }
   
   .focus-ring {
@@ -115,5 +119,34 @@
 
   .glass-effect {
     @apply backdrop-blur-md bg-white/70 dark:bg-black/50 border border-white/20 dark:border-white/10;
+  }
+  
+  /* Melhorando transições, feedback visual e microinterações */
+  .btn-transition {
+    @apply transition-all duration-200 ease-in-out transform hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    @apply animate-fade-in;
+  }
+
+  .toast-success {
+    @apply bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700;
+  }
+
+  .toast-info {
+    @apply bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700;
+  }
+
+  .toast-warning {
+    @apply bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700;
   }
 }

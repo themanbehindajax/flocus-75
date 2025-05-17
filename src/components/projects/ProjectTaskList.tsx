@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ListPlus, List, Kanban, CheckCircle, CheckCircle2 } from "lucide-react";
@@ -7,6 +8,7 @@ import { Task } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 
 interface ProjectTaskListProps {
   projectId: string;
@@ -27,22 +29,31 @@ export const ProjectTaskList = ({
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
     
-    // Show toast notification based on completion state after toggle
-    if (task.completed) {
-      toast({
-        title: "Tarefa reaberta",
-        description: `A tarefa "${task.title}" foi desmarcada como concluída.`,
-      });
-    } else {
+    // Show toast notification based on new completion state after toggle
+    if (!task.completed) {
       toast({
         title: "Tarefa concluída",
         description: `A tarefa "${task.title}" foi marcada como concluída.`,
+        className: "toast-success"
+      });
+    } else {
+      toast({
+        title: "Tarefa reaberta",
+        description: `A tarefa "${task.title}" foi desmarcada como concluída.`,
+        className: "toast-info"
       });
     }
   };
 
+  // Define priority styles for consistent design
+  const priorityStyles = {
+    alta: "border-l-red-500",
+    media: "border-l-amber-500",
+    baixa: "border-l-green-500"
+  };
+
   return (
-    <div className="md:col-span-3">
+    <div className="md:col-span-3 animate-fade-in">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium">Tarefas</h3>
         <div className="flex gap-2">
@@ -68,7 +79,7 @@ export const ProjectTaskList = ({
         </div>
       </div>
 
-      <Card className="mb-4">
+      <Card className="mb-4 shadow-sm">
         <CardContent className="p-4">
           <QuickAddTask
             projectId={projectId}
@@ -76,6 +87,7 @@ export const ProjectTaskList = ({
               toast({
                 title: "Tarefa adicionada",
                 description: "Tarefa adicionada ao projeto com sucesso.",
+                className: "toast-success"
               });
             }}
           />
@@ -83,9 +95,9 @@ export const ProjectTaskList = ({
       </Card>
 
       {projectTasks.length === 0 ? (
-        <div className="text-center py-8 border rounded-lg bg-muted/30">
+        <div className="text-center py-10 px-4 border rounded-lg bg-muted/20 transition-all animate-fade-in">
           <p className="text-muted-foreground mb-4">Nenhuma tarefa adicionada a este projeto</p>
-          <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Button onClick={() => setIsAddDialogOpen(true)} className="btn-transition">
             <ListPlus className="mr-2 h-4 w-4" />
             Adicionar Tarefa
           </Button>
@@ -93,20 +105,27 @@ export const ProjectTaskList = ({
       ) : (
         <>
           {view === "list" && (
-            <div className="space-y-3">
+            <div className="space-y-3 animate-fade-in">
               {projectTasks.map((task) => (
-                <Card key={task.id} className={`border-l-4 ${
-                  task.priority === "alta" ? "border-l-red-500" :
-                  task.priority === "media" ? "border-l-yellow-500" :
-                  "border-l-green-500"
-                } ${task.completed ? 'bg-muted/30' : ''}`}>
+                <Card 
+                  key={task.id} 
+                  className={cn(
+                    "border-l-4 transition-all duration-200 hover:shadow-md",
+                    priorityStyles[task.priority] || "border-l-green-500",
+                    task.completed ? 'bg-muted/30' : ''
+                  )}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className={`h-6 w-6 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
+                          className={`h-6 w-6 p-0 rounded-full transition-all duration-200 ${
+                            task.completed 
+                              ? 'text-primary hover:text-primary/80 hover:bg-primary/10' 
+                              : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
+                          }`}
                           onClick={() => handleToggleTaskCompletion(task)}
                         >
                           {task.completed ? 
@@ -114,12 +133,12 @@ export const ProjectTaskList = ({
                             <CheckCircle className="h-4 w-4" />
                           }
                         </Button>
-                        <span className={task.completed ? "line-through text-muted-foreground" : ""}>
+                        <span className={task.completed ? "line-through text-muted-foreground" : "font-medium"}>
                           {task.title}
                         </span>
                       </div>
                       {task.dueDate && (
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/30 rounded-full">
                           {new Date(task.dueDate).toLocaleDateString("pt-BR")}
                         </span>
                       )}

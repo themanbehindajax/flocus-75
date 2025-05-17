@@ -41,26 +41,35 @@ export const TodayPriorities = () => {
     if (task) {
       toggleTaskCompletion(taskId);
       
-      // Show toast notification
-      if (task.completed) {
-        toast(`Tarefa "${task.title}" reaberta!`);
+      // Show toast notification based on the new state (opposite of the current state)
+      if (!task.completed) {
+        toast.success(`Tarefa "${task.title}" concluída!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
       } else {
-        toast(`Tarefa "${task.title}" concluída!`);
+        toast.info(`Tarefa "${task.title}" reaberta!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
       }
     }
   };
 
   if (priorityTasks.length === 0) {
     return (
-      <Card className="col-span-full">
-        <CardContent className="text-center py-10">
-          <ListChecks className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-          <h3 className="font-medium text-lg">Sem prioridades definidas</h3>
-          <p className="text-muted-foreground mt-1 mb-4">
+      <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in">
+        <CardContent className="text-center py-12 px-4">
+          <ListChecks className="h-12 w-12 mx-auto mb-4 text-muted-foreground/70" />
+          <h3 className="font-medium text-lg mb-1">Sem prioridades definidas</h3>
+          <p className="text-muted-foreground mt-1 mb-6 max-w-md mx-auto">
             Defina até 6 tarefas prioritárias para o dia
           </p>
-          <Button variant="outline" asChild>
-            <Link to="/ivy-lee">Definir prioridades</Link>
+          <Button variant="default" size="lg" className="gap-2" asChild>
+            <Link to="/ivy-lee">
+              Definir prioridades
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </Button>
         </CardContent>
       </Card>
@@ -68,20 +77,20 @@ export const TodayPriorities = () => {
   }
 
   return (
-    <Card className="col-span-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="col-span-full shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in">
+      <CardHeader className="flex flex-row items-center justify-between pb-3 border-b">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold leading-none tracking-tight inline-flex items-center gap-2">
             Prioridades de Hoje
             {completionPercentage === 100 && (
-              <Trophy className="h-4 w-4 text-amber-500" />
+              <Trophy className="h-5 w-5 text-amber-500 animate-pulse-light" />
             )}
           </h2>
           <p className="text-sm text-muted-foreground">
             {completedTasks} de {totalTasks} tarefas concluídas
           </p>
         </div>
-        <Button variant="ghost" size="sm" className="gap-1" asChild>
+        <Button variant="ghost" size="sm" className="gap-1.5 hover:bg-primary/10 transition-colors" asChild>
           <Link to="/ivy-lee">
             Gerenciar
             <ArrowRight className="h-4 w-4" />
@@ -89,16 +98,25 @@ export const TodayPriorities = () => {
         </Button>
       </CardHeader>
       
-      <CardContent>
-        <div className="mb-4">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+      <CardContent className="pt-4">
+        <div className="mb-5">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
             <span>Progresso</span>
-            <span>{completionPercentage}%</span>
+            <span className="font-medium">{completionPercentage}%</span>
           </div>
-          <Progress value={completionPercentage} className="h-2" />
+          <Progress 
+            value={completionPercentage} 
+            className={cn(
+              "h-2 transition-all duration-500",
+              completionPercentage === 100 ? "bg-muted/30" : "bg-muted/20"
+            )}
+            indicatorClassName={cn(
+              completionPercentage === 100 ? "bg-green-500" : ""
+            )}
+          />
         </div>
         
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {priorityTasks.map((task) => (
             <TaskCardCompact
               key={task.id}

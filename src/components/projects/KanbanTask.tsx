@@ -6,6 +6,7 @@ import { CheckCircle, Calendar, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface KanbanTaskProps {
   task: Task;
@@ -25,21 +26,34 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
     
     toggleTaskCompletion(task.id);
     
-    // Show toast notification based on new completion state
-    if (task.completed) {
-      toast(`Tarefa "${task.title}" reaberta!`);
+    // Show toast notification based on new completion state after toggle
+    if (!task.completed) {
+      toast.success(`Tarefa "${task.title}" concluída!`, {
+        className: "animate-fade-in",
+        duration: 2000
+      });
     } else {
-      toast(`Tarefa "${task.title}" concluída!`);
+      toast.info(`Tarefa "${task.title}" reaberta!`, {
+        className: "animate-fade-in",
+        duration: 2000
+      });
     }
+  };
+
+  // Define priority styles for consistent design
+  const priorityStyles = {
+    alta: "border-l-red-500",
+    media: "border-l-amber-500",
+    baixa: "border-l-green-500"
   };
   
   return (
     <Card 
-      className={`border-l-4 cursor-grab active:cursor-grabbing ${
-        task.priority === 'alta' ? 'border-l-red-500' : 
-        task.priority === 'media' ? 'border-l-yellow-500' : 
-        'border-l-green-500'
-      } ${task.completed ? 'bg-muted/30' : ''}`}
+      className={cn(
+        "border-l-4 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md transition-all duration-200",
+        priorityStyles[task.priority] || "border-l-green-500",
+        task.completed ? "bg-muted/30" : ""
+      )}
       draggable
       onDragStart={onDragStart}
     >
@@ -50,7 +64,11 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-5 w-5 p-0 ${task.completed ? 'text-primary' : 'text-muted-foreground'}`}
+                className={`h-5 w-5 p-0 rounded-full transition-all duration-200 ${
+                  task.completed 
+                    ? 'text-primary hover:text-primary/80 hover:bg-primary/10' 
+                    : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
+                }`}
                 onClick={handleToggleTaskCompletion}
               >
                 {task.completed ? 
@@ -80,7 +98,7 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
               {getTaskTags.map(tag => tag && (
                 <span 
                   key={tag.id}
-                  className="px-1.5 py-0.5 rounded-full text-xs"
+                  className="px-1.5 py-0.5 rounded-full text-xs font-medium"
                   style={{ backgroundColor: tag.color + '20', color: tag.color }}
                 >
                   {tag.name}
@@ -88,7 +106,7 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
               ))}
               
               {task.isQuick && (
-                <Badge variant="outline" className="text-xs px-1.5">⚡ Rápida</Badge>
+                <Badge variant="outline" className="text-xs px-1.5 bg-blue-50 dark:bg-blue-950/40">⚡ Rápida</Badge>
               )}
             </div>
           </div>

@@ -43,12 +43,27 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       // If moving to "done" status and not already completed, mark as completed
       if (status === "done" && !draggedTask.completed) {
         toggleTaskCompletion(draggedTask.id);
-        toast(`Tarefa "${draggedTask.title}" concluída!`);
+        toast.success(`Tarefa "${draggedTask.title}" concluída!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
       }
       // If moving from "done" to another status and is completed, unmark completion
       else if (draggedTask.status === "done" && status !== "done" && draggedTask.completed) {
         toggleTaskCompletion(draggedTask.id);
-        toast(`Tarefa "${draggedTask.title}" reaberta!`);
+        toast.info(`Tarefa "${draggedTask.title}" reaberta!`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
+      } else {
+        toast.info(`Tarefa movida para ${
+          status === "todo" ? "A Fazer" : 
+          status === "doing" ? "Fazendo" : 
+          "Feito"
+        }`, {
+          className: "animate-fade-in",
+          duration: 2000
+        });
       }
     }
     
@@ -57,7 +72,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   };
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 animate-fade-in">
       <KanbanColumn 
         title="A Fazer" 
         tasks={todoTasks}
