@@ -96,7 +96,18 @@ const ProjectDetails = () => {
                 </DialogHeader>
                 <TaskForm
                   onComplete={handleTaskCreated}
-                  initialValues={{ projectId: project.id }}
+                  editTask={{
+                    id: '',
+                    title: '',
+                    priority: 'media',
+                    status: 'todo',
+                    tags: [],
+                    projectId: project.id,
+                    completed: false,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    subtasks: []
+                  }}
                 />
               </DialogContent>
             </Dialog>
