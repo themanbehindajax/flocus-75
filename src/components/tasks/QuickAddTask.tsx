@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lightning } from "lucide-react";
+import { Bolt } from "lucide-react";
 
 interface QuickAddTaskProps {
   projectId?: string;
@@ -25,6 +25,8 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         status: "todo",
         projectId,
         tags: [],
+        completed: false,
+        subtasks: [],
       });
       setTaskTitle("");
       if (onTaskAdded) onTaskAdded();
@@ -45,7 +47,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         disabled={!taskTitle.trim()}
         className="text-white"
       >
-        <Lightning className="w-4 h-4 mr-1" />
+        <Bolt className="w-4 h-4 mr-1" />
         Adicionar
       </Button>
     </form>
