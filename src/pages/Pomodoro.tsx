@@ -212,9 +212,9 @@ const Pomodoro = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium opacity-80">Projeto</label>
                     <Select
-                      value={selectedProjectId || ""}
+                      value={selectedProjectId || "none"}
                       onValueChange={(value) => {
-                        setSelectedProjectId(value || null);
+                        setSelectedProjectId(value === "none" ? null : value);
                         setSelectedTaskId(null); // Reset task selection
                       }}
                       disabled={isActive && !isPaused}
@@ -223,7 +223,7 @@ const Pomodoro = () => {
                         <SelectValue placeholder="Selecione um projeto" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Sem projeto específico</SelectItem>
+                        <SelectItem value="none">Sem projeto específico</SelectItem>
                         {projects.map(project => (
                           <SelectItem key={project.id} value={project.id}>
                             {project.name}
@@ -237,15 +237,15 @@ const Pomodoro = () => {
                     <div className="space-y-2">
                       <label className="text-sm font-medium opacity-80">Tarefa</label>
                       <Select
-                        value={selectedTaskId || ""}
-                        onValueChange={(value) => setSelectedTaskId(value || null)}
+                        value={selectedTaskId || "none"}
+                        onValueChange={(value) => setSelectedTaskId(value === "none" ? null : value)}
                         disabled={isActive && !isPaused}
                       >
                         <SelectTrigger className="bg-white/10 border-white/20 text-white">
                           <SelectValue placeholder="Selecione uma tarefa" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Sem tarefa específica</SelectItem>
+                          <SelectItem value="none">Sem tarefa específica</SelectItem>
                           {projectTasks.map(task => (
                             <SelectItem key={task.id} value={task.id}>
                               {task.title}

@@ -107,7 +107,7 @@ export const SpotifyPlaylists = () => {
         ) : playlists.length > 0 ? (
           <>
             <Select
-              value={selectedPlaylistId}
+              value={selectedPlaylistId || "default"}
               onValueChange={setSelectedPlaylistId}
             >
               <SelectTrigger>

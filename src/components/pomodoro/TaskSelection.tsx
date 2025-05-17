@@ -31,7 +31,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       <div className="space-y-2">
         <label className="text-sm font-medium">Tarefa</label>
         <Select
-          value={selectedTaskId}
+          value={selectedTaskId || "none"}
           onValueChange={onTaskChange}
           disabled={disabled}
         >
@@ -54,7 +54,7 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       <div className="space-y-2">
         <label className="text-sm font-medium">Projeto</label>
         <Select
-          value={selectedProjectId}
+          value={selectedProjectId || "none"}
           onValueChange={onProjectChange}
           disabled={disabled}
         >
