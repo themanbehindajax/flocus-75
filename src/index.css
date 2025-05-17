@@ -1,5 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,6 +9,7 @@
 
 @layer base {
   :root {
+    /* Light mode */
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
 
@@ -35,17 +38,18 @@
     --input: 214 32% 91%;
     --ring: 222 84% 70%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 222 47% 4%;
+    /* Dark mode */
+    --background: 222 47% 5%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 6%;
+    --card: 222 47% 8%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 6%;
+    --popover: 222 47% 7%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 217 91% 60%;
@@ -63,23 +67,24 @@
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 15%;
-    --input: 217 33% 17%;
+    --border: 217 33% 17%;
+    --input: 217 33% 16%;
     --ring: 224 76% 48%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border selection:bg-primary/10 selection:text-primary;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv01", "cv02", "cv03";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-satoshi;
   }
 
   ::-webkit-scrollbar {
@@ -92,38 +97,41 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/40 rounded-full;
+    @apply bg-muted-foreground/30 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/60;
+    @apply bg-muted-foreground/50;
   }
 }
 
 @layer components {
+  /* Cards */
   .hover-card {
-    @apply transition-all hover:-translate-y-1 hover:shadow-lg;
+    @apply transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md;
   }
   
   .task-card {
-    @apply p-4 rounded-lg bg-card border hover:border-primary/50 transition-all;
+    @apply p-5 rounded-2xl bg-card border hover:border-primary/30 transition-all;
   }
   
   .project-card {
-    @apply p-5 rounded-xl bg-card shadow-sm hover:shadow-md transition-all duration-200;
+    @apply p-6 rounded-2xl bg-card shadow-sm hover:shadow-md border transition-all duration-200;
   }
   
+  /* Focus styling */
   .focus-ring {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-75;
   }
 
+  /* Glass effect */
   .glass-effect {
-    @apply backdrop-blur-md bg-white/70 dark:bg-black/50 border border-white/20 dark:border-white/10;
+    @apply backdrop-blur-lg bg-white/10 dark:bg-black/30 border border-white/20 dark:border-white/5 rounded-2xl;
   }
   
-  /* Melhorando transições, feedback visual e microinterações */
+  /* Hover interactions */
   .btn-transition {
-    @apply transition-all duration-200 ease-in-out transform hover:scale-[1.02] active:scale-[0.98];
+    @apply transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-[0_4px_12px_rgba(59,130,246,0.2)] active:scale-[0.98];
   }
   
   .card-hover {
@@ -134,19 +142,51 @@
     text-wrap: balance;
   }
 
+  /* Animations */
   .animate-in {
     @apply animate-fade-in;
   }
+  
+  .animate-pulse-subtle {
+    @apply animate-[pulse_3s_ease-in-out_infinite];
+  }
+  
+  .hover-glow {
+    @apply hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-shadow duration-300;
+  }
 
+  /* Toast styles */
   .toast-success {
-    @apply bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700;
+    @apply bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50 rounded-2xl;
   }
 
   .toast-info {
-    @apply bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700;
+    @apply bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50 rounded-2xl;
   }
 
   .toast-warning {
-    @apply bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700;
+    @apply bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 rounded-2xl;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_2px_10px_rgba(59,130,246,0.3)] transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-200;
+  }
+  
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all duration-200;
+  }
+  
+  /* Progress indicators */
+  .progress-bar {
+    @apply rounded-full bg-primary/20 overflow-hidden;
+  }
+  
+  .progress-value {
+    @apply rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out;
   }
 }

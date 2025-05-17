@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface KanbanTaskProps {
   task: Task;
@@ -17,108 +18,113 @@ export const KanbanTask = ({ task, onDragStart }: KanbanTaskProps) => {
   const { tags, toggleTaskCompletion } = useAppStore();
   
   const getTaskTags = task.tags.map(tagId => 
-    tags.find(t => t.id === tagId)
+    tags.find(tag => tag.id === tagId)
   ).filter(Boolean);
-  
-  const handleToggleTaskCompletion = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
+
+  const handleToggleTaskCompletion = () => {
     toggleTaskCompletion(task.id);
     
-    // Show toast notification based on new completion state after toggle
     if (!task.completed) {
       toast.success(`Tarefa "${task.title}" concluída!`, {
-        className: "animate-fade-in",
-        duration: 2000
+        className: "toast-success",
+        position: "bottom-right"
       });
     } else {
       toast.info(`Tarefa "${task.title}" reaberta!`, {
-        className: "animate-fade-in",
-        duration: 2000
+        className: "toast-info",
+        position: "bottom-right"
       });
     }
   };
 
-  // Define priority styles for consistent design
-  const priorityStyles = {
-    alta: "border-l-red-500",
-    media: "border-l-amber-500",
-    baixa: "border-l-green-500"
+  // Define prioridades com cores correspondentes
+  const priorityColors = {
+    alta: "border-l-4 border-l-red-500",
+    media: "border-l-4 border-l-yellow-500",
+    baixa: "border-l-4 border-l-green-500"
   };
-  
+
   return (
-    <Card 
-      className={cn(
-        "border-l-4 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md transition-all duration-200",
-        priorityStyles[task.priority] || "border-l-green-500",
-        task.completed ? "bg-muted/30" : ""
-      )}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       draggable
-      onDragStart={onDragStart}
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart();
+      }}
+      className="touch-none"
     >
-      <CardContent className="p-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <div className="font-medium line-clamp-2 flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-5 w-5 p-0 rounded-full transition-all duration-200 ${
-                  task.completed 
-                    ? 'text-primary hover:text-primary/80 hover:bg-primary/10' 
-                    : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
-                }`}
-                onClick={handleToggleTaskCompletion}
-              >
-                {task.completed ? 
-                  <CheckCircle2 className="h-4 w-4" /> : 
-                  <CheckCircle className="h-4 w-4" />
-                }
-              </Button>
-              <span className={task.completed ? "line-through text-muted-foreground" : ""}>
+      <Card 
+        className={cn(
+          "cursor-grab active:cursor-grabbing mb-3 group",
+          task.completed ? "bg-muted/20" : "",
+          task.priority ? priorityColors[task.priority] : "",
+          "hover:shadow-md transition-all duration-200",
+          "rounded-xl"
+        )}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0 mr-4">
+              <h3 className={`font-medium text-sm mb-1 ${task.completed ? "line-through text-muted-foreground" : ""}`}>
                 {task.title}
-              </span>
-            </div>
-            
-            {task.description && (
-              <p className="text-xs text-muted-foreground line-clamp-1 mt-1 ml-7">
-                {task.description}
-              </p>
-            )}
-            
-            {task.subtasks.length > 0 && (
-              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground ml-7">
-                <CheckCircle className="w-3 h-3" />
-                <span>{task.subtasks.filter(st => st.completed).length}/{task.subtasks.length}</span>
-              </div>
-            )}
-            
-            <div className="flex flex-wrap gap-1 mt-2 ml-7">
-              {getTaskTags.map(tag => tag && (
-                <span 
-                  key={tag.id}
-                  className="px-1.5 py-0.5 rounded-full text-xs font-medium"
-                  style={{ backgroundColor: tag.color + '20', color: tag.color }}
-                >
-                  {tag.name}
-                </span>
-              ))}
+              </h3>
               
-              {task.isQuick && (
-                <Badge variant="outline" className="text-xs px-1.5 bg-blue-50 dark:bg-blue-950/40">⚡ Rápida</Badge>
+              {task.description && (
+                <p className={`text-xs ${task.completed ? "text-muted-foreground/70" : "text-muted-foreground"} line-clamp-2 mb-2`}>
+                  {task.description}
+                </p>
               )}
+              
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {task.isQuick && (
+                  <Badge variant="outline" className="bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-800/40 text-[10px] px-1.5 py-0 h-4 rounded-full">
+                    ⚡ Rápida
+                  </Badge>
+                )}
+                
+                {task.dueDate && (
+                  <Badge variant="outline" className="bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-800/40 text-[10px] px-1.5 py-0 h-4 rounded-full flex items-center gap-1">
+                    <Calendar className="h-2.5 w-2.5" />
+                    {new Date(task.dueDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                  </Badge>
+                )}
+                
+                {getTaskTags?.map(tag => tag && (
+                  <Badge 
+                    key={tag.id} 
+                    className="text-[10px] px-1.5 py-0 h-4 rounded-full"
+                    style={{ 
+                      backgroundColor: `${tag.color}20`, 
+                      color: tag.color,
+                      borderColor: `${tag.color}50`
+                    }}
+                    variant="outline"
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleTaskCompletion}
+              className={`h-6 w-6 p-0 rounded-full opacity-90 group-hover:opacity-100 ${
+                task.completed 
+                ? 'text-success-500 hover:text-success-600 hover:bg-success-50 dark:hover:bg-success-900/20' 
+                : 'text-muted-foreground hover:text-primary hover:bg-primary-50 dark:hover:bg-primary-900/20'
+              }`}
+            >
+              {task.completed ? <CheckCircle2 className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
+            </Button>
           </div>
-          
-          {task.dueDate && (
-            <div className="flex items-center text-xs text-muted-foreground whitespace-nowrap">
-              <Calendar className="w-3 h-3 mr-1" />
-              {new Date(task.dueDate).toLocaleDateString('pt-BR')}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
