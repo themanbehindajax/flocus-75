@@ -8,7 +8,6 @@ import { useAuthStore } from "@/lib/auth";
 import { useEffect } from "react";
 import { requestNotificationPermission } from "@/lib/notifications";
 import { PomodoroMiniWidget } from "@/components/pomodoro/PomodoroMiniWidget";
-import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/layout/PageTransition";
 import Index from "./pages/Index";
 import Projects from "./pages/Projects";
@@ -36,72 +35,70 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// AnimatedRoutes component for smooth page transitions
-const AnimatedRoutes = () => {
+// Routes component without animations
+const AppRoutes = () => {
   const location = useLocation();
   
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-        
-        <Route path="/" element={
-          <ProtectedRoute>
-            <PageTransition><Index /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/projects" element={
-          <ProtectedRoute>
-            <PageTransition><Projects /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/projects/:projectId" element={
-          <ProtectedRoute>
-            <PageTransition><ProjectDetails /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/tasks" element={
-          <ProtectedRoute>
-            <PageTransition><Tasks /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/calendar" element={
-          <ProtectedRoute>
-            <PageTransition><Calendar /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/ivy-lee" element={
-          <ProtectedRoute>
-            <PageTransition><IvyLee /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/pomodoro" element={
-          <ProtectedRoute>
-            <PageTransition><Pomodoro /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/settings" element={
-          <ProtectedRoute>
-            <PageTransition><Settings /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/achievements" element={
-          <ProtectedRoute>
-            <PageTransition><Achievements /></PageTransition>
-          </ProtectedRoute>
-        } />
-        
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AnimatePresence>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+      
+      <Route path="/" element={
+        <ProtectedRoute>
+          <PageTransition><Index /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/projects" element={
+        <ProtectedRoute>
+          <PageTransition><Projects /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/projects/:projectId" element={
+        <ProtectedRoute>
+          <PageTransition><ProjectDetails /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/tasks" element={
+        <ProtectedRoute>
+          <PageTransition><Tasks /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/calendar" element={
+        <ProtectedRoute>
+          <PageTransition><Calendar /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/ivy-lee" element={
+        <ProtectedRoute>
+          <PageTransition><IvyLee /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/pomodoro" element={
+        <ProtectedRoute>
+          <PageTransition><Pomodoro /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <PageTransition><Settings /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/achievements" element={
+        <ProtectedRoute>
+          <PageTransition><Achievements /></PageTransition>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 
@@ -118,7 +115,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <AnimatedRoutes />
+            <AppRoutes />
             
             {/* Pomodoro mini widget will show on all protected routes */}
             <ProtectedRoute>
