@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
@@ -28,6 +28,7 @@ export const KanbanTask = ({
   onDragEnd 
 }: KanbanTaskProps) => {
   const { projects, tags } = useAppStore();
+  const taskRef = useRef<HTMLDivElement>(null);
   
   const formattedDate = task.dueDate
     ? formatDistanceToNow(new Date(task.dueDate), {
@@ -44,37 +45,54 @@ export const KanbanTask = ({
     .map(tagId => tags.find(tag => tag.id === tagId))
     .filter(Boolean);
 
-  // Manipulador de HTML5 Drag and Drop - melhorado para melhor experiência
+  // Melhorado: Manipulador de HTML5 Drag and Drop para estilo "clique, segure e solte"
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+    // Configura imediatamente os dados de transferência
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/json', JSON.stringify({
         taskId: task.id,
         sourceColumnId: columnId
       }));
+      
+      // Melhora o feedback visual durante o arrasto
       event.dataTransfer.effectAllowed = 'move';
       
-      // Adiciona uma imagem de arrastar personalizada (opcional)
-      const dragImage = document.createElement('div');
-      dragImage.classList.add('hidden');
-      document.body.appendChild(dragImage);
-      event.dataTransfer.setDragImage(dragImage, 0, 0);
-      setTimeout(() => {
-        document.body.removeChild(dragImage);
-      }, 0);
+      // Cria uma imagem de arrastar personalizada (opcional, melhora a UX)
+      if (taskRef.current) {
+        const rect = taskRef.current.getBoundingClientRect();
+        event.dataTransfer.setDragImage(taskRef.current, rect.width / 2, rect.height / 2);
+      }
     }
     
-    // Adiciona uma classe ao elemento que está sendo arrastado
-    event.currentTarget.classList.add('opacity-50');
+    // Adiciona uma classe para feedback visual durante o arrastar
+    if (taskRef.current) {
+      taskRef.current.style.opacity = '0.6';
+    }
+    
+    // Simula um toque ou pressionar em dispositivos móveis
+    taskRef.current?.classList.add('active');
     
     if (onDragStart) onDragStart();
   };
 
   // Manipulador para quando o arrastar termina
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
-    // Remove a classe adicionada ao elemento que estava sendo arrastado
-    event.currentTarget.classList.remove('opacity-50');
+    // Remove efeitos visuais de arrastar
+    if (taskRef.current) {
+      taskRef.current.style.opacity = '1';
+      taskRef.current.classList.remove('active');
+    }
     
     if (onDragEnd) onDragEnd();
+  };
+  
+  // Ajuda a fixar o item ao toque em dispositivos móveis
+  const handleTouchStart = () => {
+    taskRef.current?.classList.add('touch-dragging');
+  };
+  
+  const handleTouchEnd = () => {
+    taskRef.current?.classList.remove('touch-dragging');
   };
 
   const priorityColors = {
@@ -85,17 +103,21 @@ export const KanbanTask = ({
 
   return (
     <div
+      ref={taskRef}
       draggable="true"
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md',
-        'hover:border-primary/50 hover:shadow-md transition-all duration-150'
+        'hover:border-primary/50 hover:shadow-md transition-all duration-150',
+        'active:scale-95 active:shadow-inner'
       )}
       role="button"
       aria-roledescription="draggable item"
-      aria-grabbed="false"
+      aria-grabbed={isDragging ? "true" : "false"}
       tabIndex={0}
       onKeyDown={(e) => {
         // Acessibilidade: permite mover tarefas com o teclado (exemplo simples)

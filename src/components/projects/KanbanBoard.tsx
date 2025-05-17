@@ -22,9 +22,13 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   const doingTasks = tasks.filter(task => task.status === "doing");
   const doneTasks = tasks.filter(task => task.status === "done");
   
+  // Melhorado: Simplifica o início do arrasto
   const handleDragStart = (task: Task) => {
     setDraggedTask(task);
     setIsDragging(true);
+    
+    // Adiciona classe global para melhorar a UX durante o arrasto
+    document.body.classList.add('is-dragging');
   };
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
@@ -33,56 +37,42 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDragOverColumn(status);
   };
   
-  // Melhorado: Função handleDrop mais robusta e tolerante a erros
+  // Melhorado: Função handleDrop mais intuitiva
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
     e.preventDefault();
     
-    // Tenta obter os dados do dataTransfer primeiro
-    let taskData;
-    try {
-      const dataStr = e.dataTransfer.getData('application/json');
-      if (dataStr) {
-        taskData = JSON.parse(dataStr);
-      }
-    } catch (err) {
-      console.error("Erro ao processar dados de arrastar:", err);
-    }
+    // Limpa estado global de arrastar
+    document.body.classList.remove('is-dragging');
     
-    // Usa o estado se os dados do dataTransfer não funcionarem
-    const taskId = taskData?.taskId || (draggedTask?.id || null);
-    if (!taskId) return;
-    
-    // Encontra a tarefa pelo ID
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
+    if (!draggedTask) return;
     
     // Reseta o estado do drag
     setIsDragging(false);
     setDragOverColumn(null);
-    setDraggedTask(null);
     
-    if (task.status !== status) {
+    if (draggedTask.status !== status) {
       // Atualiza o status da tarefa
       const updatedTask = {
-        ...task,
+        ...draggedTask,
         status,
         updatedAt: new Date().toISOString(),
       };
       
       updateTask(updatedTask);
       
+      // Feedback visual e sonoro melhorado
       // Se movido para o status "done" e não estiver concluído, marca como concluído
-      if (status === "done" && !task.completed) {
-        toggleTaskCompletion(task.id);
-        toast.success(`Tarefa "${task.title}" concluída!`, {
+      if (status === "done" && !draggedTask.completed) {
+        toggleTaskCompletion(draggedTask.id);
+        toast.success(`Tarefa "${draggedTask.title}" concluída!`, {
           className: "animate-fade-in",
           duration: 2000
         });
       }
       // Se movido do "done" para outro status e estiver concluído, desmarca conclusão
-      else if (task.status === "done" && status !== "done" && task.completed) {
-        toggleTaskCompletion(task.id);
-        toast.info(`Tarefa "${task.title}" reaberta!`, {
+      else if (draggedTask.status === "done" && status !== "done" && draggedTask.completed) {
+        toggleTaskCompletion(draggedTask.id);
+        toast.info(`Tarefa "${draggedTask.title}" reaberta!`, {
           className: "animate-fade-in",
           duration: 2000
         });
@@ -97,12 +87,16 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         });
       }
     }
+    
+    setDraggedTask(null);
   };
 
   const handleDragEnd = () => {
+    // Limpeza completa do estado de arrastar
     setIsDragging(false);
     setDraggedTask(null);
     setDragOverColumn(null);
+    document.body.classList.remove('is-dragging');
   };
 
   // Melhoria de acessibilidade com atalhos de teclado
@@ -114,11 +108,16 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
         setDraggedTask(null);
         setIsDragging(false);
         setDragOverColumn(null);
+        document.body.classList.remove('is-dragging');
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      // Garante que a classe seja removida ao desmontar
+      document.body.classList.remove('is-dragging');
+    };
   }, [draggedTask]);
   
   return (
