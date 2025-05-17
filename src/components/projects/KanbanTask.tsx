@@ -73,7 +73,7 @@ export const KanbanTask = ({
       transition={{ duration: 0.2 }}
       draggable="true"
       onDragStart={handleDragStart}
-      onDragEnd={() => onDragEnd && onDragEnd()}
+      onDragEnd={onDragEnd}
       className={cn(
         'p-3 mb-2 bg-card rounded-md shadow-sm border cursor-grab active:cursor-grabbing',
         isDragging && 'opacity-50 shadow-md'
