@@ -1,28 +1,29 @@
+
+// If types.ts doesn't exist yet, we'll create it
+export type PriorityLevel = "baixa" | "media" | "alta";
+export type TaskStatus = "todo" | "doing" | "done";
+
+export interface SubTask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 export interface Task {
   id: string;
   title: string;
   description?: string;
-  priority?: 'alta' | 'media' | 'baixa';
-  status: 'todo' | 'doing' | 'done';
-  tags: string[];
-  projectId?: string;
+  priority: PriorityLevel;
+  status: TaskStatus;
   dueDate?: string;
-  estimatedTime?: number;
-  assignee?: {
-    name: string;
-    avatar: string;
-  };
+  projectId?: string;
+  tags: string[];
+  completed: boolean;
   createdAt: string;
   updatedAt: string;
-  subtasks: Subtask[];
+  subtasks: SubTask[];
   isQuick?: boolean;
-  completed: boolean;
-}
-
-export interface Subtask {
-  id: string;
-  title: string;
-  completed: boolean;
+  calendarEventId?: string;
 }
 
 export interface Project {
@@ -30,9 +31,11 @@ export interface Project {
   name: string;
   description?: string;
   color?: string;
+  tasks: string[];
   createdAt: string;
   updatedAt: string;
-  tasks: Task[];
+  goal?: string;
+  dueDate?: string;
 }
 
 export interface Tag {
@@ -45,14 +48,20 @@ export interface PomodoroSession {
   id: string;
   startTime: string;
   endTime?: string;
-  duration?: number;
-  completed: boolean;
   taskId?: string;
   projectId?: string;
+  completed: boolean;
+  duration?: number;
+}
+
+export interface DailyPriority {
+  date: string;
+  taskIds: string[];
 }
 
 export interface UserProfile {
   name: string;
+  avatar?: string;
   points: number;
   streak: number;
   lastActivity: string;
@@ -60,18 +69,38 @@ export interface UserProfile {
   totalPomodorosCompleted: number;
 }
 
+export interface AppSettings {
+  pomodoroDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  theme: "light" | "dark" | "system";
+  notificationsEnabled?: boolean;
+}
+
 export interface CalendarEvent {
   id: string;
   title: string;
   description?: string;
-  startTime: string;
-  endTime: string;
-  location?: string;
-  projectId?: string;
-  taskId?: string;
+  startDate: string;
+  endDate?: string;
+  allDay: boolean;
+  repeat?: "daily" | "weekly" | "monthly" | "yearly" | "none";
+  repeatUntil?: string;
+  reminder?: number; // minutes before
+  color?: string;
 }
 
-export interface DailyPriority {
-  date: string;
-  tasks: string[];
+export interface Analytics {
+  completedTasks: {
+    daily: Record<string, number>;
+    weekly: Record<string, number>;
+    monthly: Record<string, number>;
+  };
+  tasksByProject: Record<string, number>;
+  tasksByTag: Record<string, number>;
+  pomodoros: {
+    daily: Record<string, number>;
+    weekly: Record<string, number>;
+    monthly: Record<string, number>;
+  };
 }

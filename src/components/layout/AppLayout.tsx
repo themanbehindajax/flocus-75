@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { AppSidebar } from "../AppSidebar";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -68,17 +68,28 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Overlay for mobile when sidebar is open */}
         <AnimatePresence>
           {sidebarOpen && isMobile && (
-            <div
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="fixed inset-0 z-10 bg-black/60 backdrop-blur-sm md:hidden"
               onClick={() => setSidebarOpen(false)}
             />
           )}
         </AnimatePresence>
 
-        {/* Main content - without animation */}
-        <main className="flex-1 overflow-auto">
+        {/* Main content - only this part animates on route change */}
+        <motion.main 
+          key={location.pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 overflow-auto"
+        >
           {children}
-        </main>
+        </motion.main>
       </div>
     </div>
   );

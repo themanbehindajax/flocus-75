@@ -1,237 +1,204 @@
-import React, { useState, useEffect } from 'react';
-import { useAppStore } from '@/lib/store';
-import { Project, Tag, TaskStatus, PriorityLevel, Subtask } from '@/lib/types';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, CheckCheck, Plus, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { DatePicker } from '@/components/ui/date-picker';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/components/ui/use-toast';
 
-interface TaskFormProps {
-  task?: any;
-  onCancel: () => void;
-  onSubmit: () => void;
-}
+import { useState, useEffect } from "react";
+import { useAppStore } from "@/lib/store";
+import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "react-router-dom";
+import { TaskFormTitle } from "./TaskFormTitle";
+import { TaskFormDescription } from "./TaskFormDescription";
+import { TaskFormPriority } from "./TaskFormPriority";
+import { TaskFormStatus } from "./TaskFormStatus";
+import { TaskFormDueDate } from "./TaskFormDueDate";
+import { TaskFormProject } from "./TaskFormProject";
+import { TaskFormTags } from "./TaskFormTags";
+import { TaskFormQuick } from "./TaskFormQuick";
+import { TaskFormSubtasks } from "./TaskFormSubtasks";
 
-export const TaskForm: React.FC<TaskFormProps> = ({ task, onCancel, onSubmit }) => {
-  const { projects, tags, addTask, updateTask } = useAppStore();
-  const [taskTitle, setTaskTitle] = useState(task ? task.title : '');
-  const [description, setDescription] = useState(task ? task.description : '');
-  const [priority, setPriority] = useState<PriorityLevel>(task ? task.priority : 'media');
-  const [status, setStatus] = useState<TaskStatus>(task ? task.status : 'todo');
-  const [selectedProject, setSelectedProject] = useState<string | undefined>(task ? task.projectId : undefined);
-  const [selectedTags, setSelectedTags] = useState<string[]>(task ? task.tags : []);
-  const [dueDate, setDueDate] = useState<Date | undefined>(task ? new Date(task.dueDate) : undefined);
-  const [subtasks, setSubtasks] = useState<Subtask[]>(task ? task.subtasks : []);
-  const [newSubtask, setNewSubtask] = useState('');
+export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; editTask?: Task; }) => {
+  const { addTask, updateTask, projects, tags } = useAppStore();
+  const { toast } = useToast();
+  const location = useLocation();
+
+  const projectIdFromUrl = location.pathname.startsWith('/projects/') 
+    ? location.pathname.split('/projects/')[1]
+    : undefined;
+
+  const [newTask, setNewTask] = useState<{
+    title: string;
+    description: string;
+    priority: PriorityLevel;
+    status: TaskStatus;
+    projectId?: string;
+    tags: string[];
+    dueDate?: string;
+    subtasks: string[];
+    isQuick: boolean;
+  }>({
+    title: "",
+    description: "",
+    priority: "media",
+    status: "todo",
+    tags: [],
+    projectId: projectIdFromUrl,
+    dueDate: undefined,
+    subtasks: [],
+    isQuick: false,
+  });
+
+  const [newSubtask, setNewSubtask] = useState("");
+  const [date, setDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    if (editTask) {
+      setNewTask({
+        title: editTask.title,
+        description: editTask.description || "",
+        priority: editTask.priority,
+        status: editTask.status,
+        projectId: editTask.projectId,
+        tags: editTask.tags || [],
+        dueDate: editTask.dueDate,
+        subtasks: editTask.subtasks.map(st => st.title),
+        isQuick: editTask.isQuick || false,
+      });
+      if (editTask.dueDate) setDate(new Date(editTask.dueDate));
+    }
+  }, [editTask]);
+
+  useEffect(() => {
+    if (projectIdFromUrl && !editTask) {
+      setNewTask(prev => ({
+        ...prev,
+        projectId: projectIdFromUrl
+      }));
+    }
+  }, [projectIdFromUrl, editTask]);
+
+  const handleSaveTask = () => {
+    if (newTask.title.trim()) {
+      // Only auto-detect quick tasks if user hasn't explicitly set it
+      let isQuickTask = newTask.isQuick;
+      
+      const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => {
+        if (editTask) {
+          const existingSubtask = editTask.subtasks.find(st => st.title === title);
+          if (existingSubtask) return existingSubtask;
+        }
+        return {
+          id: crypto.randomUUID(),
+          title,
+          completed: false
+        };
+      });
+
+      const taskData = {
+        title: newTask.title.trim(),
+        description: newTask.description,
+        priority: newTask.priority,
+        status: newTask.status,
+        tags: newTask.tags,
+        projectId: newTask.projectId,
+        dueDate: date ? date.toISOString().split("T")[0] : undefined,
+        subtasks: formattedSubtasks,
+        isQuick: isQuickTask,
+      };
+
+      if (editTask) {
+        updateTask({
+          ...editTask,
+          ...taskData,
+          updatedAt: new Date().toISOString()
+        });
+        toast({
+          title: "Tarefa atualizada",
+          description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
+        });
+      } else {
+        addTask(taskData);
+        toast({
+          title: "Tarefa criada",
+          description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+        });
+      }
+      setNewTask({
+        title: "",
+        description: "",
+        priority: "media",
+        status: "todo",
+        tags: [],
+        projectId: undefined,
+        dueDate: undefined,
+        subtasks: [],
+        isQuick: false,
+      });
+      setDate(undefined);
+
+      onComplete();
+    }
+  };
 
   const handleAddSubtask = () => {
     if (newSubtask.trim()) {
-      setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask, completed: false }]);
-      setNewSubtask('');
+      setNewTask({
+        ...newTask,
+        subtasks: [...newTask.subtasks, newSubtask.trim()]
+      });
+      setNewSubtask("");
     }
   };
-
-  const handleToggleSubtask = (id: string) => {
-    setSubtasks(
-      subtasks.map((subtask) =>
-        subtask.id === id ? { ...subtask, completed: !subtask.completed } : subtask
-      )
-    );
-  };
-
-  const handleDeleteSubtask = (id: string) => {
-    setSubtasks(subtasks.filter((subtask) => subtask.id !== id));
-  };
-
-  // Adicione a propriedade completed como requerido
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!taskTitle.trim()) {
-      toast({
-        title: "Erro",
-        description: "Título da tarefa é obrigatório",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const taskData = {
-      title: taskTitle,
-      description: description,
-      priority: priority as PriorityLevel,
-      status: status as TaskStatus,
-      tags: selectedTags,
-      projectId: selectedProject,
-      dueDate: dueDate,
-      subtasks: subtasks,
-      isQuick: false,
-      completed: false
-    };
-
-    if (task) {
-      updateTask({ ...task, ...taskData, updatedAt: new Date().toISOString() });
-      toast({
-        title: "Sucesso",
-        description: "Tarefa atualizada com sucesso",
-      });
-    } else {
-      addTask(taskData);
-      toast({
-        title: "Sucesso",
-        description: "Tarefa criada com sucesso",
-      });
-    }
-
-    onSubmit();
+  
+  const handleRemoveSubtask = (index: number) => {
+    const updatedSubtasks = [...newTask.subtasks];
+    updatedSubtasks.splice(index, 1);
+    setNewTask({
+      ...newTask,
+      subtasks: updatedSubtasks
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div>
-        <Label htmlFor="title">Título</Label>
-        <Input
-          type="text"
-          id="title"
-          value={taskTitle}
-          onChange={(e) => setTaskTitle(e.target.value)}
+    <div>
+      <div className="space-y-4 py-4">
+        <TaskFormTitle value={newTask.title} onChange={(title) => setNewTask({ ...newTask, title })} />
+        <TaskFormDescription value={newTask.description} onChange={(description) => setNewTask({ ...newTask, description })} />
+        <div className="grid grid-cols-2 gap-4">
+          <TaskFormPriority value={newTask.priority} onChange={(priority) => setNewTask({ ...newTask, priority })} />
+          <TaskFormStatus value={newTask.status} onChange={(status) => setNewTask({ ...newTask, status })} />
+        </div>
+        <TaskFormDueDate date={date} setDate={setDate} />
+        <TaskFormProject
+          projectId={newTask.projectId}
+          setProjectId={(projectId) => setNewTask({ ...newTask, projectId })}
+          projects={projects}
+        />
+        <TaskFormTags
+          tags={tags}
+          selected={newTask.tags}
+          setSelected={(t) => setNewTask({ ...newTask, tags: t })}
+        />
+        <TaskFormQuick
+          value={newTask.isQuick}
+          onChange={(isQuick) => setNewTask({ ...newTask, isQuick })}
+        />
+        <TaskFormSubtasks
+          subtasks={newTask.subtasks}
+          setSubtasks={(subtasks) => setNewTask({ ...newTask, subtasks })}
+          newSubtask={newSubtask}
+          setNewSubtask={setNewSubtask}
+          onAdd={handleAddSubtask}
+          onRemove={handleRemoveSubtask}
         />
       </div>
-
-      <div>
-        <Label htmlFor="description">Descrição</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="priority">Prioridade</Label>
-          <Select value={priority} onValueChange={(value) => setPriority(value as PriorityLevel)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione a prioridade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="alta">Alta</SelectItem>
-              <SelectItem value="media">Média</SelectItem>
-              <SelectItem value="baixa">Baixa</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="status">Status</Label>
-          <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todo">A fazer</SelectItem>
-              <SelectItem value="doing">Em andamento</SelectItem>
-              <SelectItem value="done">Concluído</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="project">Projeto</Label>
-        <Select value={selectedProject} onValueChange={setSelectedProject}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o projeto" />
-          </SelectTrigger>
-          <SelectContent>
-            {projects.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
-            <SelectItem value={undefined}>Nenhum</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label>Tags</Label>
-        <div className="flex flex-wrap gap-1">
-          {tags.map((tag) => (
-            <Badge
-              key={tag.id}
-              variant={selectedTags.includes(tag.id) ? 'default' : 'outline'}
-              onClick={() =>
-                setSelectedTags((prev) =>
-                  prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id]
-                )
-              }
-              className="cursor-pointer"
-            >
-              {tag.name}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <Label>Data de Entrega</Label>
-        <DatePicker
-          date={dueDate}
-          onDateChange={setDueDate}
-        />
-      </div>
-
-      <div>
-        <Label>Subtarefas</Label>
-        <div className="flex items-center gap-2">
-          <Input
-            type="text"
-            placeholder="Nova subtarefa"
-            value={newSubtask}
-            onChange={(e) => setNewSubtask(e.target.value)}
-          />
-          <Button type="button" variant="outline" size="icon" onClick={handleAddSubtask}>
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-        <ul className="mt-2 space-y-1">
-          {subtasks.map((subtask) => (
-            <li key={subtask.id} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id={subtask.id}
-                  checked={subtask.completed}
-                  onCheckedChange={() => handleToggleSubtask(subtask.id)}
-                />
-                <Label htmlFor={subtask.id} className={cn(subtask.completed ? 'line-through text-muted-foreground' : '')}>
-                  {subtask.title}
-                </Label>
-              </div>
-              <Button type="button" variant="ghost" size="icon" onClick={() => handleDeleteSubtask(subtask.id)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" onClick={onCancel}>
+      <DialogFooter>
+        <Button variant="outline" onClick={onComplete}>
           Cancelar
         </Button>
-        <Button type="submit">Salvar</Button>
-      </div>
-    </form>
+        <Button onClick={handleSaveTask}>
+          {editTask ? "Salvar Alterações" : "Criar Tarefa"}
+        </Button>
+      </DialogFooter>
+    </div>
   );
 };
