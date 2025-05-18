@@ -18,7 +18,9 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (taskTitle.trim()) {
-      addTask({
+      console.log("Adicionando tarefa rápida com projectId:", projectId);
+      
+      const taskId = addTask({
         title: taskTitle,
         description: "",
         dueDate: "",
@@ -28,11 +30,16 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         tags: [],
         subtasks: [],
         isQuick: isQuick,
-        completed: false,  // Fix: Always include 'completed'
+        completed: false,
       });
+      
+      console.log("Tarefa rápida criada com ID:", taskId);
       setTaskTitle("");
       setIsQuick(false);
-      if (onTaskAdded) onTaskAdded();
+      
+      if (onTaskAdded) {
+        onTaskAdded();
+      }
     }
   };
 

@@ -92,8 +92,11 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
-      // Ensure we use the projectId from URL if we're on a project page
+      // Certifique-se de usar o projectId da URL se estivermos em uma página de projeto
+      // Importante: Garanta que a string não seja undefined/null
       const actualProjectId = projectIdFromUrl || newTask.projectId;
+      
+      console.log("Salvando tarefa com dados. ProjectId=", actualProjectId);
 
       const taskData = {
         title: newTask.title.trim(),
@@ -101,14 +104,14 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         priority: newTask.priority,
         status: newTask.status,
         tags: newTask.tags,
-        projectId: actualProjectId,
+        projectId: actualProjectId,  // Garanta que isso seja uma string válida ou undefined
         dueDate: date ? date.toISOString() : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
         completed: false,
       };
 
-      console.log("Salvando tarefa com dados:", taskData);
+      console.log("Salvando tarefa com dados completos:", taskData);
 
       try {
         if (editTask) {
@@ -122,8 +125,10 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
             description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
           });
         } else {
-          // Adiciona a tarefa
-          addTask(taskData);
+          // Adiciona a tarefa diretamente usando o método do store
+          const taskId = addTask(taskData);
+          console.log("Tarefa criada com ID:", taskId);
+          
           toast({
             title: "Tarefa criada",
             description: `A tarefa "${taskData.title}" foi criada com sucesso.`,

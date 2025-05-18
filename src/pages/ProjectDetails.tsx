@@ -63,15 +63,21 @@ const ProjectDetails = () => {
   }
 
   const handleTaskCreated = () => {
+    // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
     
-    // Força atualização das tarefas do projeto após a criação
-    updateProjectTasks();
-    
-    toast({
-      title: "Tarefa criada",
-      description: "Tarefa adicionada ao projeto com sucesso.",
-    });
+    // Força atualização explícita das tarefas do projeto após a criação
+    // Usando setTimeout para garantir que o store foi atualizado antes de buscar as tarefas
+    setTimeout(() => {
+      const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
+      console.log("Atualizando tarefas após criar nova:", currentTasks);
+      setProjectTasks(currentTasks);
+      
+      toast({
+        title: "Tarefa criada",
+        description: "Tarefa adicionada ao projeto com sucesso.",
+      });
+    }, 100);
   };
 
   return (
@@ -88,7 +94,7 @@ const ProjectDetails = () => {
             setView={setView}
             setIsAddDialogOpen={setIsAddDialogOpen}
             isAddDialogOpen={isAddDialogOpen}
-            onTaskAdded={updateProjectTasks} // Nova prop para atualizar tarefas quando adicionadas via QuickAdd
+            onTaskAdded={updateProjectTasks} // Para atualizar tarefas quando adicionadas via QuickAdd
           >
             {/* Children: botão de nova tarefa com modal */}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

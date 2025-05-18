@@ -47,15 +47,30 @@ const Tasks = () => {
   }, [tasks, searchQuery]);
 
   const handleTaskCreated = () => {
+    // Fecha o diálogo
     setIsAddDialogOpen(false);
     
-    // A lista será atualizada automaticamente pelo useEffect que observa tasks
-    // Mas vamos garantir isso com uma atualização explícita
-    const currentTasks = useAppStore.getState().tasks;
-    const filtered = currentTasks.filter((task) => 
-      task.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setDisplayedTasks(filtered);
+    // Atualização explícita das tarefas após criar uma nova
+    setTimeout(() => {
+      const currentTasks = useAppStore.getState().tasks;
+      const filtered = currentTasks.filter((task) => 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      console.log("Atualizando lista após criar nova tarefa:", filtered);
+      setDisplayedTasks(filtered);
+    }, 100);
+  };
+
+  const handleQuickTaskAdded = () => {
+    // Atualização explícita das tarefas após adicionar uma rápida
+    setTimeout(() => {
+      const currentTasks = useAppStore.getState().tasks;
+      const filtered = currentTasks.filter((task) => 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      console.log("Atualizando lista após adicionar tarefa rápida:", filtered);
+      setDisplayedTasks(filtered);
+    }, 100);
   };
 
   return (
@@ -126,7 +141,7 @@ const Tasks = () => {
             <CardTitle className="text-lg">Adicionar Tarefa</CardTitle>
           </CardHeader>
           <CardContent>
-            <QuickAddTask />
+            <QuickAddTask onTaskAdded={handleQuickTaskAdded} />
           </CardContent>
         </Card>
         
