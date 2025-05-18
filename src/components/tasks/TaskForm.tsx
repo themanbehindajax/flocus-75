@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
@@ -122,18 +123,10 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
           description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
         });
       } else {
-        addTask(taskData);
-        // Log o estado global após adicionar
-        setTimeout(() => {
-          // Wait para pegar o estado mais atualizado
-          const globalTasks: any = (window as any).__GLOBAL_APP_STORE__?.tasks ?? "Zustand global state não exposto";
-          console.log("[DEBUG] Estado global de tarefas após addTask:", globalTasks);
-        }, 500);
-        toast({
-          title: "Tarefa criada",
-          description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
-        });
+        const newTaskId = addTask(taskData);
+        console.log("[DEBUG] Nova tarefa criada com ID:", newTaskId);
       }
+      
       setNewTask({
         title: "",
         description: "",
@@ -184,6 +177,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
           projectId={newTask.projectId}
           setProjectId={(projectId) => setNewTask({ ...newTask, projectId })}
           projects={projects}
+          disabled={!!projectIdFromUrl} // Desabilitar se estiver em uma página de projeto
         />
         <TaskFormTags
           tags={tags}

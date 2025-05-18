@@ -36,5 +36,10 @@ export const TaskFormProject = ({ projectId, setProjectId, projects, disabled = 
         ))}
       </SelectContent>
     </Select>
+    {disabled && projectId && (
+      <p className="text-xs text-muted-foreground mt-1">
+        O projeto foi pré-selecionado e não pode ser alterado nesta visualização.
+      </p>
+    )}
   </div>
 );

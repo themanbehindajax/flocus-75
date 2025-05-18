@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -26,12 +27,12 @@ const ProjectDetails = () => {
   // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
   useEffect(() => {
     if (project) {
-      console.log("[DEBUG] Estado global de tasks bruto:", tasks);
-      const filtered = tasks.filter(
-        task => String(task.projectId) === String(projectId)
+      // Filtrar tarefas pelo projectId diretamente
+      const filteredTasks = tasks.filter(task => 
+        String(task.projectId) === String(projectId)
       );
-      console.log("Tarefas do projeto (", projectId, ") após filtro:", filtered);
-      setProjectTasks(filtered);
+      console.log("[DEBUG] Tarefas filtradas para projeto", projectId, ":", filteredTasks);
+      setProjectTasks(filteredTasks);
     }
   }, [project, tasks, projectId]);
 
@@ -59,10 +60,16 @@ const ProjectDetails = () => {
     );
   }
 
-  // Agora o handleTaskCreated fecha apenas o diálogo e mostra o toast,
-  // deixando o useEffect cuidar da atualização da lista.
+  // Função de callback para quando uma tarefa é criada
   const handleTaskCreated = () => {
     setIsAddDialogOpen(false);
+    
+    // Atualiza imediatamente a lista de tarefas após criar uma nova
+    const updatedTasks = useAppStore.getState().tasks.filter(
+      task => String(task.projectId) === String(projectId)
+    );
+    setProjectTasks(updatedTasks);
+    
     toast({
       title: "Tarefa criada",
       description: "Tarefa adicionada ao projeto com sucesso.",
