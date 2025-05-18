@@ -84,6 +84,7 @@ export const TodayPriorities = () => {
     }
   };
 
+  // Load existing priority tasks
   if (priorityTasks.length === 0) {
     return (
       <motion.div 

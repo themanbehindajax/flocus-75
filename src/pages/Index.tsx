@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
@@ -68,6 +69,8 @@ const Index = () => {
   ).length;
   
   const todayPoints = (todayCompletedTasks * 5) + (todayPomodoros * 10);
+  const totalPoints = profile.points;
+  const totalPomodoros = profile.totalPomodorosCompleted;
 
   return (
     <AppLayout>
@@ -126,7 +129,8 @@ const Index = () => {
             <CardContent className="flex justify-between items-center">
               <div className="text-2xl font-bold">{todayPoints}</div>
               <div className="flex items-center text-muted-foreground text-sm">
-                <span>Total: {profile.points}</span>
+                <Trophy className="h-4 w-4 mr-1 text-primary/70" />
+                <span>Total: {totalPoints}</span>
               </div>
             </CardContent>
           </Card>
@@ -141,7 +145,7 @@ const Index = () => {
               <div className="text-2xl font-bold">{todayPomodoros}</div>
               <div className="flex items-center text-muted-foreground text-sm">
                 <Clock className="h-4 w-4 mr-1" />
-                <span>Total: {profile.totalPomodorosCompleted}</span>
+                <span>Total: {totalPomodoros}</span>
               </div>
             </CardContent>
           </Card>
