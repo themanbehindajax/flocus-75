@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -117,11 +118,11 @@
   }
   
   .task-card {
-    @apply p-5 rounded-2xl bg-card border hover:border-primary/30 transition-all;
+    @apply p-5 rounded-2xl glass-effect hover:border-primary/30 transition-all;
   }
   
   .project-card {
-    @apply p-6 rounded-2xl bg-card shadow-sm hover:shadow-md border transition-all duration-200;
+    @apply p-6 rounded-2xl glass-effect shadow-sm hover:shadow-md transition-all duration-200;
   }
   
   /* Focus styling */
@@ -131,7 +132,7 @@
 
   /* Glass effect - adaptado para modo claro e escuro */
   .glass-effect {
-    @apply backdrop-blur-lg border rounded-2xl;
+    @apply backdrop-blur-xl border rounded-2xl;
     @apply dark:bg-black/30 dark:border-white/5;
     @apply bg-white/70 border-black/5;
   }
@@ -202,7 +203,7 @@
   
   /* Premium UI components - adaptado para modo claro e escuro */
   .premium-card {
-    @apply rounded-3xl bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border transition-all duration-300;
+    @apply rounded-3xl glass-effect backdrop-blur-sm transition-all duration-300;
     @apply dark:border-border/50 dark:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)];
     @apply border-border/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
   }
@@ -233,9 +234,9 @@
 
   /* Adaptações específicas para modo claro para cards de conquistas */
   .achievement-card {
-    @apply backdrop-blur-xl border shadow-lg transition-all;
-    @apply dark:bg-white/5 dark:border-white/10 dark:text-white/90;
-    @apply bg-white/80 border-black/5 text-gray-800;
+    @apply glass-effect transition-all;
+    @apply dark:text-white/90;
+    @apply text-gray-800;
   }
 
   /* Background gradiente estilo conquistas - adaptado para claro e escuro */

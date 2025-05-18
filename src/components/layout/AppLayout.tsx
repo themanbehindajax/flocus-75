@@ -18,6 +18,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const { sidebarCollapsed } = useAppStore();
+  
+  // Check if current page is pomodoro to avoid applying the background
+  const isPomodoroPage = location.pathname === "/pomodoro";
 
   useEffect(() => {
     if (isMobile) {
@@ -32,7 +35,19 @@ export function AppLayout({ children }: AppLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background">
+    <div className={cn(
+      "flex h-screen w-full overflow-hidden",
+      !isPomodoroPage && "bg-gradient-to-br from-background via-background to-muted/30 relative"
+    )}>
+      {/* Background decorative elements - only when not on pomodoro page */}
+      {!isPomodoroPage && (
+        <div className="absolute inset-0 overflow-hidden -z-10">
+          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl"></div>
+          <div className="absolute top-1/3 -left-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl"></div>
+          <div className="absolute -bottom-20 right-1/3 w-80 h-80 rounded-full bg-primary/5 blur-3xl"></div>
+        </div>
+      )}
+      
       {/* Sidebar */}
       {sidebarOpen && <AppSidebar activePath={location.pathname} />}
 
