@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { v4 as uuidv4 } from "uuid";
 
 const MAX_PRIORITIES = 6;
 
@@ -66,7 +67,13 @@ const IvyLee = () => {
     
     const newSelectedTaskIds = [...selectedTaskIds, taskId];
     setSelectedTaskIds(newSelectedTaskIds);
+    
+    // Find existing priority for this date
+    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    
+    // Create or update priority with the correct structure
     setDailyPriorities({
+      id: existingPriority?.id || uuidv4(),
       date,
       taskIds: newSelectedTaskIds
     });
@@ -80,7 +87,12 @@ const IvyLee = () => {
   const handleRemoveTask = (taskId: string) => {
     const newSelectedTaskIds = selectedTaskIds.filter(id => id !== taskId);
     setSelectedTaskIds(newSelectedTaskIds);
+    
+    // Find existing priority for this date
+    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    
     setDailyPriorities({
+      id: existingPriority?.id || uuidv4(),
       date,
       taskIds: newSelectedTaskIds
     });
@@ -114,7 +126,12 @@ const IvyLee = () => {
     newOrder.splice(toIndex, 0, movedTask);
     
     setSelectedTaskIds(newOrder);
+    
+    // Find existing priority for this date
+    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    
     setDailyPriorities({
+      id: existingPriority?.id || uuidv4(),
       date,
       taskIds: newOrder
     });
