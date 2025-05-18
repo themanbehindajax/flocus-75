@@ -43,11 +43,14 @@ export const createPomodoroActions = (set: any, get: any) => ({
         const today = new Date().toISOString().split("T")[0];
         const lastActivityDate = new Date(state.profile.lastActivity).toISOString().split("T")[0];
         if (lastActivityDate === today) {
+          // Same day activity, maintain streak
         } else if (
-          new Date(lastActivityDate) >= new Date(new Date(today).getTime() - 86400000)
+          new Date(lastActivityDate).getTime() >= new Date(new Date(today).getTime() - 86400000).getTime()
         ) {
+          // Activity within last 24 hours, increase streak
           updatedProfile.streak += 1;
         } else {
+          // Activity after a break, reset streak to 1
           updatedProfile.streak = 1;
         }
       }
