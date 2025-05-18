@@ -52,24 +52,22 @@ const Tasks = () => {
     
     // Atualização explícita das tarefas após criar uma nova
     setTimeout(() => {
-      const currentTasks = useAppStore.getState().tasks;
-      const filtered = currentTasks.filter((task) => 
+      const currentTasks = useAppStore.getState().tasks.filter((task) => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log("Atualizando lista após criar nova tarefa:", filtered);
-      setDisplayedTasks(filtered);
+      console.log("Atualizando lista após criar nova tarefa:", currentTasks);
+      setDisplayedTasks(currentTasks);
     }, 100);
   };
 
   const handleQuickTaskAdded = () => {
     // Atualização explícita das tarefas após adicionar uma rápida
     setTimeout(() => {
-      const currentTasks = useAppStore.getState().tasks;
-      const filtered = currentTasks.filter((task) => 
+      const currentTasks = useAppStore.getState().tasks.filter((task) => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log("Atualizando lista após adicionar tarefa rápida:", filtered);
-      setDisplayedTasks(filtered);
+      console.log("Atualizando lista após adicionar tarefa rápida:", currentTasks);
+      setDisplayedTasks(currentTasks);
     }, 100);
   };
 

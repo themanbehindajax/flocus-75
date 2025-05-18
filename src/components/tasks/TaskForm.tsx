@@ -16,14 +16,26 @@ import { TaskFormTags } from "./TaskFormTags";
 import { TaskFormQuick } from "./TaskFormQuick";
 import { TaskFormSubtasks } from "./TaskFormSubtasks";
 
-export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; editTask?: Task; }) => {
+interface TaskFormProps {
+  onComplete: () => void;
+  editTask?: Task;
+  defaultProjectId?: string;
+}
+
+export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormProps) => {
   const { addTask, updateTask, projects, tags } = useAppStore();
   const { toast } = useToast();
   const location = useLocation();
 
+  // Determinar projectId com base na ordem de prioridade:
+  // 1. defaultProjectId (passado como prop)
+  // 2. editTask?.projectId (se estiver editando uma tarefa)
+  // 3. URL do projeto atual (se estiver em uma página de projeto)
   const projectIdFromUrl = location.pathname.startsWith('/projects/') 
     ? location.pathname.split('/projects/')[1]
     : undefined;
+    
+  const initialProjectId = defaultProjectId || (editTask?.projectId) || projectIdFromUrl;
 
   const [newTask, setNewTask] = useState<{
     title: string;
@@ -41,7 +53,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
     priority: "media",
     status: "todo",
     tags: [],
-    projectId: projectIdFromUrl,
+    projectId: initialProjectId,
     dueDate: undefined,
     subtasks: [],
     isQuick: false,
@@ -67,14 +79,15 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
     }
   }, [editTask]);
 
+  // Garante que o projectId é atualizado se a prop defaultProjectId mudar
   useEffect(() => {
-    if (projectIdFromUrl && !editTask) {
+    if (defaultProjectId) {
       setNewTask(prev => ({
         ...prev,
-        projectId: projectIdFromUrl
+        projectId: defaultProjectId
       }));
     }
-  }, [projectIdFromUrl, editTask]);
+  }, [defaultProjectId]);
 
   const handleSaveTask = () => {
     if (newTask.title.trim()) {
@@ -92,9 +105,8 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
-      // Certifique-se de usar o projectId da URL se estivermos em uma página de projeto
-      // Importante: Garanta que a string não seja undefined/null
-      const actualProjectId = projectIdFromUrl || newTask.projectId;
+      // Usamos o projectId do estado, que já foi definido corretamente
+      const actualProjectId = newTask.projectId;
       
       console.log("Salvando tarefa com dados. ProjectId=", actualProjectId);
 
@@ -104,7 +116,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         priority: newTask.priority,
         status: newTask.status,
         tags: newTask.tags,
-        projectId: actualProjectId,  // Garanta que isso seja uma string válida ou undefined
+        projectId: actualProjectId,
         dueDate: date ? date.toISOString() : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
@@ -203,7 +215,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
           projectId={newTask.projectId}
           setProjectId={(projectId) => setNewTask({ ...newTask, projectId })}
           projects={projects}
-          disabled={!!projectIdFromUrl} // Desabilitar se estiver em uma página de projeto
+          disabled={!!defaultProjectId} // Desabilitar se um projectId foi fornecido como prop
         />
         <TaskFormTags
           tags={tags}

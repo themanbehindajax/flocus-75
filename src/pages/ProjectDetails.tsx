@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -27,7 +26,8 @@ const ProjectDetails = () => {
   // Função para atualizar as tarefas do projeto
   const updateProjectTasks = () => {
     if (projectId) {
-      const currentTasks = tasks.filter(task => task.projectId === projectId);
+      // Usa getState para garantir o estado mais recente
+      const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
       console.log("Atualizando tarefas do projeto:", projectId, currentTasks);
       setProjectTasks(currentTasks);
     }
@@ -69,9 +69,7 @@ const ProjectDetails = () => {
     // Força atualização explícita das tarefas do projeto após a criação
     // Usando setTimeout para garantir que o store foi atualizado antes de buscar as tarefas
     setTimeout(() => {
-      const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
-      console.log("Atualizando tarefas após criar nova:", currentTasks);
-      setProjectTasks(currentTasks);
+      updateProjectTasks();
       
       toast({
         title: "Tarefa criada",
@@ -113,18 +111,7 @@ const ProjectDetails = () => {
                 </DialogHeader>
                 <TaskForm
                   onComplete={handleTaskCreated}
-                  editTask={{
-                    id: '',
-                    title: '',
-                    priority: 'media',
-                    status: 'todo',
-                    tags: [],
-                    projectId: project.id,
-                    completed: false,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    subtasks: []
-                  }}
+                  defaultProjectId={project.id}
                 />
               </DialogContent>
             </Dialog>
