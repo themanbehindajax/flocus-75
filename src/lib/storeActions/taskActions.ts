@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -7,9 +6,8 @@ export const createTaskActions = (set: any, get: any) => ({
     // Ensure projectId is a proper string or undefined
     const projectId = taskData.projectId !== null && 
       taskData.projectId !== undefined &&
-      typeof taskData.projectId === 'object' && 
-      '_type' in taskData.projectId ? 
-      undefined : (taskData.projectId ?? undefined);
+      typeof taskData.projectId === 'string' ? 
+      taskData.projectId : undefined;
     
     const newTask: Task = {
       id: uuidv4(),

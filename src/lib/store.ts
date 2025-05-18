@@ -128,9 +128,8 @@ export const useAppStore = create<AppState>()(
         // Ensure projectId is a proper string or undefined
         const projectId = task.projectId !== null && 
           task.projectId !== undefined &&
-          typeof task.projectId === 'object' && 
-          '_type' in task.projectId ? 
-          undefined : (task.projectId ?? undefined);
+          typeof task.projectId === 'string' ? 
+          task.projectId : undefined;
           
         const newTask = {
           id: crypto.randomUUID(),
