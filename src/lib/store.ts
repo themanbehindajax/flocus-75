@@ -125,6 +125,12 @@ export const useAppStore = create<AppState>()(
       // Tasks
       tasks: [],
       addTask: (task) => set((state) => { 
+        // Ensure projectId is a proper string or undefined
+        const projectId = task.projectId && 
+          typeof task.projectId === 'object' && 
+          '_type' in task.projectId ? 
+          undefined : task.projectId;
+          
         const newTask = {
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
@@ -132,9 +138,12 @@ export const useAppStore = create<AppState>()(
           completed: false,
           subtasks: [],
           tags: task.tags || [],
-          ...task
+          ...task,
+          projectId, // Use sanitized projectId
         };
+        
         console.log("[DEBUG STORE] Adicionando task:", newTask);
+        
         // Adiciona no window para depuração extra
         (window as any).__GLOBAL_APP_STORE__ = {
           ...((window as any).__GLOBAL_APP_STORE__ || {}),

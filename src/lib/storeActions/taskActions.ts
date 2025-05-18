@@ -4,9 +4,16 @@ import { Task, Project, DailyPriority } from "../types";
 
 export const createTaskActions = (set: any, get: any) => ({
   addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => {
+    // Ensure projectId is a proper string or undefined
+    const projectId = taskData.projectId && 
+      typeof taskData.projectId === 'object' && 
+      '_type' in taskData.projectId ? 
+      undefined : taskData.projectId;
+    
     const newTask: Task = {
       id: uuidv4(),
       ...taskData,
+      projectId, // Use the sanitized projectId
       subtasks: taskData.subtasks || [],
       completed: false,
       createdAt: new Date().toISOString(),
@@ -21,10 +28,10 @@ export const createTaskActions = (set: any, get: any) => ({
     }));
     
     // Se a tarefa pertence a um projeto, adiciona-a ao projeto
-    if (taskData.projectId) {
+    if (projectId) {
       // Busca o projeto atual
       const currentState = get();
-      const project = currentState.projects.find((p: Project) => p.id === taskData.projectId);
+      const project = currentState.projects.find((p: Project) => p.id === projectId);
       
       if (project) {
         console.log("[DEBUG] Adding task to project:", project.name, "Project ID:", project.id, "Task ID:", newTask.id);
@@ -39,11 +46,11 @@ export const createTaskActions = (set: any, get: any) => ({
         // Atualiza o estado com o projeto modificado
         set((state: any) => ({
           projects: state.projects.map((p: Project) => 
-            p.id === taskData.projectId ? updatedProject : p
+            p.id === projectId ? updatedProject : p
           ),
         }));
       } else {
-        console.warn("[DEBUG] Project not found:", taskData.projectId);
+        console.warn("[DEBUG] Project not found:", projectId);
       }
     }
     

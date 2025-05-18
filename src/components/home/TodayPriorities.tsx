@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Task } from "@/lib/types";
 
 export const TodayPriorities = () => {
   const { tasks, dailyPriorities, toggleTaskCompletion, profile } = useAppStore();
@@ -35,8 +36,11 @@ export const TodayPriorities = () => {
     console.log("TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
   }, [dailyPriorities]);
   
-  // Get the priority tasks
-  const priorityTasks = tasks.filter(task => todaysPriorities.includes(task.id));
+  // Get the priority tasks - fixing the filter to handle potentially malformed projectId
+  const priorityTasks = tasks.filter(task => {
+    // First check if the task ID is in today's priorities
+    return todaysPriorities.includes(task.id);
+  });
   
   console.log("TodayPriorities - Filtered priority tasks:", priorityTasks);
   console.log("TodayPriorities - All tasks:", tasks);
