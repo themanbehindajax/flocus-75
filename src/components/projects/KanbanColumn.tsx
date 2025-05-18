@@ -27,8 +27,8 @@ export const KanbanColumn = ({
   isDraggingOver
 }: KanbanColumnProps) => {
   return (
-    <Card className="h-full glass-effect dark:bg-blue-950/20 backdrop-blur-xl">
-      <CardHeader className="pb-2 dark:bg-blue-950/30 bg-muted/50">
+    <Card className="h-full">
+      <CardHeader className="pb-2 bg-muted/50">
         <CardTitle className="text-lg font-medium flex justify-between">
           <span>{title} <span className="ml-2 text-sm text-muted-foreground">({tasks.length})</span></span>
         </CardTitle>
@@ -36,7 +36,7 @@ export const KanbanColumn = ({
       <CardContent 
         className={cn(
           "p-2 min-h-[300px] transition-colors duration-200",
-          isDraggingOver ? "dark:bg-blue-950/40 bg-muted/40 border-2 border-dashed border-primary/40 rounded-md" : ""
+          isDraggingOver ? "bg-muted/40 border-2 border-dashed border-primary/40 rounded-md" : ""
         )}
         onDragOver={(e) => {
           e.preventDefault();

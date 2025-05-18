@@ -130,11 +130,11 @@
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-75;
   }
 
-  /* Glass effect - aprimorado para modo claro e escuro */
+  /* Glass effect - adaptado para modo claro e escuro */
   .glass-effect {
     @apply backdrop-blur-xl border rounded-2xl;
-    @apply dark:bg-blue-950/30 dark:border-white/5 dark:shadow-lg dark:shadow-black/20;
-    @apply bg-white/60 border-black/5 shadow-sm;
+    @apply dark:bg-black/30 dark:border-white/5;
+    @apply bg-white/70 border-black/5;
   }
   
   /* Hover interactions */
@@ -165,20 +165,17 @@
 
   /* Toast styles - adaptado para modo claro e escuro */
   .toast-success {
-    @apply glass-effect;
-    @apply dark:bg-emerald-950/30 dark:border-emerald-800/50;
+    @apply dark:bg-emerald-950/30 border dark:border-emerald-800/50 rounded-2xl shadow-lg;
     @apply bg-emerald-50 border-emerald-200;
   }
 
   .toast-info {
-    @apply glass-effect;
-    @apply dark:bg-blue-950/30 dark:border-blue-800/50;
+    @apply dark:bg-blue-950/30 border dark:border-blue-800/50 rounded-2xl shadow-lg;
     @apply bg-blue-50 border-blue-200;
   }
 
   .toast-warning {
-    @apply glass-effect;
-    @apply dark:bg-amber-950/30 dark:border-amber-800/50;
+    @apply dark:bg-amber-950/30 border dark:border-amber-800/50 rounded-2xl shadow-lg;
     @apply bg-amber-50 border-amber-200;
   }
   
@@ -206,9 +203,9 @@
   
   /* Premium UI components - adaptado para modo claro e escuro */
   .premium-card {
-    @apply glass-effect transition-all duration-300;
-    @apply dark:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)];
-    @apply shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
+    @apply rounded-3xl glass-effect backdrop-blur-sm transition-all duration-300;
+    @apply dark:border-border/50 dark:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)];
+    @apply border-border/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
   }
   
   .premium-button {
@@ -223,9 +220,11 @@
     @apply rounded-full px-3 py-1 text-xs font-medium bg-gradient-to-r;
   }
   
-  /* Glassmorphism effect - aprimorado para modo claro e escuro */
+  /* Glassmorphism effect - adaptado para modo claro e escuro */
   .glassmorphism {
-    @apply glass-effect;
+    @apply backdrop-blur-xl border shadow-lg;
+    @apply dark:bg-black/20 dark:border-white/10;
+    @apply bg-white/60 border-black/5;
   }
   
   /* Gradient text */
