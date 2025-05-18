@@ -86,7 +86,7 @@ export const ProjectTaskList = ({
   return (
     <div className="md:col-span-3 animate-fade-in">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium">Tarefas</h3>
+        <h3 className="text-lg font-medium text-foreground">Tarefas</h3>
         <div className="flex gap-2">
           <div className="flex items-center border rounded-md overflow-hidden">
             <Button

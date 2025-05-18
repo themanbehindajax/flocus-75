@@ -55,7 +55,7 @@ export const CalendarTaskCard = ({ task, projects }: CalendarTaskCardProps) => {
               completeTask(task.id);
             }}
             className={`mt-1 w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center transition-colors ${
-              task.completed ? "bg-primary text-white" : "border border-muted-foreground"
+              task.completed ? "bg-primary text-primary-foreground" : "border border-muted-foreground"
             }`}
           >
             {task.completed && <CheckCircle className="h-4 w-4" />}

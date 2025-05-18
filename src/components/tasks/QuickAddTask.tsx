@@ -49,7 +49,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         placeholder="Adicionar nova tarefa..."
-        className="flex-grow bg-white/5 border-white/20 text-white placeholder:text-white/60 w-full"
+        className="flex-grow text-foreground placeholder:text-muted-foreground w-full"
       />
       <Button
         type="button"
@@ -65,7 +65,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         type="submit" 
         size="sm" 
         disabled={!taskTitle.trim()}
-        className="text-white whitespace-nowrap"
+        className="whitespace-nowrap"
       >
         <Bolt className="w-4 h-4 mr-1" />
         Adicionar
