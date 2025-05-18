@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
@@ -128,7 +129,6 @@ const Index = () => {
             <CardContent className="flex justify-between items-center">
               <div className="text-2xl font-bold">{todayPoints}</div>
               <div className="flex items-center text-muted-foreground text-sm">
-                <Trophy className="h-4 w-4 mr-1 text-primary/70" />
                 <span>Total: {totalPoints}</span>
               </div>
             </CardContent>

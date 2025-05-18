@@ -28,6 +28,11 @@ export const TodayPriorities = () => {
     } else {
       setTodaysPriorities([]);
     }
+    
+    // Debug
+    console.log("Today's date:", today);
+    console.log("All daily priorities:", dailyPriorities);
+    console.log("Today's priority list:", todaysPriorityList);
   }, [dailyPriorities]);
   
   // Get the priority tasks
