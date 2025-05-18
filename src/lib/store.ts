@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
@@ -176,7 +177,7 @@ export const useAppStore = create<AppState>()(
           };
         }),
         
-        // Add back task methods that were removed
+        // Fixed the argument count issues here
         updateTask: taskActions.updateTask,
         deleteTask: taskActions.deleteTask,
         completeTask: taskActions.completeTask,
