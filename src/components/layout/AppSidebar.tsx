@@ -118,10 +118,10 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
           <span className="font-bold text-xl text-primary">F</span>
         ) : (
           <div className="flex items-center w-full justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback className="text-xs">U</AvatarFallback>
               </Avatar>
               <h1 className="font-bold text-xl text-primary">Flocus</h1>
             </div>
