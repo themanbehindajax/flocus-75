@@ -27,10 +27,7 @@ const ProjectDetails = () => {
   // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
   useEffect(() => {
     if (project) {
-      // Filtrar tarefas pelo projectId diretamente
-      const filteredTasks = tasks.filter(task => 
-        String(task.projectId) === String(projectId)
-      );
+      const filteredTasks = tasks.filter(task => task.projectId === projectId);
       console.log("[DEBUG] Tarefas filtradas para projeto", projectId, ":", filteredTasks);
       setProjectTasks(filteredTasks);
     }
@@ -64,16 +61,17 @@ const ProjectDetails = () => {
   const handleTaskCreated = () => {
     setIsAddDialogOpen(false);
     
-    // Atualiza imediatamente a lista de tarefas após criar uma nova
-    const updatedTasks = useAppStore.getState().tasks.filter(
-      task => String(task.projectId) === String(projectId)
-    );
-    setProjectTasks(updatedTasks);
-    
-    toast({
-      title: "Tarefa criada",
-      description: "Tarefa adicionada ao projeto com sucesso.",
-    });
+    // Usando setTimeout para garantir que o estado global já tenha sido atualizado
+    setTimeout(() => {
+      const currentState = useAppStore.getState();
+      const updatedTasks = currentState.tasks.filter(task => task.projectId === projectId);
+      setProjectTasks(updatedTasks);
+      
+      toast({
+        title: "Tarefa criada",
+        description: "Tarefa adicionada ao projeto com sucesso.",
+      });
+    }, 100);
   };
 
   return (

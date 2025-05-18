@@ -122,9 +122,20 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
           title: "Tarefa atualizada",
           description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
         });
+        onComplete();
       } else {
-        const newTaskId = addTask(taskData);
-        console.log("[DEBUG] Nova tarefa criada com ID:", newTaskId);
+        addTask(taskData);
+        
+        // Como a adição de tarefas é assíncrona, esperamos um pouco antes de chamar o callback
+        setTimeout(() => {
+          console.log("[DEBUG] Task salva, chamando onComplete");
+          onComplete();
+        }, 50);
+        
+        toast({
+          title: "Tarefa criada",
+          description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+        });
       }
       
       setNewTask({
@@ -139,8 +150,6 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         isQuick: false,
       });
       setDate(undefined);
-
-      onComplete();
     }
   };
 
