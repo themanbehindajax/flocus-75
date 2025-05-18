@@ -3,23 +3,36 @@ import { v4 as uuidv4 } from "uuid";
 import { DailyPriority, UserProfile } from "../types";
 
 export const createMiscActions = (set: any) => ({
-  // Standardize the setDailyPriorities function to accept a complete DailyPriority object
+  // Enhanced setDailyPriorities function with better logging
   setDailyPriorities: (priorities: DailyPriority) => {
+    console.log("[DEBUG] Setting daily priorities:", priorities);
+    
+    // Validate taskIds is an array
+    const validatedTaskIds = Array.isArray(priorities.taskIds) ? priorities.taskIds : [];
+    
+    // Create a standardized priorities object
+    const standardizedPriorities = {
+      id: priorities.id || uuidv4(),
+      date: priorities.date,
+      taskIds: validatedTaskIds,
+    };
+    
+    console.log("[DEBUG] Standardized priorities object:", standardizedPriorities);
+    
     set((state: any) => {
       const existingPriority = state.dailyPriorities.find((dp: DailyPriority) => dp.date === priorities.date);
+      
       if (existingPriority) {
+        console.log("[DEBUG] Updating existing priorities for date:", priorities.date);
         return {
           dailyPriorities: state.dailyPriorities.map((dp: DailyPriority) =>
-            dp.date === priorities.date ? { ...dp, taskIds: priorities.taskIds } : dp
+            dp.date === priorities.date ? standardizedPriorities : dp
           ),
         };
       } else {
+        console.log("[DEBUG] Adding new priorities for date:", priorities.date);
         return {
-          dailyPriorities: [...state.dailyPriorities, {
-            id: priorities.id || uuidv4(),
-            date: priorities.date,
-            taskIds: priorities.taskIds,
-          }],
+          dailyPriorities: [...state.dailyPriorities, standardizedPriorities],
         };
       }
     });

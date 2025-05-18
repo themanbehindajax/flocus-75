@@ -24,26 +24,34 @@ export const TodayPriorities = () => {
     
     // Find today's priorities
     const todaysPriorityList = dailyPriorities.find(dp => dp.date === today);
+    
     if (todaysPriorityList) {
+      console.log("[DEBUG] Found priority list for today:", todaysPriorityList);
       setTodaysPriorities(todaysPriorityList.taskIds);
     } else {
+      console.log("[DEBUG] No priority list found for today. Date:", today);
       setTodaysPriorities([]);
     }
     
-    console.log("TodayPriorities - Today's date:", today);
-    console.log("TodayPriorities - All daily priorities:", dailyPriorities);
-    console.log("TodayPriorities - Today's priority list:", todaysPriorityList);
-    console.log("TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
-  }, [dailyPriorities]);
+    // More detailed logging
+    console.log("[DEBUG] TodayPriorities - Today's date:", today);
+    console.log("[DEBUG] TodayPriorities - All daily priorities:", dailyPriorities);
+    console.log("[DEBUG] TodayPriorities - Today's priority list:", todaysPriorityList);
+    console.log("[DEBUG] TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
+    console.log("[DEBUG] TodayPriorities - All tasks IDs:", tasks.map(t => t.id));
+  }, [dailyPriorities, tasks]);
   
-  // Get the priority tasks - fixing the filter to handle potentially malformed projectId
+  // Get the priority tasks with improved logging and reliability
   const priorityTasks = tasks.filter(task => {
-    // First check if the task ID is in today's priorities
-    return todaysPriorities.includes(task.id);
+    const isInPriorities = todaysPriorities.includes(task.id);
+    if (isInPriorities) {
+      console.log("[DEBUG] Task included in priorities:", task.id, task.title);
+    }
+    return isInPriorities;
   });
   
-  console.log("TodayPriorities - Filtered priority tasks:", priorityTasks);
-  console.log("TodayPriorities - All tasks:", tasks);
+  console.log("[DEBUG] TodayPriorities - Filtered priority tasks:", priorityTasks);
+  console.log("[DEBUG] TodayPriorities - All tasks:", tasks);
   
   // Calculate completion percentage
   const completedTasks = priorityTasks.filter(task => task.completed).length;

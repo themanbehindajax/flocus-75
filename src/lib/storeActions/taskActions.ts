@@ -9,7 +9,7 @@ export const createTaskActions = (set: any, get: any) => ({
       taskData.projectId !== undefined &&
       typeof taskData.projectId === 'object' && 
       '_type' in taskData.projectId ? 
-      undefined : taskData.projectId;
+      undefined : (taskData.projectId ?? undefined);
     
     const newTask: Task = {
       id: uuidv4(),

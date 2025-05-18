@@ -130,7 +130,7 @@ export const useAppStore = create<AppState>()(
           task.projectId !== undefined &&
           typeof task.projectId === 'object' && 
           '_type' in task.projectId ? 
-          undefined : task.projectId;
+          undefined : (task.projectId ?? undefined);
           
         const newTask = {
           id: crypto.randomUUID(),
@@ -243,16 +243,23 @@ export const useAppStore = create<AppState>()(
       dailyPriorities: [],
       setDailyPriorities: (priorities) => set((state) => {
         const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
+        
+        // Ensure taskIds is an array
+        const safeTaskIds = Array.isArray(priorities.taskIds) ? priorities.taskIds : [];
+        
+        console.log("[DEBUG] Setting priorities in store:", priorities.date, safeTaskIds);
+        
         if (dateIndex >= 0) {
           return {
             dailyPriorities: state.dailyPriorities.map((p, i) => 
-              i === dateIndex ? priorities : p
+              i === dateIndex ? { ...p, taskIds: safeTaskIds } : p
             )
           };
         } else {
           return { 
             dailyPriorities: [...state.dailyPriorities, {
               ...priorities,
+              taskIds: safeTaskIds,
               id: priorities.id || crypto.randomUUID()
             }] 
           };
