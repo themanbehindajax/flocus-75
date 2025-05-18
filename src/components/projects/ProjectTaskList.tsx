@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface ProjectTaskListProps {
   projectId: string;
@@ -28,8 +29,6 @@ export const ProjectTaskList = ({
   
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
-    
-    // Show toast notification based on new completion state after toggle
     if (!task.completed) {
       toast({
         title: "Tarefa concluída",
@@ -45,7 +44,6 @@ export const ProjectTaskList = ({
     }
   };
 
-  // Define priority styles for consistent design
   const priorityStyles = {
     alta: "border-l-red-500",
     media: "border-l-amber-500",
@@ -136,6 +134,10 @@ export const ProjectTaskList = ({
                         <span className={task.completed ? "line-through text-muted-foreground" : "font-medium"}>
                           {task.title}
                         </span>
+                        {/* Badge de tarefa rápida */}
+                        {task.isQuick && (
+                          <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5">⚡ Rápida</Badge>
+                        )}
                       </div>
                       {task.dueDate && (
                         <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/30 rounded-full">

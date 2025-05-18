@@ -37,56 +37,38 @@ export const KanbanTask = ({
       })
     : null;
 
-  // Encontra o nome do projeto se esta tarefa pertencer a um projeto
   const project = task.projectId ? projects.find(p => p.id === task.projectId) : null;
-  
-  // Encontra objetos de tag para os IDs de tag desta tarefa
   const taskTags = task.tags
     .map(tagId => tags.find(tag => tag.id === tagId))
     .filter(Boolean);
 
-  // Melhorado: Manipulador de HTML5 Drag and Drop para estilo "clique, segure e solte"
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    // Configura imediatamente os dados de transferência
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/json', JSON.stringify({
         taskId: task.id,
         sourceColumnId: columnId
       }));
-      
-      // Melhora o feedback visual durante o arrasto
       event.dataTransfer.effectAllowed = 'move';
-      
-      // Cria uma imagem de arrastar personalizada (opcional, melhora a UX)
       if (taskRef.current) {
         const rect = taskRef.current.getBoundingClientRect();
         event.dataTransfer.setDragImage(taskRef.current, rect.width / 2, rect.height / 2);
       }
     }
-    
-    // Adiciona uma classe para feedback visual durante o arrastar
     if (taskRef.current) {
       taskRef.current.style.opacity = '0.6';
     }
-    
-    // Simula um toque ou pressionar em dispositivos móveis
     taskRef.current?.classList.add('active');
-    
     if (onDragStart) onDragStart();
   };
 
-  // Manipulador para quando o arrastar termina
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
-    // Remove efeitos visuais de arrastar
     if (taskRef.current) {
       taskRef.current.style.opacity = '1';
       taskRef.current.classList.remove('active');
     }
-    
     if (onDragEnd) onDragEnd();
   };
   
-  // Ajuda a fixar o item ao toque em dispositivos móveis
   const handleTouchStart = () => {
     taskRef.current?.classList.add('touch-dragging');
   };
@@ -120,7 +102,6 @@ export const KanbanTask = ({
       aria-grabbed={isDragging ? "true" : "false"}
       tabIndex={0}
       onKeyDown={(e) => {
-        // Acessibilidade: permite mover tarefas com o teclado (exemplo simples)
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           if (onDragStart) onDragStart();
@@ -142,6 +123,10 @@ export const KanbanTask = ({
                 <GripVertical size={14} />
               </div>
               <span className="font-medium text-sm">{task.title}</span>
+              {/* Badge de tarefa rápida */}
+              {task.isQuick && (
+                <Badge variant="outline" className="ml-1 text-xs px-2 py-0.5">⚡ Rápida</Badge>
+              )}
             </div>
             {task.priority && (
               <div
