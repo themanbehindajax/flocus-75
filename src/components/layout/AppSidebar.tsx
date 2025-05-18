@@ -74,7 +74,7 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ activePath }: AppSidebarProps) {
-  const { sidebarCollapsed, toggleSidebarCollapse } = useAppStore();
+  const { sidebarCollapsed, toggleSidebarCollapse, profile } = useAppStore();
   
   const sidebarItems = [
     { icon: <Home className="w-5 h-5" />, label: "Dashboard", to: "/" },
@@ -119,10 +119,14 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
         ) : (
           <div className="flex items-center w-full justify-between">
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="text-xs">U</AvatarFallback>
-              </Avatar>
+              <Link to="/settings" className="hover:opacity-80 transition">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={profile?.avatar} />
+                  <AvatarFallback className="text-xs">
+                    {profile?.name?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <h1 className="font-bold text-xl text-primary">Flocus</h1>
             </div>
             <div className="flex items-center gap-2">
@@ -199,4 +203,4 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
       )}
     </motion.div>
   );
-};
+}
