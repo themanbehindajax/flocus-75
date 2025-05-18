@@ -9,6 +9,14 @@ import {
   UserProfile,
   CalendarEvent
 } from './types';
+import { 
+  createTaskActions, 
+  createProjectActions, 
+  createTagActions, 
+  createPomodoroActions,
+  createMiscActions,
+  createCalendarActions
+} from './storeActions';
 
 export interface AppState {
   // User preferences
@@ -105,213 +113,239 @@ export interface AppState {
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set, get) => ({
-      // Theme
-      theme: 'system',
-      setTheme: (theme) => set({ theme }),
+    (set, get) => {
+      // Initialize task-related actions
+      const taskActions = createTaskActions(set, get);
+      // Initialize project-related actions
+      const projectActions = createProjectActions(set, get);
+      // Initialize tag-related actions
+      const tagActions = createTagActions(set, get);
+      // Initialize pomodoro-related actions
+      const pomodoroActions = createPomodoroActions(set, get);
+      // Initialize misc actions
+      const miscActions = createMiscActions(set, get);
+      // Initialize calendar actions
+      const calendarActions = createCalendarActions(set, get);
       
-      // Sidebar
-      sidebarOpen: true,
-      setSidebarOpen: (open) => set({ sidebarOpen: open }),
-      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-      sidebarCollapsed: false,
-      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-      toggleSidebarCollapse: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-      
-      // Notifications
-      notificationsEnabled: true,
-      setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
-      
-      // Tasks
-      tasks: [],
-      addTask: (task) => set((state) => { 
-        // Ensure projectId is a proper string or undefined
-        const projectId = task.projectId !== null && 
-          task.projectId !== undefined &&
-          typeof task.projectId === 'string' ? 
-          task.projectId : undefined;
-          
-        const newTask = {
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          completed: false,
-          subtasks: [],
-          tags: task.tags || [],
-          ...task,
-          projectId, // Use sanitized projectId
-        };
-        
-        console.log("[DEBUG STORE] Adicionando task:", newTask);
-        
-        // Adiciona no window para depuração extra
-        (window as any).__GLOBAL_APP_STORE__ = {
-          ...((window as any).__GLOBAL_APP_STORE__ || {}),
-          tasks: [...state.tasks, newTask],
-        };
-        return { 
-          tasks: [...state.tasks, newTask] 
-        };
-      }),
-      
-      // Projects
-      projects: [],
-      addProject: (project) => set((state) => ({
-        projects: [...state.projects, {
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          tasks: [],
-          ...project
-        }]
-      })),
-      updateProject: (updatedProject) => set((state) => ({
-        projects: state.projects.map(project => 
-          project.id === updatedProject.id ? { ...updatedProject, updatedAt: new Date().toISOString() } : project
-        )
-      })),
-      deleteProject: (projectId) => set((state) => ({
-        projects: state.projects.filter(project => project.id !== projectId)
-      })),
-      
-      // Tags
-      tags: [],
-      addTag: (tag) => set((state) => ({
-        tags: [...state.tags, { id: crypto.randomUUID(), ...tag }]
-      })),
-      updateTag: (updatedTag) => set((state) => ({
-        tags: state.tags.map(tag => 
-          tag.id === updatedTag.id ? updatedTag : tag
-        )
-      })),
-      deleteTag: (tagId) => set((state) => ({
-        tags: state.tags.filter(tag => tag.id !== tagId)
-      })),
-      
-      // Daily Priorities
-      dailyPriorities: [],
-      setDailyPriorities: (priorities) => set((state) => {
-        const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
-        
-        // Ensure taskIds is an array
-        const safeTaskIds = Array.isArray(priorities.taskIds) ? priorities.taskIds : [];
-        
-        console.log("[DEBUG] Setting priorities in store:", priorities.date, safeTaskIds);
-        
-        if (dateIndex >= 0) {
-          return {
-            dailyPriorities: state.dailyPriorities.map((p, i) => 
-              i === dateIndex ? { ...p, taskIds: safeTaskIds } : p
-            )
-          };
-        } else {
-          return { 
-            dailyPriorities: [...state.dailyPriorities, {
-              ...priorities,
-              taskIds: safeTaskIds,
-              id: priorities.id || crypto.randomUUID()
-            }] 
-          };
-        }
-      }),
-      
-      // Pomodoro sessions
-      pomodoroSessions: [],
-      startPomodoroSession: (taskId, projectId) => {
-        const newSession = {
-          id: crypto.randomUUID(),
-          startTime: new Date().toISOString(),
-          completed: false,
-          taskId,
-          projectId
-        };
-        set((state) => ({
-          pomodoroSessions: [...state.pomodoroSessions, newSession]
-        }));
-        return newSession;
-      },
-      completePomodoroSession: (sessionId) => set((state) => ({
-        pomodoroSessions: state.pomodoroSessions.map(session => 
-          session.id === sessionId 
-            ? { 
-                ...session, 
-                completed: true, 
-                endTime: new Date().toISOString(),
-                duration: session.startTime ? 
-                  Math.round((new Date().getTime() - new Date(session.startTime).getTime()) / 1000 / 60) : 
-                  undefined
-              } 
-            : session
-        )
-      })),
-      
-      // User profile
-      profile: {
-        name: 'Usuário',
-        points: 0,
-        streak: 0,
-        lastActivity: new Date().toISOString(),
-        totalTasksCompleted: 0,
-        totalPomodorosCompleted: 0
-      },
-      updateProfile: (updates) => set((state) => ({
-        profile: { ...state.profile, ...updates }
-      })),
-      
-      // Calendar events
-      calendarEvents: [],
-      addCalendarEvent: (event) => set((state) => ({
-        calendarEvents: [...state.calendarEvents, { id: crypto.randomUUID(), ...event }]
-      })),
-      updateCalendarEvent: (updatedEvent) => set((state) => ({
-        calendarEvents: state.calendarEvents.map(event => 
-          event.id === updatedEvent.id ? updatedEvent : event
-        )
-      })),
-      deleteCalendarEvent: (eventId) => set((state) => ({
-        calendarEvents: state.calendarEvents.filter(event => event.id !== eventId)
-      })),
-      
-      // Pomodoro settings
-      pomodoroSettings: {
-        workDuration: 25,
-        shortBreakDuration: 5,
-        longBreakDuration: 15,
-        longBreakInterval: 4,
-        autoStartBreaks: true,
-        autoStartPomodoros: true,
-        alarmSound: 'bell',
-        alarmVolume: 0.5,
-      },
-      updatePomodoroSettings: (settings) => 
-        set((state) => ({ 
-          pomodoroSettings: { ...state.pomodoroSettings, ...settings } 
-        })),
-      
-      // App settings
-      settings: {
-        pomodoroDuration: 25,
-        shortBreakDuration: 5,
-        longBreakDuration: 15,
+      return {
+        // Theme
         theme: 'system',
+        setTheme: (theme) => set({ theme }),
+        
+        // Sidebar
+        sidebarOpen: true,
+        setSidebarOpen: (open) => set({ sidebarOpen: open }),
+        toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+        sidebarCollapsed: false,
+        setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+        toggleSidebarCollapse: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+        
+        // Notifications
         notificationsEnabled: true,
-      },
-      updateSettings: (updates) => set((state) => ({
-        settings: { ...state.settings, ...updates }
-      })),
-      
-      // Spotify stubs
-      spotifyAuth: null,
-      setSpotifyAuth: (auth) => set({ spotifyAuth: auth }),
-      clearSpotifyAuth: () => set({ spotifyAuth: null }),
-      getCurrentTrack: () => null,
-      playTrack: () => {},
-      pauseTrack: () => {},
-      nextTrack: () => {},
-      previousTrack: () => {},
-      getUserPlaylists: () => [],
-      playPlaylist: () => {},
-    }),
+        setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+        
+        // Tasks
+        tasks: [],
+        addTask: (task) => set((state) => { 
+          // Ensure projectId is a proper string or undefined
+          const projectId = task.projectId !== null && 
+            task.projectId !== undefined &&
+            typeof task.projectId === 'string' ? 
+            task.projectId : undefined;
+            
+          const newTask = {
+            id: crypto.randomUUID(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            completed: false,
+            subtasks: [],
+            tags: task.tags || [],
+            ...task,
+            projectId, // Use sanitized projectId
+          };
+          
+          console.log("[DEBUG STORE] Adicionando task:", newTask);
+          
+          // Adiciona no window para depuração extra
+          (window as any).__GLOBAL_APP_STORE__ = {
+            ...((window as any).__GLOBAL_APP_STORE__ || {}),
+            tasks: [...state.tasks, newTask],
+          };
+          return { 
+            tasks: [...state.tasks, newTask] 
+          };
+        }),
+        
+        // Add back task methods that were removed
+        updateTask: taskActions.updateTask,
+        deleteTask: taskActions.deleteTask,
+        completeTask: taskActions.completeTask,
+        toggleTaskCompletion: taskActions.toggleTaskCompletion,
+        
+        // Projects
+        projects: [],
+        // ... keep existing code (project-related methods)
+        addProject: (project) => set((state) => ({
+          projects: [...state.projects, {
+            id: crypto.randomUUID(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            tasks: [],
+            ...project
+          }]
+        })),
+        updateProject: (updatedProject) => set((state) => ({
+          projects: state.projects.map(project => 
+            project.id === updatedProject.id ? { ...updatedProject, updatedAt: new Date().toISOString() } : project
+          )
+        })),
+        deleteProject: (projectId) => set((state) => ({
+          projects: state.projects.filter(project => project.id !== projectId)
+        })),
+        
+        // Tags
+        tags: [],
+        // ... keep existing code (tag-related methods)
+        addTag: (tag) => set((state) => ({
+          tags: [...state.tags, { id: crypto.randomUUID(), ...tag }]
+        })),
+        updateTag: (updatedTag) => set((state) => ({
+          tags: state.tags.map(tag => 
+            tag.id === updatedTag.id ? updatedTag : tag
+          )
+        })),
+        deleteTag: (tagId) => set((state) => ({
+          tags: state.tags.filter(tag => tag.id !== tagId)
+        })),
+        
+        // Daily Priorities
+        dailyPriorities: [],
+        // ... keep existing code (daily priorities methods)
+        setDailyPriorities: (priorities) => set((state) => {
+          const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
+          
+          // Ensure taskIds is an array
+          const safeTaskIds = Array.isArray(priorities.taskIds) ? priorities.taskIds : [];
+          
+          console.log("[DEBUG] Setting priorities in store:", priorities.date, safeTaskIds);
+          
+          if (dateIndex >= 0) {
+            return {
+              dailyPriorities: state.dailyPriorities.map((p, i) => 
+                i === dateIndex ? { ...p, taskIds: safeTaskIds } : p
+              )
+            };
+          } else {
+            return { 
+              dailyPriorities: [...state.dailyPriorities, {
+                ...priorities,
+                taskIds: safeTaskIds,
+                id: priorities.id || crypto.randomUUID()
+              }] 
+            };
+          }
+        }),
+        
+        // Pomodoro sessions
+        pomodoroSessions: [],
+        // ... keep existing code (pomodoro session methods)
+        startPomodoroSession: (taskId, projectId) => {
+          const newSession = {
+            id: crypto.randomUUID(),
+            startTime: new Date().toISOString(),
+            completed: false,
+            taskId,
+            projectId
+          };
+          set((state) => ({
+            pomodoroSessions: [...state.pomodoroSessions, newSession]
+          }));
+          return newSession;
+        },
+        completePomodoroSession: (sessionId) => set((state) => ({
+          pomodoroSessions: state.pomodoroSessions.map(session => 
+            session.id === sessionId 
+              ? { 
+                  ...session, 
+                  completed: true, 
+                  endTime: new Date().toISOString(),
+                  duration: session.startTime ? 
+                    Math.round((new Date().getTime() - new Date(session.startTime).getTime()) / 1000 / 60) : 
+                    undefined
+                } 
+              : session
+          )
+        })),
+        
+        // User profile
+        profile: {
+          name: 'Usuário',
+          points: 0,
+          streak: 0,
+          lastActivity: new Date().toISOString(),
+          totalTasksCompleted: 0,
+          totalPomodorosCompleted: 0
+        },
+        updateProfile: (updates) => set((state) => ({
+          profile: { ...state.profile, ...updates }
+        })),
+        
+        // Calendar events
+        calendarEvents: [],
+        // ... keep existing code (calendar event methods)
+        addCalendarEvent: (event) => set((state) => ({
+          calendarEvents: [...state.calendarEvents, { id: crypto.randomUUID(), ...event }]
+        })),
+        updateCalendarEvent: (updatedEvent) => set((state) => ({
+          calendarEvents: state.calendarEvents.map(event => 
+            event.id === updatedEvent.id ? updatedEvent : event
+          )
+        })),
+        deleteCalendarEvent: (eventId) => set((state) => ({
+          calendarEvents: state.calendarEvents.filter(event => event.id !== eventId)
+        })),
+        
+        // Pomodoro settings
+        pomodoroSettings: {
+          workDuration: 25,
+          shortBreakDuration: 5,
+          longBreakDuration: 15,
+          longBreakInterval: 4,
+          autoStartBreaks: true,
+          autoStartPomodoros: true,
+          alarmSound: 'bell',
+          alarmVolume: 0.5,
+        },
+        updatePomodoroSettings: (settings) => 
+          set((state) => ({ 
+            pomodoroSettings: { ...state.pomodoroSettings, ...settings } 
+          })),
+        
+        // App settings
+        settings: {
+          pomodoroDuration: 25,
+          shortBreakDuration: 5,
+          longBreakDuration: 15,
+          theme: 'system',
+          notificationsEnabled: true,
+        },
+        updateSettings: (updates) => set((state) => ({
+          settings: { ...state.settings, ...updates }
+        })),
+        
+        // Spotify stubs
+        spotifyAuth: null,
+        setSpotifyAuth: (auth) => set({ spotifyAuth: auth }),
+        clearSpotifyAuth: () => set({ spotifyAuth: null }),
+        getCurrentTrack: () => null,
+        playTrack: () => {},
+        pauseTrack: () => {},
+        nextTrack: () => {},
+        previousTrack: () => {},
+        getUserPlaylists: () => [],
+        playPlaylist: () => {},
+      };
+    },
     {
       name: 'flocus-app-storage',
       partialize: (state) => ({
