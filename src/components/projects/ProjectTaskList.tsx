@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ListPlus, List, Kanban, CheckCircle, CheckCircle2, Square, CheckSquare } from "lucide-react";
@@ -9,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { TaskDetailDrawer } from "@/components/tasks/TaskDetailDrawer";
 
 interface ProjectTaskListProps {
   projectId: string;
@@ -26,8 +28,11 @@ export const ProjectTaskList = ({
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
   const { toggleTaskCompletion, updateTask } = useAppStore();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   
-  const handleToggleTaskCompletion = (task: Task) => {
+  const handleToggleTaskCompletion = (e: React.MouseEvent, task: Task) => {
+    e.stopPropagation(); // Prevent opening the drawer
     toggleTaskCompletion(task.id);
     if (!task.completed) {
       toast({
@@ -44,7 +49,9 @@ export const ProjectTaskList = ({
     }
   };
 
-  const handleToggleSubtaskCompletion = (task: Task, subtaskId: string) => {
+  const handleToggleSubtaskCompletion = (e: React.MouseEvent, task: Task, subtaskId: string) => {
+    e.stopPropagation(); // Prevent opening the drawer
+    
     const updatedTask = {
       ...task,
       subtasks: task.subtasks.map(subtask => 
@@ -63,6 +70,11 @@ export const ProjectTaskList = ({
       description: `A subtarefa foi ${updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "marcada como concluída" : "reaberta"}.`,
       className: updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "toast-success" : "toast-info"
     });
+  };
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setIsDetailDrawerOpen(true);
   };
 
   const priorityStyles = {
@@ -133,10 +145,11 @@ export const ProjectTaskList = ({
                 <Card 
                   key={task.id} 
                   className={cn(
-                    "border-l-4 transition-all duration-200 hover:shadow-md",
+                    "border-l-4 transition-all duration-200 hover:shadow-md cursor-pointer",
                     priorityStyles[task.priority] || "border-l-green-500",
                     task.completed ? 'bg-muted/30' : ''
                   )}
+                  onClick={() => handleTaskClick(task)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -149,7 +162,7 @@ export const ProjectTaskList = ({
                               ? 'text-primary hover:text-primary/80 hover:bg-primary/10' 
                               : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
                           }`}
-                          onClick={() => handleToggleTaskCompletion(task)}
+                          onClick={(e) => handleToggleTaskCompletion(e, task)}
                         >
                           {task.completed ? 
                             <CheckCircle2 className="h-4 w-4" /> : 
@@ -197,7 +210,7 @@ export const ProjectTaskList = ({
                                   ? 'text-primary hover:text-primary/80' 
                                   : 'text-muted-foreground hover:text-primary'
                               }`}
-                              onClick={() => handleToggleSubtaskCompletion(task, subtask.id)}
+                              onClick={(e) => handleToggleSubtaskCompletion(e, task, subtask.id)}
                             >
                               {subtask.completed ? 
                                 <CheckSquare className="h-3.5 w-3.5" /> : 
@@ -221,7 +234,13 @@ export const ProjectTaskList = ({
           )}
         </>
       )}
+
+      {/* Task Detail Drawer */}
+      <TaskDetailDrawer
+        task={selectedTask}
+        open={isDetailDrawerOpen}
+        onOpenChange={setIsDetailDrawerOpen}
+      />
     </div>
   );
 };
-
