@@ -5,7 +5,8 @@ import { Task, Project, DailyPriority } from "../types";
 export const createTaskActions = (set: any, get: any) => ({
   addTask: (taskData: Omit<Task, "id" | "createdAt" | "updatedAt" | "completed">) => {
     // Ensure projectId is a proper string or undefined
-    const projectId = taskData.projectId && 
+    const projectId = taskData.projectId !== null && 
+      taskData.projectId !== undefined &&
       typeof taskData.projectId === 'object' && 
       '_type' in taskData.projectId ? 
       undefined : taskData.projectId;

@@ -126,7 +126,8 @@ export const useAppStore = create<AppState>()(
       tasks: [],
       addTask: (task) => set((state) => { 
         // Ensure projectId is a proper string or undefined
-        const projectId = task.projectId && 
+        const projectId = task.projectId !== null && 
+          task.projectId !== undefined &&
           typeof task.projectId === 'object' && 
           '_type' in task.projectId ? 
           undefined : task.projectId;
