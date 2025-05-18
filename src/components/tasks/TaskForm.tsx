@@ -92,19 +92,26 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
-      // NOTE: Add 'completed: false', TypeScript expects it
+      // Sempre pega o projectId esperado do contexto do projeto
+      let actualProjectId = newTask.projectId;
+      if (projectIdFromUrl) {
+        actualProjectId = projectIdFromUrl;
+      }
+
       const taskData = {
         title: newTask.title.trim(),
         description: newTask.description,
         priority: newTask.priority,
         status: newTask.status,
         tags: newTask.tags,
-        projectId: newTask.projectId,
+        projectId: actualProjectId,
         dueDate: date ? date.toISOString().split("T")[0] : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
         completed: false,
       };
+
+      console.log("Criando tarefa com dados:", taskData);
 
       if (editTask) {
         updateTask({

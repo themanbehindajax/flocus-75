@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -27,7 +26,11 @@ const ProjectDetails = () => {
   // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
   useEffect(() => {
     if (project) {
-      const currentTasks = tasks.filter(task => task.projectId === projectId);
+      // Filtragem robusta: apenas tarefas que possuem projectId igual ao ID do projeto como string
+      const currentTasks = tasks.filter(
+        task => String(task.projectId) === String(projectId)
+      );
+      console.log("Tarefas do projeto (", projectId, "):", currentTasks);
       setProjectTasks(currentTasks);
     }
   }, [project, tasks, projectId]);
