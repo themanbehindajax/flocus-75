@@ -33,7 +33,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
   };
 
   return (
-    <Card className="animate-fade-in shadow-sm hover:shadow-md transition-all duration-300 dark:bg-blue-950/40">
+    <Card className="project-card glass-effect animate-fade-in">
       <CardHeader className="pb-2">
         <CardTitle>{project.name}</CardTitle>
         {project.goal && (
@@ -61,7 +61,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
           <Button 
             size="icon" 
             variant="outline" 
-            className="h-8 w-8 dark:bg-blue-950/20 dark:border-white/10"
+            className="h-8 w-8"
             onClick={() => onEdit(project)}
           >
             <Pencil className="h-4 w-4" />
@@ -69,13 +69,13 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
           <Button 
             size="icon" 
             variant="outline" 
-            className="h-8 w-8 text-destructive dark:bg-blue-950/20 dark:border-white/10"
+            className="h-8 w-8 text-destructive"
             onClick={() => onDelete(project.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-        <Button asChild className="dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+        <Button asChild>
           <Link to={`/projects/${project.id}`}>Abrir</Link>
         </Button>
       </CardFooter>

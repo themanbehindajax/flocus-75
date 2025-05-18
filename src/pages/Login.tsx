@@ -35,7 +35,7 @@ const Login = () => {
         transition={{ duration: 0.6 }}
         className="w-full max-w-md z-10"
       >
-        <div className="glass-effect p-10 animate-fade-in shadow-elegant">
+        <div className="glass-effect backdrop-blur-xl p-10 animate-fade-in">
           <div className="text-center mb-10">
             <motion.div 
               initial={{ opacity: 0, y: -20 }}

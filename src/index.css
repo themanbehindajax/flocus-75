@@ -130,11 +130,11 @@
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-75;
   }
 
-  /* Glass effect - enhanced for light and dark modes */
+  /* Glass effect - aprimorado para modo claro e escuro */
   .glass-effect {
-    @apply backdrop-blur-xl border rounded-2xl shadow-sm;
-    @apply dark:bg-blue-950/30 dark:border-white/5 dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)];
-    @apply bg-white/60 border-black/5;
+    @apply backdrop-blur-xl border rounded-2xl;
+    @apply dark:bg-blue-900/20 dark:border-white/5 dark:shadow-lg;
+    @apply bg-white/60 border-black/5 shadow-sm;
   }
   
   /* Hover interactions */
@@ -165,17 +165,20 @@
 
   /* Toast styles - adaptado para modo claro e escuro */
   .toast-success {
-    @apply dark:bg-emerald-950/30 border dark:border-emerald-800/50 rounded-2xl shadow-lg glass-effect;
+    @apply glass-effect;
+    @apply dark:bg-emerald-950/30 dark:border-emerald-800/50;
     @apply bg-emerald-50 border-emerald-200;
   }
 
   .toast-info {
-    @apply dark:bg-blue-950/30 border dark:border-blue-800/50 rounded-2xl shadow-lg glass-effect;
+    @apply glass-effect;
+    @apply dark:bg-blue-950/30 dark:border-blue-800/50;
     @apply bg-blue-50 border-blue-200;
   }
 
   .toast-warning {
-    @apply dark:bg-amber-950/30 border dark:border-amber-800/50 rounded-2xl shadow-lg glass-effect;
+    @apply glass-effect;
+    @apply dark:bg-amber-950/30 dark:border-amber-800/50;
     @apply bg-amber-50 border-amber-200;
   }
   
@@ -201,11 +204,11 @@
     @apply rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out;
   }
   
-  /* Premium UI components - enhanced with glass effect */
+  /* Premium UI components - adaptado para modo claro e escuro */
   .premium-card {
-    @apply rounded-3xl glass-effect backdrop-blur-xl transition-all duration-300;
-    @apply dark:border-border/50 dark:shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)];
-    @apply border-border/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
+    @apply glass-effect transition-all duration-300;
+    @apply dark:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)];
+    @apply shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)];
   }
   
   .premium-button {
@@ -220,11 +223,9 @@
     @apply rounded-full px-3 py-1 text-xs font-medium bg-gradient-to-r;
   }
   
-  /* Enhanced glassmorphism effect for light and dark modes */
+  /* Glassmorphism effect - aprimorado para modo claro e escuro */
   .glassmorphism {
-    @apply backdrop-blur-xl border shadow-lg;
-    @apply dark:bg-blue-950/20 dark:border-white/10 dark:shadow-[0_4px_30px_rgba(0,0,0,0.2)];
-    @apply bg-white/70 border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.05)];
+    @apply glass-effect;
   }
   
   /* Gradient text */
@@ -244,26 +245,6 @@
     @apply absolute inset-0 -z-10;
     @apply dark:bg-gradient-to-br dark:from-blue-500/10 dark:via-blue-600/5 dark:to-purple-600/10;
     @apply bg-gradient-to-br from-blue-100/60 via-blue-50/40 to-purple-100/50;
-  }
-  
-  /* Card styles with glass effect */
-  .card-glass {
-    @apply glass-effect shadow-sm hover:shadow-md transition-all duration-200;
-  }
-  
-  /* Task card with glass effect */
-  .task-glass {
-    @apply glass-effect p-4 border rounded-xl shadow-sm;
-  }
-  
-  /* Kanban column with glass effect */
-  .kanban-column {
-    @apply glass-effect border shadow-sm h-full;
-  }
-  
-  /* Sidebar with glass effect */
-  .sidebar-glass {
-    @apply glass-effect border-r shadow-md;
   }
 }
 
@@ -297,3 +278,4 @@
     @apply bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent;
   }
 }
+

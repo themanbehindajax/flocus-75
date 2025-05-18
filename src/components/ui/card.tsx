@@ -5,13 +5,12 @@ import { cn } from "@/lib/utils"
 
 interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag'> {
   animate?: boolean;
-  glass?: boolean;
 }
 
 const Card = React.forwardRef<
   HTMLDivElement,
   CardProps
->(({ className, animate = false, glass = false, ...props }, ref) => {
+>(({ className, animate = false, ...props }, ref) => {
   if (animate) {
     const CardComponent = motion.div;
     
@@ -27,7 +26,6 @@ const Card = React.forwardRef<
         ref={ref}
         className={cn(
           "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300",
-          glass && "glass-effect",
           className
         )}
         {...animateProps}
@@ -41,7 +39,6 @@ const Card = React.forwardRef<
       ref={ref}
       className={cn(
         "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300",
-        glass && "glass-effect",
         className
       )}
       {...props}
