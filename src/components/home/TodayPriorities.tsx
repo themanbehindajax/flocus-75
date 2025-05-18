@@ -29,14 +29,17 @@ export const TodayPriorities = () => {
       setTodaysPriorities([]);
     }
     
-    // Debug
-    console.log("Today's date:", today);
-    console.log("All daily priorities:", dailyPriorities);
-    console.log("Today's priority list:", todaysPriorityList);
+    console.log("TodayPriorities - Today's date:", today);
+    console.log("TodayPriorities - All daily priorities:", dailyPriorities);
+    console.log("TodayPriorities - Today's priority list:", todaysPriorityList);
+    console.log("TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
   }, [dailyPriorities]);
   
   // Get the priority tasks
   const priorityTasks = tasks.filter(task => todaysPriorities.includes(task.id));
+  
+  console.log("TodayPriorities - Filtered priority tasks:", priorityTasks);
+  console.log("TodayPriorities - All tasks:", tasks);
   
   // Calculate completion percentage
   const completedTasks = priorityTasks.filter(task => task.completed).length;

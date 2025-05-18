@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
@@ -51,6 +50,9 @@ const Index = () => {
       .map(task => task.id);
     
     setQuickTasks(quickTaskIds);
+    
+    console.log("Index - Profile:", profile);
+    console.log("Index - Profile points:", profile.points);
   }, [tasks, profile.name, updateProfile]); 
 
   // Statistics
@@ -71,6 +73,9 @@ const Index = () => {
   const todayPoints = (todayCompletedTasks * 5) + (todayPomodoros * 10);
   const totalPoints = profile.points;
   const totalPomodoros = profile.totalPomodorosCompleted;
+  
+  console.log("Index - Total points calculated:", totalPoints);
+  console.log("Index - Today points calculated:", todayPoints);
 
   return (
     <AppLayout>
