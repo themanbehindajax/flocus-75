@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
@@ -177,7 +176,7 @@ export const useAppStore = create<AppState>()(
           };
         }),
         
-        // Fixed the argument count issues here - using the correct taskActions functions
+        // Fixed the argument count issues here - using the proper action function references
         updateTask: taskActions.updateTask,
         deleteTask: taskActions.deleteTask,
         completeTask: taskActions.completeTask,
@@ -185,7 +184,6 @@ export const useAppStore = create<AppState>()(
         
         // Projects
         projects: [],
-        // ... keep existing code (project-related methods)
         addProject: (project) => set((state) => ({
           projects: [...state.projects, {
             id: crypto.randomUUID(),
@@ -206,7 +204,6 @@ export const useAppStore = create<AppState>()(
         
         // Tags
         tags: [],
-        // ... keep existing code (tag-related methods)
         addTag: (tag) => set((state) => ({
           tags: [...state.tags, { id: crypto.randomUUID(), ...tag }]
         })),
@@ -221,7 +218,6 @@ export const useAppStore = create<AppState>()(
         
         // Daily Priorities
         dailyPriorities: [],
-        // ... keep existing code (daily priorities methods)
         setDailyPriorities: (priorities) => set((state) => {
           const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
           
@@ -249,7 +245,6 @@ export const useAppStore = create<AppState>()(
         
         // Pomodoro sessions
         pomodoroSessions: [],
-        // ... keep existing code (pomodoro session methods)
         startPomodoroSession: (taskId, projectId) => {
           const newSession = {
             id: crypto.randomUUID(),
@@ -293,7 +288,6 @@ export const useAppStore = create<AppState>()(
         
         // Calendar events
         calendarEvents: [],
-        // ... keep existing code (calendar event methods)
         addCalendarEvent: (event) => set((state) => ({
           calendarEvents: [...state.calendarEvents, { id: crypto.randomUUID(), ...event }]
         })),
