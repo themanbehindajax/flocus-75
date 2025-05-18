@@ -153,56 +153,6 @@ export const useAppStore = create<AppState>()(
           tasks: [...state.tasks, newTask] 
         };
       }),
-      updateTask: (updatedTask) => set((state) => ({
-        tasks: state.tasks.map(task => 
-          task.id === updatedTask.id ? { ...updatedTask, updatedAt: new Date().toISOString() } : task
-        )
-      })),
-      deleteTask: (taskId) => set((state) => ({
-        tasks: state.tasks.filter(task => task.id !== taskId)
-      })),
-      completeTask: (taskId) => set((state) => {
-        const task = state.tasks.find(t => t.id === taskId);
-        if (!task || task.completed) return state; // No changes if task doesn't exist or already completed
-        
-        // Add points (5 points per completed task)
-        const pointsPerTask = 5;
-        const newPoints = state.profile.points + pointsPerTask;
-        const newTotalCompleted = state.profile.totalTasksCompleted + 1;
-        
-        return {
-          tasks: state.tasks.map(task => 
-            task.id === taskId ? { ...task, completed: true, updatedAt: new Date().toISOString() } : task
-          ),
-          profile: {
-            ...state.profile,
-            points: newPoints,
-            totalTasksCompleted: newTotalCompleted,
-            lastActivity: new Date().toISOString()
-          }
-        };
-      }),
-      toggleTaskCompletion: (taskId) => set((state) => {
-        const task = state.tasks.find(t => t.id === taskId);
-        if (!task) return state; // No changes if task doesn't exist
-        
-        // Points logic - add points when completing, remove when uncompleting
-        const pointsPerTask = 5;
-        const pointsDelta = task.completed ? -pointsPerTask : pointsPerTask; 
-        const totalCompletedDelta = task.completed ? -1 : 1;
-        
-        return {
-          tasks: state.tasks.map(task => 
-            task.id === taskId ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() } : task
-          ),
-          profile: {
-            ...state.profile,
-            points: state.profile.points + pointsDelta,
-            totalTasksCompleted: state.profile.totalTasksCompleted + totalCompletedDelta,
-            lastActivity: new Date().toISOString()
-          }
-        };
-      }),
       
       // Projects
       projects: [],
