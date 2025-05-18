@@ -17,13 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -45,10 +38,24 @@ const IvyLee = () => {
 
   // Load priorities for selected date
   useEffect(() => {
-    const todaysPriorities = dailyPriorities.find(dp => dp.date === date);
-    if (todaysPriorities) {
-      setSelectedTaskIds(todaysPriorities.taskIds);
+    console.log("[DEBUG IvyLee] Loading priorities for date:", date);
+    console.log("[DEBUG IvyLee] All daily priorities:", dailyPriorities);
+    
+    // Find priorities with consistent date formatting
+    const selectedDatePriorities = dailyPriorities.find(dp => {
+      const formattedDpDate = dp.date.split('T')[0]; 
+      const formattedSelectedDate = date.split('T')[0];
+      const isMatch = formattedDpDate === formattedSelectedDate;
+      
+      console.log(`[DEBUG IvyLee] Comparing: ${formattedDpDate} with ${formattedSelectedDate}, match: ${isMatch}`);
+      return isMatch;
+    });
+    
+    if (selectedDatePriorities) {
+      console.log("[DEBUG IvyLee] Found priorities for date:", date, selectedDatePriorities);
+      setSelectedTaskIds(selectedDatePriorities.taskIds);
     } else {
+      console.log("[DEBUG IvyLee] No priorities found for date:", date);
       setSelectedTaskIds([]);
     }
   }, [date, dailyPriorities]);
@@ -68,13 +75,17 @@ const IvyLee = () => {
     const newSelectedTaskIds = [...selectedTaskIds, taskId];
     setSelectedTaskIds(newSelectedTaskIds);
     
-    // Find existing priority for this date
-    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    // Find existing priority for this date with consistent formatting
+    const formattedDate = date.split('T')[0];
+    const existingPriority = dailyPriorities.find(dp => dp.date.split('T')[0] === formattedDate);
+    
+    console.log("[DEBUG IvyLee] Adding task to priorities:", taskId);
+    console.log("[DEBUG IvyLee] New selected task IDs:", newSelectedTaskIds);
     
     // Create or update priority with the correct structure
     setDailyPriorities({
       id: existingPriority?.id || uuidv4(),
-      date,
+      date: formattedDate, // Use formatted date
       taskIds: newSelectedTaskIds
     });
     
@@ -88,12 +99,16 @@ const IvyLee = () => {
     const newSelectedTaskIds = selectedTaskIds.filter(id => id !== taskId);
     setSelectedTaskIds(newSelectedTaskIds);
     
-    // Find existing priority for this date
-    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    // Find existing priority for this date with consistent formatting
+    const formattedDate = date.split('T')[0];
+    const existingPriority = dailyPriorities.find(dp => dp.date.split('T')[0] === formattedDate);
+    
+    console.log("[DEBUG IvyLee] Removing task from priorities:", taskId);
+    console.log("[DEBUG IvyLee] New selected task IDs:", newSelectedTaskIds);
     
     setDailyPriorities({
       id: existingPriority?.id || uuidv4(),
-      date,
+      date: formattedDate, // Use formatted date
       taskIds: newSelectedTaskIds
     });
     
@@ -127,12 +142,15 @@ const IvyLee = () => {
     
     setSelectedTaskIds(newOrder);
     
-    // Find existing priority for this date
-    const existingPriority = dailyPriorities.find(dp => dp.date === date);
+    // Find existing priority for this date with consistent formatting
+    const formattedDate = date.split('T')[0];
+    const existingPriority = dailyPriorities.find(dp => dp.date.split('T')[0] === formattedDate);
+    
+    console.log("[DEBUG IvyLee] Reordering tasks, new order:", newOrder);
     
     setDailyPriorities({
       id: existingPriority?.id || uuidv4(),
-      date,
+      date: formattedDate, // Use formatted date
       taskIds: newOrder
     });
   };

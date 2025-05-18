@@ -22,8 +22,16 @@ export const TodayPriorities = () => {
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split("T")[0];
     
-    // Find today's priorities
-    const todaysPriorityList = dailyPriorities.find(dp => dp.date === today);
+    console.log("[DEBUG] TodayPriorities - Today's date (formatted):", today);
+    console.log("[DEBUG] TodayPriorities - All daily priorities:", dailyPriorities);
+    
+    // Find today's priorities with improved logging
+    const todaysPriorityList = dailyPriorities.find(dp => {
+      const dpDate = dp.date.split('T')[0]; // Ensure consistent format
+      const isMatch = dpDate === today;
+      console.log(`[DEBUG] Checking priority date: ${dpDate} against today ${today}, match: ${isMatch}`);
+      return isMatch;
+    });
     
     if (todaysPriorityList) {
       console.log("[DEBUG] Found priority list for today:", todaysPriorityList);
@@ -34,11 +42,10 @@ export const TodayPriorities = () => {
     }
     
     // More detailed logging
-    console.log("[DEBUG] TodayPriorities - Today's date:", today);
-    console.log("[DEBUG] TodayPriorities - All daily priorities:", dailyPriorities);
     console.log("[DEBUG] TodayPriorities - Today's priority list:", todaysPriorityList);
     console.log("[DEBUG] TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
-    console.log("[DEBUG] TodayPriorities - All tasks IDs:", tasks.map(t => t.id));
+    console.log("[DEBUG] TodayPriorities - All tasks:", tasks);
+    console.log("[DEBUG] TodayPriorities - All task IDs:", tasks.map(t => t.id));
   }, [dailyPriorities, tasks]);
   
   // Get the priority tasks with improved logging and reliability
@@ -51,7 +58,6 @@ export const TodayPriorities = () => {
   });
   
   console.log("[DEBUG] TodayPriorities - Filtered priority tasks:", priorityTasks);
-  console.log("[DEBUG] TodayPriorities - All tasks:", tasks);
   
   // Calculate completion percentage
   const completedTasks = priorityTasks.filter(task => task.completed).length;
