@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from "uuid";
 import { Task, Project, DailyPriority } from "../types";
 
@@ -12,6 +13,8 @@ export const createTaskActions = (set: any, get: any) => ({
       updatedAt: new Date().toISOString(),
     };
     
+    console.log("[DEBUG] Adding task to store:", newTask);
+    
     // Adiciona a tarefa à lista global de tarefas
     set((state: any) => ({
       tasks: [...state.tasks, newTask],
@@ -24,7 +27,7 @@ export const createTaskActions = (set: any, get: any) => ({
       const project = currentState.projects.find((p: Project) => p.id === taskData.projectId);
       
       if (project) {
-        console.log("[DEBUG] Adicionando tarefa ao projeto:", project.name, "ID do projeto:", project.id);
+        console.log("[DEBUG] Adding task to project:", project.name, "Project ID:", project.id, "Task ID:", newTask.id);
         
         // Atualiza o projeto com a nova tarefa
         const updatedProject = {
@@ -39,6 +42,8 @@ export const createTaskActions = (set: any, get: any) => ({
             p.id === taskData.projectId ? updatedProject : p
           ),
         }));
+      } else {
+        console.warn("[DEBUG] Project not found:", taskData.projectId);
       }
     }
     

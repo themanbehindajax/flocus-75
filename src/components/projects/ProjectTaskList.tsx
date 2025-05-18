@@ -6,7 +6,6 @@ import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { KanbanBoard } from "@/components/projects/KanbanBoard";
 import { Task } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -19,10 +18,11 @@ interface ProjectTaskListProps {
   setIsAddDialogOpen: (open: boolean) => void;
   isAddDialogOpen: boolean;
   children: React.ReactNode; // for renderização do dialog/modal
+  onTaskAdded?: () => void; // Novo callback para quando uma tarefa é adicionada
 }
 
 export const ProjectTaskList = ({
-  projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children,
+  projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children, onTaskAdded
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
   const { toggleTaskCompletion } = useAppStore();
@@ -87,6 +87,10 @@ export const ProjectTaskList = ({
                 description: "Tarefa adicionada ao projeto com sucesso.",
                 className: "toast-success"
               });
+              // Notificar o componente pai que uma tarefa foi adicionada
+              if (onTaskAdded) {
+                onTaskAdded();
+              }
             }}
           />
         </CardContent>

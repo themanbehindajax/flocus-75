@@ -24,13 +24,18 @@ const ProjectDetails = () => {
 
   const project = projects.find(p => p.id === projectId);
 
+  // Função para atualizar as tarefas do projeto
+  const updateProjectTasks = () => {
+    if (projectId) {
+      const currentTasks = tasks.filter(task => task.projectId === projectId);
+      console.log("Atualizando tarefas do projeto:", projectId, currentTasks);
+      setProjectTasks(currentTasks);
+    }
+  };
+
   // Carrega as tarefas do projeto quando a página é carregada ou quando tasks muda
   useEffect(() => {
-    if (projectId) {
-      const filteredTasks = tasks.filter(task => task.projectId === projectId);
-      console.log("Carregando tarefas do projeto:", projectId, filteredTasks);
-      setProjectTasks(filteredTasks);
-    }
+    updateProjectTasks();
   }, [tasks, projectId]);
 
   if (!project) {
@@ -61,8 +66,7 @@ const ProjectDetails = () => {
     setIsAddDialogOpen(false);
     
     // Força atualização das tarefas do projeto após a criação
-    const updatedTasks = tasks.filter(task => task.projectId === projectId);
-    setProjectTasks(updatedTasks);
+    updateProjectTasks();
     
     toast({
       title: "Tarefa criada",
@@ -84,6 +88,7 @@ const ProjectDetails = () => {
             setView={setView}
             setIsAddDialogOpen={setIsAddDialogOpen}
             isAddDialogOpen={isAddDialogOpen}
+            onTaskAdded={updateProjectTasks} // Nova prop para atualizar tarefas quando adicionadas via QuickAdd
           >
             {/* Children: botão de nova tarefa com modal */}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
