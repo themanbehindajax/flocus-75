@@ -115,15 +115,22 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
         sidebarCollapsed ? "justify-center" : "justify-between"
       )}>
         {sidebarCollapsed ? (
-          <span className="font-bold text-xl text-primary">F</span>
+          <Link to="/settings" className="hover:opacity-80 transition">
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={profile?.avatar} />
+              <AvatarFallback className="text-xs text-primary">
+                F
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         ) : (
           <div className="flex items-center w-full justify-between">
             <div className="flex items-center gap-2">
               <Link to="/settings" className="hover:opacity-80 transition">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src={profile?.avatar} />
-                  <AvatarFallback className="text-xs">
-                    {profile?.name?.charAt(0).toUpperCase() || "U"}
+                  <AvatarFallback className="text-xs text-primary">
+                    F
                   </AvatarFallback>
                 </Avatar>
               </Link>
