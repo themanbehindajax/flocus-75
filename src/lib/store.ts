@@ -177,7 +177,7 @@ export const useAppStore = create<AppState>()(
           };
         }),
         
-        // Fixed the argument count issues here - using the proper task action function references
+        // Fixed the argument count issues - directly use the task actions
         updateTask: taskActions.updateTask,
         deleteTask: taskActions.deleteTask,
         completeTask: taskActions.completeTask,
