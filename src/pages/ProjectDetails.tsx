@@ -16,7 +16,8 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks, addTask } = useAppStore();
+  const { projects, tasks } = useAppStore();
+
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [projectTasks, setProjectTasks] = useState<any[]>([]);
@@ -55,18 +56,13 @@ const ProjectDetails = () => {
     );
   }
 
+  // Agora o handleTaskCreated fecha apenas o diálogo e mostra o toast,
+  // deixando o useEffect cuidar da atualização da lista.
   const handleTaskCreated = () => {
-    // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
-    
-    // Força a atualização das tarefas do projeto
-    const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
-    setProjectTasks(currentTasks);
-    
-    // Notifica o usuário sobre a criação da tarefa
     toast({
       title: "Tarefa criada",
-      description: "Tarefa adicionada ao projeto com sucesso."
+      description: "Tarefa adicionada ao projeto com sucesso.",
     });
   };
 
