@@ -16,7 +16,7 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks, addTask } = useAppStore();
+  const { projects, tasks } = useAppStore();
 
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -24,14 +24,14 @@ const ProjectDetails = () => {
 
   const project = projects.find(p => p.id === projectId);
 
-  // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
+  // Carrega as tarefas do projeto quando a página é carregada ou quando tasks muda
   useEffect(() => {
-    if (project) {
+    if (projectId) {
       const filteredTasks = tasks.filter(task => task.projectId === projectId);
-      console.log("[DEBUG] Tarefas filtradas para projeto", projectId, ":", filteredTasks);
+      console.log("Carregando tarefas do projeto:", projectId, filteredTasks);
       setProjectTasks(filteredTasks);
     }
-  }, [project, tasks, projectId]);
+  }, [tasks, projectId]);
 
   if (!project) {
     return (
@@ -58,13 +58,10 @@ const ProjectDetails = () => {
   }
 
   const handleTaskCreated = () => {
-    // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
     
-    // Obtém os dados mais recentes diretamente do store
-    const currentState = useAppStore.getState();
-    const updatedTasks = currentState.tasks.filter(task => task.projectId === projectId);
-    console.log("[DEBUG] Tarefas filtradas após criação:", updatedTasks);
+    // Força atualização das tarefas do projeto após a criação
+    const updatedTasks = tasks.filter(task => task.projectId === projectId);
     setProjectTasks(updatedTasks);
     
     toast({

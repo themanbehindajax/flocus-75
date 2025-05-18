@@ -93,10 +93,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
       });
 
       // Ensure we use the projectId from URL if we're on a project page
-      let actualProjectId = newTask.projectId;
-      if (projectIdFromUrl) {
-        actualProjectId = projectIdFromUrl;
-      }
+      const actualProjectId = projectIdFromUrl || newTask.projectId;
 
       const taskData = {
         title: newTask.title.trim(),
@@ -105,52 +102,66 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         status: newTask.status,
         tags: newTask.tags,
         projectId: actualProjectId,
-        dueDate: date ? date.toISOString().split("T")[0] : undefined,
+        dueDate: date ? date.toISOString() : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
         completed: false,
       };
 
-      console.log("[DEBUG] Criando tarefa com dados:", taskData);
+      console.log("Salvando tarefa com dados:", taskData);
 
-      if (editTask) {
-        updateTask({
-          ...editTask,
-          ...taskData,
-          updatedAt: new Date().toISOString()
-        });
-        toast({
-          title: "Tarefa atualizada",
-          description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
-        });
-        onComplete();
-      } else {
-        // Adiciona a tarefa e obtém seu ID
-        const newTaskId = addTask(taskData);
-        console.log("[DEBUG] Nova tarefa criada com ID:", newTaskId);
+      try {
+        if (editTask) {
+          updateTask({
+            ...editTask,
+            ...taskData,
+            updatedAt: new Date().toISOString()
+          });
+          toast({
+            title: "Tarefa atualizada",
+            description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
+          });
+        } else {
+          // Adiciona a tarefa
+          addTask(taskData);
+          toast({
+            title: "Tarefa criada",
+            description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+          });
+        }
         
-        // Notifica o usuário sobre a criação bem-sucedida
-        toast({
-          title: "Tarefa criada",
-          description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+        // Resetamos o formulário
+        setNewTask({
+          title: "",
+          description: "",
+          priority: "media",
+          status: "todo",
+          tags: [],
+          projectId: undefined,
+          dueDate: undefined,
+          subtasks: [],
+          isQuick: false,
         });
+        setDate(undefined);
         
-        // Chama o callback somente após a tarefa ser adicionada
-        onComplete();
+        // Chamamos o callback após a operação ser concluída
+        if (onComplete) {
+          onComplete();
+        }
+      } catch (error) {
+        console.error("Erro ao salvar tarefa:", error);
+        toast({
+          title: "Erro",
+          description: "Ocorreu um erro ao salvar a tarefa.",
+          variant: "destructive"
+        });
       }
-      
-      setNewTask({
-        title: "",
-        description: "",
-        priority: "media",
-        status: "todo",
-        tags: [],
-        projectId: undefined,
-        dueDate: undefined,
-        subtasks: [],
-        isQuick: false,
+    } else {
+      toast({
+        title: "Título obrigatório",
+        description: "Por favor, adicione um título para a tarefa.",
+        variant: "destructive"
       });
-      setDate(undefined);
     }
   };
 

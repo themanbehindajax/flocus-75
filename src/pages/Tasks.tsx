@@ -43,16 +43,18 @@ const Tasks = () => {
       task.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setDisplayedTasks(filtered);
+    console.log("Atualizando lista de tarefas:", filtered);
   }, [tasks, searchQuery]);
 
   const handleTaskCreated = () => {
     setIsAddDialogOpen(false);
-    // Ensure we get the latest tasks from the store
-    const latestTasks = useAppStore.getState().tasks;
-    const filtered = latestTasks.filter((task) =>
+    
+    // A lista será atualizada automaticamente pelo useEffect que observa tasks
+    // Mas vamos garantir isso com uma atualização explícita
+    const currentTasks = useAppStore.getState().tasks;
+    const filtered = currentTasks.filter((task) => 
       task.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    console.log("[DEBUG] Tarefas atualizadas após criação:", filtered);
     setDisplayedTasks(filtered);
   };
 
