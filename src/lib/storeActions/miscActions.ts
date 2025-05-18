@@ -34,6 +34,6 @@ export const createMiscActions = (set: any) => ({
   updateSettings: (settingsUpdate: any) => {
     set((state: any) => ({
       settings: { ...state.settings, ...settingsUpdate },
-    }));
-  }),
+    }))
+  }
 });

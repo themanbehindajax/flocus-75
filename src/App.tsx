@@ -114,18 +114,18 @@ const App = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
             <AnimatedRoutes />
             
             {/* Pomodoro mini widget will show on all protected routes */}
             <ProtectedRoute>
               <PomodoroMiniWidget />
             </ProtectedRoute>
-          </BrowserRouter>
-        </TooltipProvider>
+          </TooltipProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </React.StrictMode>
   );
