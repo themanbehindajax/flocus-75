@@ -78,7 +78,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
       >
         {/* Mobile header with menu button */}
-        <div className="md:hidden flex items-center p-4 border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="md:hidden flex items-center p-4 border-b glass-effect sticky top-0 z-10">
           <button
             onClick={toggleSidebar}
             className="p-2 rounded-lg hover:bg-muted transition-colors duration-200"

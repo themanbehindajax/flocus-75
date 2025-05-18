@@ -27,7 +27,7 @@ export const KanbanColumn = ({
   isDraggingOver
 }: KanbanColumnProps) => {
   return (
-    <Card className="h-full">
+    <Card className="h-full glass-effect">
       <CardHeader className="pb-2 bg-muted/50">
         <CardTitle className="text-lg font-medium flex justify-between">
           <span>{title} <span className="ml-2 text-sm text-muted-foreground">({tasks.length})</span></span>
