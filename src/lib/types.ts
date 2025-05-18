@@ -55,6 +55,7 @@ export interface PomodoroSession {
 }
 
 export interface DailyPriority {
+  id: string;
   date: string;
   taskIds: string[];
 }
