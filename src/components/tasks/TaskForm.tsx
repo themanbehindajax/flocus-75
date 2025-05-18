@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { Task, PriorityLevel, TaskStatus, SubTask } from "@/lib/types";
@@ -93,6 +92,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
+      // NOTE: Remover o campo "completed" e campos extras!
       const taskData = {
         title: newTask.title.trim(),
         description: newTask.description,
@@ -103,7 +103,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         dueDate: date ? date.toISOString().split("T")[0] : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
-        completed: false, // Add the missing completed property
+        // NÃO passar o campo completed aqui!
       };
 
       if (editTask) {

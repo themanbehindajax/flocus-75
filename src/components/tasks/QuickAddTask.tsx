@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bolt } from "lucide-react";
+import { Bolt, Zap } from "lucide-react";
 
 interface QuickAddTaskProps {
   projectId?: string;
@@ -12,6 +12,7 @@ interface QuickAddTaskProps {
 
 export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
   const [taskTitle, setTaskTitle] = useState("");
+  const [isQuick, setIsQuick] = useState(false);
   const { addTask } = useAppStore();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,10 +26,12 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         status: "todo",
         projectId,
         tags: [],
-        completed: false,
         subtasks: [],
+        isQuick: isQuick,
+        // NÃO passar o campo completed aqui!
       });
       setTaskTitle("");
+      setIsQuick(false);
       if (onTaskAdded) onTaskAdded();
     }
   };
@@ -41,6 +44,16 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         placeholder="Adicionar nova tarefa..."
         className="flex-grow bg-white/5 border-white/20 text-white placeholder:text-white/60 w-full"
       />
+      <Button
+        type="button"
+        size="sm"
+        variant={isQuick ? "default" : "outline"}
+        onClick={() => setIsQuick((v) => !v)}
+        className={`text-yellow-500 ${isQuick ? "bg-yellow-100 dark:bg-yellow-950/40" : ""}`}
+        title="Tarefa rápida (até 2 minutos)"
+      >
+        <Zap className="w-4 h-4" />
+      </Button>
       <Button 
         type="submit" 
         size="sm" 
