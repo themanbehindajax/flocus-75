@@ -92,6 +92,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
+      // Ensure we use the projectId from URL if we're on a project page
       let actualProjectId = newTask.projectId;
       if (projectIdFromUrl) {
         actualProjectId = projectIdFromUrl;
@@ -124,18 +125,17 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         });
         onComplete();
       } else {
-        addTask(taskData);
-        
-        // Como a adição de tarefas é assíncrona, esperamos um pouco antes de chamar o callback
-        setTimeout(() => {
-          console.log("[DEBUG] Task salva, chamando onComplete");
-          onComplete();
-        }, 50);
+        // Add task to store
+        const taskId = addTask(taskData);
+        console.log("[DEBUG] Nova tarefa criada com ID:", taskId);
         
         toast({
           title: "Tarefa criada",
           description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
         });
+        
+        // Call onComplete AFTER adding the task
+        onComplete();
       }
       
       setNewTask({

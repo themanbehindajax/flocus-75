@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import {
@@ -35,10 +35,24 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [view, setView] = useState<"list" | "kanban">("list");
+  const [displayedTasks, setDisplayedTasks] = useState(tasks);
+  
+  // Update displayed tasks whenever the global task list changes or search query changes
+  useEffect(() => {
+    const filtered = tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setDisplayedTasks(filtered);
+  }, [tasks, searchQuery]);
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleTaskCreated = () => {
+    setIsAddDialogOpen(false);
+    // Ensure we get the latest tasks from the store
+    const latestTasks = useAppStore.getState().tasks;
+    setDisplayedTasks(latestTasks.filter((task) =>
+      task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    ));
+  };
 
   return (
     <AppLayout>
@@ -96,7 +110,7 @@ const Tasks = () => {
                     Adicione os detalhes da sua nova tarefa.
                   </DialogDescription>
                 </DialogHeader>
-                <TaskForm onComplete={() => setIsAddDialogOpen(false)} />
+                <TaskForm onComplete={handleTaskCreated} />
               </DialogContent>
             </Dialog>
           </div>
@@ -113,11 +127,11 @@ const Tasks = () => {
         </Card>
         
         {/* Tasks Grid */}
-        {filteredTasks.length > 0 ? (
+        {displayedTasks.length > 0 ? (
           view === "list" ? (
-            <TaskList tasks={filteredTasks} showProjectName={true} />
+            <TaskList tasks={displayedTasks} showProjectName={true} />
           ) : (
-            <KanbanBoard tasks={filteredTasks} projectId="" />
+            <KanbanBoard tasks={displayedTasks} projectId="" />
           )
         ) : (
           <EmptyTasksPlaceholder onCreateTask={() => setIsAddDialogOpen(true)} />

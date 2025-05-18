@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -59,19 +58,18 @@ const ProjectDetails = () => {
 
   // Função de callback para quando uma tarefa é criada
   const handleTaskCreated = () => {
+    // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
     
-    // Usando setTimeout para garantir que o estado global já tenha sido atualizado
-    setTimeout(() => {
-      const currentState = useAppStore.getState();
-      const updatedTasks = currentState.tasks.filter(task => task.projectId === projectId);
-      setProjectTasks(updatedTasks);
-      
-      toast({
-        title: "Tarefa criada",
-        description: "Tarefa adicionada ao projeto com sucesso.",
-      });
-    }, 100);
+    // Atualizar a lista de tarefas com as últimas do estado global
+    const updatedTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
+    console.log("Tarefas do projeto (", projectId, ") após filtro:", updatedTasks);
+    setProjectTasks(updatedTasks);
+    
+    toast({
+      title: "Tarefa criada",
+      description: "Tarefa adicionada ao projeto com sucesso.",
+    });
   };
 
   return (
