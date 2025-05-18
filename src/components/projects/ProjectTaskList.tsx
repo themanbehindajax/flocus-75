@@ -169,7 +169,7 @@ export const ProjectTaskList = ({
                             <CheckCircle className="h-4 w-4" />
                           }
                         </Button>
-                        <span className={task.completed ? "line-through text-muted-foreground" : "font-medium"}>
+                        <span className={`text-foreground ${task.completed ? "line-through text-muted-foreground" : "font-medium"}`}>
                           {task.title}
                         </span>
                         {/* Badge de tarefa rápida */}
@@ -217,7 +217,7 @@ export const ProjectTaskList = ({
                                 <Square className="h-3.5 w-3.5" />
                               }
                             </Button>
-                            <span className={`text-xs ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
+                            <span className={`text-xs text-foreground ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
                               {subtask.title}
                             </span>
                           </div>

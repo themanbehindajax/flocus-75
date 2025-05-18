@@ -43,14 +43,14 @@ export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
     updateTask(updatedTask);
   };
 
-  // Define prioridades com cores correspondentes
+  // Define prioridades com cores correspondentes - adaptado para modo claro/escuro
   const priorityColors = {
-    alta: "bg-gradient-to-r from-red-50/80 to-red-100/50 dark:bg-red-950/30 border-red-200/60 dark:border-red-800/40",
-    media: "bg-gradient-to-r from-amber-50/80 to-amber-100/50 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/40",
-    baixa: "bg-gradient-to-r from-green-50/80 to-green-100/50 dark:bg-green-950/30 border-green-200/60 dark:border-green-800/40"
+    alta: "bg-gradient-to-r from-red-50/80 to-red-100/50 dark:bg-red-950/30 border-red-200/60 dark:border-red-800/40 text-foreground dark:text-foreground",
+    media: "bg-gradient-to-r from-amber-50/80 to-amber-100/50 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/40 text-foreground dark:text-foreground",
+    baixa: "bg-gradient-to-r from-green-50/80 to-green-100/50 dark:bg-green-950/30 border-green-200/60 dark:border-green-800/40 text-foreground dark:text-foreground"
   };
 
-  // Badge styling
+  // Badge styling - corrigido para garantir contraste
   const badgeStyles = {
     alta: "border-red-200/70 dark:border-red-700/40 text-red-700 dark:text-red-400 bg-gradient-to-r from-red-50 to-red-100/80 dark:from-red-900/30 dark:to-red-800/20",
     rapida: "border-blue-200/70 dark:border-blue-700/40 text-blue-700 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/20",
@@ -98,7 +98,7 @@ export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
               </motion.div>
               
               <div className="min-w-0">
-                <h3 className={`font-medium text-sm transition-all duration-300 ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                <h3 className={`font-medium text-sm transition-all duration-300 text-foreground ${task.completed ? "line-through text-muted-foreground" : ""}`}>
                   {task.title}
                 </h3>
                 
@@ -154,7 +154,7 @@ export const TaskCardCompact = ({ task, onComplete }: TaskCardCompactProps) => {
                         <Square className="h-3.5 w-3.5" />
                       }
                     </Button>
-                    <span className={`text-xs ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
+                    <span className={`text-xs text-foreground ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
                       {subtask.title}
                     </span>
                   </div>

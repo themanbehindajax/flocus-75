@@ -62,7 +62,7 @@ export const CalendarTaskCard = ({ task, projects }: CalendarTaskCardProps) => {
           </button>
           
           <div className="flex-1">
-            <h3 className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+            <h3 className={`text-foreground font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
               {task.title}
             </h3>
             
@@ -95,7 +95,7 @@ export const CalendarTaskCard = ({ task, projects }: CalendarTaskCardProps) => {
                           <Square className="h-3.5 w-3.5" />
                         }
                       </Button>
-                      <span className={`text-xs ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
+                      <span className={`text-xs text-foreground ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
                         {subtask.title}
                       </span>
                     </div>
