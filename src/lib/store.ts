@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
@@ -176,7 +177,7 @@ export const useAppStore = create<AppState>()(
           };
         }),
         
-        // Fixed the argument count issues here - using the proper action function references
+        // Fixed the argument count issues here - using the proper task action function references
         updateTask: taskActions.updateTask,
         deleteTask: taskActions.deleteTask,
         completeTask: taskActions.completeTask,
