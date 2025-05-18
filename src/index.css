@@ -133,7 +133,7 @@
   /* Glass effect - aprimorado para modo claro e escuro */
   .glass-effect {
     @apply backdrop-blur-xl border rounded-2xl;
-    @apply dark:bg-blue-900/20 dark:border-white/5 dark:shadow-lg;
+    @apply dark:bg-blue-950/30 dark:border-white/5 dark:shadow-lg dark:shadow-black/20;
     @apply bg-white/60 border-black/5 shadow-sm;
   }
   
@@ -278,4 +278,3 @@
     @apply bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent;
   }
 }
-
