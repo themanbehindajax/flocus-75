@@ -49,9 +49,11 @@ const Tasks = () => {
     setIsAddDialogOpen(false);
     // Ensure we get the latest tasks from the store
     const latestTasks = useAppStore.getState().tasks;
-    setDisplayedTasks(latestTasks.filter((task) =>
+    const filtered = latestTasks.filter((task) =>
       task.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ));
+    );
+    console.log("[DEBUG] Tarefas atualizadas após criação:", filtered);
+    setDisplayedTasks(filtered);
   };
 
   return (

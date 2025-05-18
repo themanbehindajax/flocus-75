@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -15,7 +16,7 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { projects, tasks } = useAppStore();
+  const { projects, tasks, addTask } = useAppStore();
 
   const [view, setView] = useState<"list" | "kanban">("list");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -56,14 +57,14 @@ const ProjectDetails = () => {
     );
   }
 
-  // Função de callback para quando uma tarefa é criada
   const handleTaskCreated = () => {
     // Fecha o diálogo de adição de tarefa
     setIsAddDialogOpen(false);
     
-    // Atualizar a lista de tarefas com as últimas do estado global
-    const updatedTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
-    console.log("Tarefas do projeto (", projectId, ") após filtro:", updatedTasks);
+    // Obtém os dados mais recentes diretamente do store
+    const currentState = useAppStore.getState();
+    const updatedTasks = currentState.tasks.filter(task => task.projectId === projectId);
+    console.log("[DEBUG] Tarefas filtradas após criação:", updatedTasks);
     setProjectTasks(updatedTasks);
     
     toast({

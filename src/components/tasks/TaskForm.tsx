@@ -125,16 +125,17 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         });
         onComplete();
       } else {
-        // Add task to store
-        const taskId = addTask(taskData);
-        console.log("[DEBUG] Nova tarefa criada com ID:", taskId);
+        // Adiciona a tarefa e obtém seu ID
+        const newTaskId = addTask(taskData);
+        console.log("[DEBUG] Nova tarefa criada com ID:", newTaskId);
         
+        // Notifica o usuário sobre a criação bem-sucedida
         toast({
           title: "Tarefa criada",
           description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
         });
         
-        // Call onComplete AFTER adding the task
+        // Chama o callback somente após a tarefa ser adicionada
         onComplete();
       }
       
