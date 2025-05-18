@@ -1,10 +1,12 @@
 
+import { useState } from "react";
 import { Task } from "@/lib/types";
 import { TaskCardWrapper as TaskCard } from "./TaskCard";
 import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
 import { TaskCardCompact } from "./TaskCardCompact";
 import { motion } from "framer-motion";
+import { TaskDetailDrawer } from "./TaskDetailDrawer";
 
 interface TaskListProps {
   tasks: Task[];
@@ -14,6 +16,8 @@ interface TaskListProps {
 
 export const TaskList = ({ tasks, variant = "default", showProjectName = false }: TaskListProps) => {
   const { toggleTaskCompletion, projects, tags } = useAppStore();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
 
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
@@ -33,6 +37,11 @@ export const TaskList = ({ tasks, variant = "default", showProjectName = false }
         duration: 3000
       });
     }
+  };
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setIsDetailDrawerOpen(true);
   };
 
   const container = {
@@ -66,40 +75,49 @@ export const TaskList = ({ tasks, variant = "default", showProjectName = false }
   };
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="show"
-      variants={container}
-      className={`grid grid-cols-1 ${variant === "compact" ? "gap-2.5" : "gap-4"}`}
-    >
-      {tasks.length === 0 ? (
-        <motion.div 
-          variants={item}
-          className="py-12 px-6 text-center bg-muted/10 rounded-2xl border border-muted/30"
-        >
-          <p className="text-muted-foreground">Nenhuma tarefa encontrada.</p>
-        </motion.div>
-      ) : (
-        tasks.map((task) => (
-          <motion.div key={task.id} variants={item}>
-            {variant === "compact" ? (
-              <TaskCardCompact
-                task={task}
-                onComplete={() => handleToggleTaskCompletion(task)}
-              />
-            ) : (
-              <TaskCard
-                task={{
-                  ...task,
-                  projectName: showProjectName ? getProjectName(task.projectId) : undefined,
-                  tagObjects: getTaskTags(task.tags)
-                }}
-                onComplete={() => handleToggleTaskCompletion(task)}
-              />
-            )}
+    <>
+      <motion.div 
+        initial="hidden"
+        animate="show"
+        variants={container}
+        className={`grid grid-cols-1 ${variant === "compact" ? "gap-2.5" : "gap-4"}`}
+      >
+        {tasks.length === 0 ? (
+          <motion.div 
+            variants={item}
+            className="py-12 px-6 text-center bg-muted/10 rounded-2xl border border-muted/30"
+          >
+            <p className="text-muted-foreground">Nenhuma tarefa encontrada.</p>
           </motion.div>
-        ))
-      )}
-    </motion.div>
+        ) : (
+          tasks.map((task) => (
+            <motion.div key={task.id} variants={item} onClick={() => handleTaskClick(task)}>
+              {variant === "compact" ? (
+                <TaskCardCompact
+                  task={task}
+                  onComplete={() => handleToggleTaskCompletion(task)}
+                />
+              ) : (
+                <TaskCard
+                  task={{
+                    ...task,
+                    projectName: showProjectName ? getProjectName(task.projectId) : undefined,
+                    tagObjects: getTaskTags(task.tags)
+                  }}
+                  onComplete={() => handleToggleTaskCompletion(task)}
+                />
+              )}
+            </motion.div>
+          ))
+        )}
+      </motion.div>
+
+      {/* Task Detail Drawer */}
+      <TaskDetailDrawer
+        task={selectedTask}
+        open={isDetailDrawerOpen}
+        onOpenChange={setIsDetailDrawerOpen}
+      />
+    </>
   );
 };
