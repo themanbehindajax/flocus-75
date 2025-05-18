@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export const TodayPriorities = () => {
-  const { tasks, dailyPriorities, toggleTaskCompletion } = useAppStore();
+  const { tasks, dailyPriorities, toggleTaskCompletion, profile } = useAppStore();
   const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
   const [animateProgress, setAnimateProgress] = useState(false);
   

@@ -34,14 +34,19 @@ export const createPomodoroActions = (set: any, get: any) => ({
         }
         return session;
       });
+      
       const sessionCompleted = state.pomodoroSessions.find((s: PomodoroSession) => s.id === id && !s.completed);
       const updatedProfile = { ...state.profile };
+      
       if (sessionCompleted) {
+        // Update points and pomodoro count immediately
         updatedProfile.points += 10;
         updatedProfile.totalPomodorosCompleted += 1;
         updatedProfile.lastActivity = new Date().toISOString();
+        
         const today = new Date().toISOString().split("T")[0];
         const lastActivityDate = new Date(state.profile.lastActivity).toISOString().split("T")[0];
+        
         if (lastActivityDate === today) {
           // Same day activity, maintain streak
         } else if (
@@ -54,6 +59,7 @@ export const createPomodoroActions = (set: any, get: any) => ({
           updatedProfile.streak = 1;
         }
       }
+      
       return {
         pomodoroSessions: updatedSessions,
         profile: updatedProfile,
