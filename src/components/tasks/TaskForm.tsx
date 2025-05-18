@@ -92,7 +92,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
-      // NOTE: Remover o campo "completed" e campos extras!
+      // NOTE: Add 'completed: false', TypeScript expects it
       const taskData = {
         title: newTask.title.trim(),
         description: newTask.description,
@@ -103,7 +103,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         dueDate: date ? date.toISOString().split("T")[0] : undefined,
         subtasks: formattedSubtasks,
         isQuick: isQuickTask,
-        // NÃO passar o campo completed aqui!
+        completed: false,
       };
 
       if (editTask) {

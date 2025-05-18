@@ -28,7 +28,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         tags: [],
         subtasks: [],
         isQuick: isQuick,
-        // NÃO passar o campo completed aqui!
+        completed: false,  // Fix: Always include 'completed'
       });
       setTaskTitle("");
       setIsQuick(false);
