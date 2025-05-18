@@ -33,7 +33,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
   };
 
   return (
-    <Card className="project-card glass-effect animate-fade-in">
+    <Card className="project-card animate-fade-in">
       <CardHeader className="pb-2">
         <CardTitle>{project.name}</CardTitle>
         {project.goal && (
