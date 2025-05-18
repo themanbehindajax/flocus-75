@@ -124,8 +124,8 @@ export const useAppStore = create<AppState>()(
       
       // Tasks
       tasks: [],
-      addTask: (task) => set((state) => ({ 
-        tasks: [...state.tasks, {
+      addTask: (task) => set((state) => { 
+        const newTask = {
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -133,8 +133,17 @@ export const useAppStore = create<AppState>()(
           subtasks: [],
           tags: task.tags || [],
           ...task
-        }]
-      })),
+        };
+        console.log("[DEBUG STORE] Adicionando task:", newTask);
+        // Adiciona no window para depuração extra
+        (window as any).__GLOBAL_APP_STORE__ = {
+          ...((window as any).__GLOBAL_APP_STORE__ || {}),
+          tasks: [...state.tasks, newTask],
+        };
+        return { 
+          tasks: [...state.tasks, newTask] 
+        };
+      }),
       updateTask: (updatedTask) => set((state) => ({
         tasks: state.tasks.map(task => 
           task.id === updatedTask.id ? { ...updatedTask, updatedAt: new Date().toISOString() } : task

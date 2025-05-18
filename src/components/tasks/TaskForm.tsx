@@ -77,7 +77,6 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
 
   const handleSaveTask = () => {
     if (newTask.title.trim()) {
-      // Only auto-detect quick tasks if user hasn't explicitly set it
       let isQuickTask = newTask.isQuick;
       
       const formattedSubtasks: SubTask[] = newTask.subtasks.map((title) => {
@@ -92,7 +91,6 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         };
       });
 
-      // Sempre pega o projectId esperado do contexto do projeto
       let actualProjectId = newTask.projectId;
       if (projectIdFromUrl) {
         actualProjectId = projectIdFromUrl;
@@ -111,7 +109,7 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         completed: false,
       };
 
-      console.log("Criando tarefa com dados:", taskData);
+      console.log("[DEBUG] Criando tarefa com dados:", taskData);
 
       if (editTask) {
         updateTask({
@@ -125,6 +123,12 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
         });
       } else {
         addTask(taskData);
+        // Log o estado global após adicionar
+        setTimeout(() => {
+          // Wait para pegar o estado mais atualizado
+          const globalTasks: any = (window as any).__GLOBAL_APP_STORE__?.tasks ?? "Zustand global state não exposto";
+          console.log("[DEBUG] Estado global de tarefas após addTask:", globalTasks);
+        }, 500);
         toast({
           title: "Tarefa criada",
           description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
@@ -143,7 +147,6 @@ export const TaskForm = ({ onComplete, editTask }: { onComplete: () => void; edi
       });
       setDate(undefined);
 
-      // Chamar onComplete após salvar a tarefa para fechar o modal
       onComplete();
     }
   };

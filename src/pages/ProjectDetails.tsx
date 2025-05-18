@@ -26,12 +26,12 @@ const ProjectDetails = () => {
   // Atualiza as tarefas do projeto sempre que as tarefas ou projetos mudarem
   useEffect(() => {
     if (project) {
-      // Filtragem robusta: apenas tarefas que possuem projectId igual ao ID do projeto como string
-      const currentTasks = tasks.filter(
+      console.log("[DEBUG] Estado global de tasks bruto:", tasks);
+      const filtered = tasks.filter(
         task => String(task.projectId) === String(projectId)
       );
-      console.log("Tarefas do projeto (", projectId, "):", currentTasks);
-      setProjectTasks(currentTasks);
+      console.log("Tarefas do projeto (", projectId, ") após filtro:", filtered);
+      setProjectTasks(filtered);
     }
   }, [project, tasks, projectId]);
 
