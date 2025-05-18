@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CalendarIcon, Clock, GripVertical } from 'lucide-react';
+import { CalendarIcon, Clock, GripVertical, CheckSquare, Square } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAppStore } from '@/lib/store';
@@ -27,7 +27,7 @@ export const KanbanTask = ({
   onDragStart,
   onDragEnd 
 }: KanbanTaskProps) => {
-  const { projects, tags } = useAppStore();
+  const { projects, tags, updateTask } = useAppStore();
   const taskRef = useRef<HTMLDivElement>(null);
   
   const formattedDate = task.dueDate
@@ -77,11 +77,30 @@ export const KanbanTask = ({
     taskRef.current?.classList.remove('touch-dragging');
   };
 
+  const handleToggleSubtask = (subtaskId: string) => {
+    const updatedSubtasks = task.subtasks.map(subtask => 
+      subtask.id === subtaskId 
+        ? { ...subtask, completed: !subtask.completed } 
+        : subtask
+    );
+    
+    const updatedTask = {
+      ...task,
+      subtasks: updatedSubtasks,
+    };
+    
+    updateTask(updatedTask);
+  };
+
   const priorityColors = {
     alta: 'bg-red-500',
     media: 'bg-yellow-500',
     baixa: 'bg-green-500',
   };
+
+  // Calculate subtasks completion
+  const completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
+  const totalSubtasks = task.subtasks.length;
 
   return (
     <div
@@ -142,6 +161,46 @@ export const KanbanTask = ({
             <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
           )}
 
+          {/* Subtasks section */}
+          {task.subtasks && task.subtasks.length > 0 && (
+            <div className="mt-1.5 space-y-1">
+              <div className="flex items-center text-xs text-muted-foreground">
+                <span>Subtarefas: {completedSubtasks}/{totalSubtasks}</span>
+              </div>
+              
+              {/* Display first 2 subtasks only to save space */}
+              <div className="space-y-1">
+                {task.subtasks.slice(0, 2).map(subtask => (
+                  <div key={subtask.id} className="flex items-center gap-1.5">
+                    <button 
+                      className="focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSubtask(subtask.id);
+                      }}
+                    >
+                      {subtask.completed ? (
+                        <CheckSquare size={12} className="text-primary" />
+                      ) : (
+                        <Square size={12} className="text-muted-foreground" />
+                      )}
+                    </button>
+                    <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                      {subtask.title}
+                    </span>
+                  </div>
+                ))}
+                
+                {/* Show counter if there are more subtasks */}
+                {task.subtasks.length > 2 && (
+                  <div className="text-xs text-muted-foreground pl-5">
+                    + {task.subtasks.length - 2} mais
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-1 mt-1">
             {taskTags.map((tag: any) => (
               <Badge 
@@ -185,3 +244,4 @@ export const KanbanTask = ({
 };
 
 export default KanbanTask;
+

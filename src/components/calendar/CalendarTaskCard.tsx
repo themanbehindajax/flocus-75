@@ -1,7 +1,8 @@
 
 import { Task } from "@/lib/types";
 import { useAppStore } from "@/lib/store";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, CheckSquare, Square } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CalendarTaskCardProps {
   task: Task;
@@ -9,11 +10,24 @@ interface CalendarTaskCardProps {
 }
 
 export const CalendarTaskCard = ({ task, projects }: CalendarTaskCardProps) => {
-  const { completeTask } = useAppStore();
+  const { completeTask, updateTask } = useAppStore();
   
   const projectName = task.projectId 
     ? projects.find(p => p.id === task.projectId)?.name 
     : undefined;
+
+  const handleToggleSubtask = (subtaskId: string) => {
+    const updatedTask = {
+      ...task,
+      subtasks: task.subtasks.map(subtask => 
+        subtask.id === subtaskId 
+          ? { ...subtask, completed: !subtask.completed } 
+          : subtask
+      )
+    };
+    
+    updateTask(updatedTask);
+  };
 
   return (
     <div className={`p-4 rounded-lg border ${
@@ -43,15 +57,34 @@ export const CalendarTaskCard = ({ task, projects }: CalendarTaskCardProps) => {
           )}
           
           {task.subtasks.length > 0 && (
-            <div className="mt-3 space-y-1 pl-2 border-l-2 border-muted">
-              {task.subtasks.map(subtask => (
-                <div key={subtask.id} className="text-sm flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${subtask.completed ? 'bg-primary' : 'bg-muted-foreground'}`} />
-                  <span className={subtask.completed ? "line-through text-muted-foreground" : ""}>
-                    {subtask.title}
-                  </span>
-                </div>
-              ))}
+            <div className="mt-3 space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                Subtarefas ({task.subtasks.filter(s => s.completed).length}/{task.subtasks.length})
+              </p>
+              <div className="pl-2 space-y-1.5">
+                {task.subtasks.map(subtask => (
+                  <div key={subtask.id} className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`h-5 w-5 p-0 rounded-sm transition-all ${
+                        subtask.completed 
+                          ? 'text-primary hover:text-primary/80' 
+                          : 'text-muted-foreground hover:text-primary'
+                      }`}
+                      onClick={() => handleToggleSubtask(subtask.id)}
+                    >
+                      {subtask.completed ? 
+                        <CheckSquare className="h-3.5 w-3.5" /> : 
+                        <Square className="h-3.5 w-3.5" />
+                      }
+                    </Button>
+                    <span className={`text-xs ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
+                      {subtask.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           

@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ListPlus, List, Kanban, CheckCircle, CheckCircle2 } from "lucide-react";
+import { ListPlus, List, Kanban, CheckCircle, CheckCircle2, Square, CheckSquare } from "lucide-react";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { KanbanBoard } from "@/components/projects/KanbanBoard";
 import { Task } from "@/lib/types";
@@ -25,7 +25,7 @@ export const ProjectTaskList = ({
   projectId, projectTasks, view, setView, setIsAddDialogOpen, isAddDialogOpen, children, onTaskAdded
 }: ProjectTaskListProps) => {
   const { toast } = useToast();
-  const { toggleTaskCompletion } = useAppStore();
+  const { toggleTaskCompletion, updateTask } = useAppStore();
   
   const handleToggleTaskCompletion = (task: Task) => {
     toggleTaskCompletion(task.id);
@@ -42,6 +42,27 @@ export const ProjectTaskList = ({
         className: "toast-info"
       });
     }
+  };
+
+  const handleToggleSubtaskCompletion = (task: Task, subtaskId: string) => {
+    const updatedTask = {
+      ...task,
+      subtasks: task.subtasks.map(subtask => 
+        subtask.id === subtaskId 
+          ? { ...subtask, completed: !subtask.completed } 
+          : subtask
+      )
+    };
+    
+    updateTask(updatedTask);
+    
+    toast({
+      title: updatedTask.subtasks.find(s => s.id === subtaskId)?.completed 
+        ? "Subtarefa concluída" 
+        : "Subtarefa reaberta",
+      description: `A subtarefa foi ${updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "marcada como concluída" : "reaberta"}.`,
+      className: updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "toast-success" : "toast-info"
+    });
   };
 
   const priorityStyles = {
@@ -149,6 +170,47 @@ export const ProjectTaskList = ({
                         </span>
                       )}
                     </div>
+                    
+                    {/* Exibindo descrição se existir */}
+                    {task.description && (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        {task.description}
+                      </div>
+                    )}
+                    
+                    {/* Exibindo subtarefas se existirem */}
+                    {task.subtasks && task.subtasks.length > 0 && (
+                      <div className="mt-3 pl-8 space-y-1.5">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">
+                          Subtarefas ({task.subtasks.filter(s => s.completed).length}/{task.subtasks.length})
+                        </p>
+                        {task.subtasks.map(subtask => (
+                          <div 
+                            key={subtask.id} 
+                            className="flex items-center gap-2"
+                          >
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`h-5 w-5 p-0 rounded-sm transition-all ${
+                                subtask.completed 
+                                  ? 'text-primary hover:text-primary/80' 
+                                  : 'text-muted-foreground hover:text-primary'
+                              }`}
+                              onClick={() => handleToggleSubtaskCompletion(task, subtask.id)}
+                            >
+                              {subtask.completed ? 
+                                <CheckSquare className="h-3.5 w-3.5" /> : 
+                                <Square className="h-3.5 w-3.5" />
+                              }
+                            </Button>
+                            <span className={`text-xs ${subtask.completed ? "line-through text-muted-foreground" : ""}`}>
+                              {subtask.title}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -162,3 +224,4 @@ export const ProjectTaskList = ({
     </div>
   );
 };
+
