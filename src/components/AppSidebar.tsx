@@ -13,11 +13,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAppStore } from "@/lib/store";
 import { motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type SidebarItemProps = {
   icon: React.ReactNode;
@@ -112,8 +113,14 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
         {sidebarCollapsed ? (
           <span className="font-bold text-xl text-primary">F</span>
         ) : (
-          <>
-            <h1 className="font-bold text-xl text-primary">Flocus</h1>
+          <div className="flex items-center w-full justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src="/placeholder.svg" />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <h1 className="font-bold text-xl text-primary">Flocus</h1>
+            </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <Button 
@@ -125,7 +132,7 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
             </div>
-          </>
+          </div>
         )}
       </div>
       
