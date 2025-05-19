@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { format, isSameDay, isToday } from "date-fns";
+import { format, isSameDay, isToday, subMinutes } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { CalendarTaskCard } from "./CalendarTaskCard";
 import { useAppStore } from "@/lib/store";
 import { CalendarEventForm } from "./CalendarEventForm";
+import { scheduleNotification, cancelEventNotifications } from "@/lib/notifications";
 
 interface DayCalendarViewProps {
   selectedDate: Date;
@@ -76,6 +77,30 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
     
     setDayEvents(combinedEvents);
   }, [tasks, calendarEvents, selectedDate]);
+
+  // Schedule reminders for events
+  useEffect(() => {
+    // Cancel existing reminders for events that have been removed or updated
+    calendarEvents.forEach(event => {
+      cancelEventNotifications(event.id);
+
+      // Only schedule reminders for events with reminder settings and in the future
+      if (event.reminder && event.reminder > 0) {
+        const eventStart = new Date(event.startDate);
+        const reminderTime = subMinutes(eventStart, event.reminder);
+        
+        // Only schedule if reminder time is in the future
+        if (reminderTime > new Date()) {
+          scheduleNotification(
+            `Lembrete: ${event.title}`,
+            `O evento começa em ${event.reminder} minutos (${format(eventStart, 'HH:mm')})`,
+            reminderTime,
+            event.id
+          );
+        }
+      }
+    });
+  }, [calendarEvents]);
   
   const handleEventClick = (event: DayEvent) => {
     if (!event.isTask && event.originalEvent) {

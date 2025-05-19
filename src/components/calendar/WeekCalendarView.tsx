@@ -198,7 +198,7 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                       backgroundColor: bgColor
                     }}
                     title={event.title}
-                    onClick={() => !event.isTask && handleEventClick(event)}
+                    onClick={() => handleEventClick(event)}
                   >
                     <div className="flex items-center gap-1">
                       <span className="truncate">
@@ -228,7 +228,7 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                     backgroundColor: event.color,
                     zIndex: 20
                   }}
-                  onClick={() => !event.isTask && handleEventClick(event)}
+                  onClick={() => handleEventClick(event)}
                 >
                   {event.title}
                 </div>

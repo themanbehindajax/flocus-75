@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,6 +63,7 @@ export const CalendarEventForm = ({
     return "10:00";
   };
   
+  // Initialize form state
   const [eventData, setEventData] = useState<{
     title: string;
     description: string;
@@ -88,6 +89,40 @@ export const CalendarEventForm = ({
     reminder: editEvent?.reminder || null,
     color: editEvent?.color || "#6366f1"
   });
+
+  // Update form data when editEvent changes
+  useEffect(() => {
+    if (editEvent) {
+      setEventData({
+        title: editEvent.title,
+        description: editEvent.description || "",
+        startDate: new Date(editEvent.startDate),
+        endDate: editEvent.endDate ? new Date(editEvent.endDate) : undefined,
+        startTime: format(new Date(editEvent.startDate), "HH:mm"),
+        endTime: editEvent.endDate ? format(new Date(editEvent.endDate), "HH:mm") : "10:00",
+        allDay: editEvent.allDay,
+        repeat: editEvent.repeat || "none",
+        repeatUntil: editEvent.repeatUntil ? new Date(editEvent.repeatUntil) : undefined,
+        reminder: editEvent.reminder || null,
+        color: editEvent.color || "#6366f1"
+      });
+    } else {
+      // Reset form when not editing
+      setEventData({
+        title: "",
+        description: "",
+        startDate: selectedDate || new Date(),
+        endDate: undefined,
+        startTime: "09:00",
+        endTime: "10:00",
+        allDay: false,
+        repeat: "none",
+        repeatUntil: undefined,
+        reminder: null,
+        color: "#6366f1"
+      });
+    }
+  }, [editEvent, selectedDate]);
 
   const [startDatePickerOpen, setStartDatePickerOpen] = useState(false);
   const [endDatePickerOpen, setEndDatePickerOpen] = useState(false);

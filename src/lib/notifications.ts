@@ -54,6 +54,7 @@ interface PendingNotification {
   body: string;
   scheduledTime: Date;
   timeoutId: number;
+  eventId?: string; // Add eventId to track which event a notification belongs to
 }
 
 const pendingNotifications: PendingNotification[] = [];
@@ -61,7 +62,8 @@ const pendingNotifications: PendingNotification[] = [];
 export const scheduleNotification = (
   title: string,
   body: string,
-  scheduledTime: Date
+  scheduledTime: Date,
+  eventId?: string // Optional eventId parameter
 ) => {
   const now = new Date();
   if (scheduledTime <= now) {
@@ -90,6 +92,7 @@ export const scheduleNotification = (
     body,
     scheduledTime,
     timeoutId,
+    eventId
   });
   
   console.log(`Notificação agendada para ${scheduledTime.toLocaleString()} (em ${Math.floor(timeUntilNotification/60000)} minutos)`);
@@ -106,6 +109,17 @@ export const cancelScheduledNotification = (id: string) => {
     return true;
   }
   return false;
+};
+
+// Cancel all notifications for a specific event
+export const cancelEventNotifications = (eventId: string) => {
+  const notificationsToCancel = pendingNotifications.filter(n => n.eventId === eventId);
+  
+  notificationsToCancel.forEach(notification => {
+    cancelScheduledNotification(notification.id);
+  });
+  
+  return notificationsToCancel.length > 0;
 };
 
 export const getPendingNotifications = () => {
