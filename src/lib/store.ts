@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
@@ -122,8 +123,8 @@ export const useAppStore = create<AppState>()(
       const tagActions = createTagActions(set, get);
       // Initialize pomodoro-related actions
       const pomodoroActions = createPomodoroActions(set, get);
-      // Initialize misc actions - fixed to properly handle both parameters
-      const miscActions = createMiscActions(set, get);
+      // Initialize misc actions - remove the get parameter that's causing the error
+      const miscActions = createMiscActions(set);
       // Initialize calendar actions
       const calendarActions = createCalendarActions(set, get);
       
