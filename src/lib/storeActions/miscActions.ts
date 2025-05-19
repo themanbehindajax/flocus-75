@@ -2,6 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { DailyPriority, UserProfile } from "../types";
 
+// Explicitly define the function to accept both parameters
 export const createMiscActions = (set: any, get?: any) => ({
   // Enhanced setDailyPriorities function with consistent date formatting
   setDailyPriorities: (priorities: DailyPriority) => {
@@ -56,6 +57,6 @@ export const createMiscActions = (set: any, get?: any) => ({
   updateSettings: (settingsUpdate: any) => {
     set((state: any) => ({
       settings: { ...state.settings, ...settingsUpdate },
-    }))
+    }));
   }
 });
