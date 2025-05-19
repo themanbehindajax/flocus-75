@@ -1,4 +1,3 @@
-
 import { 
   Task, 
   PomodoroSession, 
@@ -22,6 +21,18 @@ export interface UIState {
   
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
+  
+  // Add colorMode and the setter function
+  colorMode: 'light' | 'dark' | 'system';
+  setColorMode: (mode: 'light' | 'dark' | 'system') => void;
+  
+  // Add accentColor and the setter function
+  accentColor: string;
+  setAccentColor: (color: string) => void;
+  
+  // Add animationsEnabled and the setter function
+  animationsEnabled: boolean;
+  setAnimationsEnabled: (enabled: boolean) => void;
 }
 
 export interface TasksState {
