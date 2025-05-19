@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
@@ -123,7 +122,7 @@ export const useAppStore = create<AppState>()(
       const tagActions = createTagActions(set, get);
       // Initialize pomodoro-related actions
       const pomodoroActions = createPomodoroActions(set, get);
-      // Initialize misc actions - now correctly providing both parameters
+      // Initialize misc actions - fixed to properly handle both parameters
       const miscActions = createMiscActions(set, get);
       // Initialize calendar actions
       const calendarActions = createCalendarActions(set, get);
