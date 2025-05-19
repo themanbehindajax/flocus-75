@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -75,7 +74,7 @@ const IvyLee = () => {
     const newSelectedTaskIds = [...selectedTaskIds, taskId];
     setSelectedTaskIds(newSelectedTaskIds);
     
-    // Find existing priority for this date with consistent formatting
+    // Garantindo formato de data consistente
     const formattedDate = date.split('T')[0];
     const existingPriority = dailyPriorities.find(dp => dp.date.split('T')[0] === formattedDate);
     

@@ -123,7 +123,7 @@ export const useAppStore = create<AppState>()(
       // Initialize pomodoro-related actions
       const pomodoroActions = createPomodoroActions(set, get);
       // Initialize misc actions
-      const miscActions = createMiscActions(set, get);
+      const miscActions = createMiscActions(set);
       // Initialize calendar actions
       const calendarActions = createCalendarActions(set, get);
       
@@ -176,7 +176,7 @@ export const useAppStore = create<AppState>()(
           };
         }),
         
-        // Fixed the argument count issues - direct function reference
+        // Fix the argument count issues - direct function reference
         updateTask: taskActions.updateTask,
         deleteTask: taskActions.deleteTask,
         completeTask: taskActions.completeTask,
