@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import { DailyPriority, UserProfile } from "../types";
 
 export const createMiscActions = (set: any) => ({
-  // Enhanced setDailyPriorities function with better logging and date handling
+  // Enhanced setDailyPriorities function with better date formatting
   setDailyPriorities: (priorities: DailyPriority) => {
-    // Ensure date is in YYYY-MM-DD format
+    // Ensure date is in YYYY-MM-DD format (remove any time component)
     const formattedDate = priorities.date.split('T')[0];
     
     console.log("[DEBUG] Setting daily priorities:", priorities);
@@ -25,7 +25,7 @@ export const createMiscActions = (set: any) => ({
     
     set((state: any) => {
       const existingPriority = state.dailyPriorities.find(
-        (dp: DailyPriority) => dp.date === formattedDate
+        (dp: DailyPriority) => dp.date.split('T')[0] === formattedDate
       );
       
       console.log("[DEBUG] Found existing priority?", !!existingPriority);
@@ -35,7 +35,7 @@ export const createMiscActions = (set: any) => ({
         
         return {
           dailyPriorities: state.dailyPriorities.map((dp: DailyPriority) =>
-            dp.date === formattedDate ? standardizedPriorities : dp
+            dp.date.split('T')[0] === formattedDate ? standardizedPriorities : dp
           ),
         };
       } else {

@@ -218,30 +218,7 @@ export const useAppStore = create<AppState>()(
         
         // Daily Priorities
         dailyPriorities: [],
-        setDailyPriorities: (priorities) => set((state) => {
-          const dateIndex = state.dailyPriorities.findIndex(p => p.date === priorities.date);
-          
-          // Ensure taskIds is an array
-          const safeTaskIds = Array.isArray(priorities.taskIds) ? priorities.taskIds : [];
-          
-          console.log("[DEBUG] Setting priorities in store:", priorities.date, safeTaskIds);
-          
-          if (dateIndex >= 0) {
-            return {
-              dailyPriorities: state.dailyPriorities.map((p, i) => 
-                i === dateIndex ? { ...p, taskIds: safeTaskIds } : p
-              )
-            };
-          } else {
-            return { 
-              dailyPriorities: [...state.dailyPriorities, {
-                ...priorities,
-                taskIds: safeTaskIds,
-                id: priorities.id || crypto.randomUUID()
-              }] 
-            };
-          }
-        }),
+        setDailyPriorities: miscActions.setDailyPriorities,
         
         // Pomodoro sessions
         pomodoroSessions: [],
@@ -282,23 +259,13 @@ export const useAppStore = create<AppState>()(
           totalTasksCompleted: 0,
           totalPomodorosCompleted: 0
         },
-        updateProfile: (updates) => set((state) => ({
-          profile: { ...state.profile, ...updates }
-        })),
+        updateProfile: miscActions.updateProfile,
         
         // Calendar events
         calendarEvents: [],
-        addCalendarEvent: (event) => set((state) => ({
-          calendarEvents: [...state.calendarEvents, { id: crypto.randomUUID(), ...event }]
-        })),
-        updateCalendarEvent: (updatedEvent) => set((state) => ({
-          calendarEvents: state.calendarEvents.map(event => 
-            event.id === updatedEvent.id ? updatedEvent : event
-          )
-        })),
-        deleteCalendarEvent: (eventId) => set((state) => ({
-          calendarEvents: state.calendarEvents.filter(event => event.id !== eventId)
-        })),
+        addCalendarEvent: calendarActions.addCalendarEvent,
+        updateCalendarEvent: calendarActions.updateCalendarEvent,
+        deleteCalendarEvent: calendarActions.deleteCalendarEvent,
         
         // Pomodoro settings
         pomodoroSettings: {
@@ -324,9 +291,7 @@ export const useAppStore = create<AppState>()(
           theme: 'system',
           notificationsEnabled: true,
         },
-        updateSettings: (updates) => set((state) => ({
-          settings: { ...state.settings, ...updates }
-        })),
+        updateSettings: miscActions.updateSettings,
         
         // Spotify stubs
         spotifyAuth: null,

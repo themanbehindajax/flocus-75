@@ -51,7 +51,7 @@ const IvyLee = () => {
       return isMatch;
     });
     
-    if (selectedDatePriorities) {
+    if (selectedDatePriorities && Array.isArray(selectedDatePriorities.taskIds)) {
       console.log("[DEBUG IvyLee] Found priorities for date:", date, selectedDatePriorities);
       setSelectedTaskIds(selectedDatePriorities.taskIds);
     } else {
