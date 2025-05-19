@@ -2,8 +2,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { DailyPriority, UserProfile } from "../types";
 
-// Explicitly define the function to accept both parameters
-export const createMiscActions = (set: any, get?: any) => ({
+// Make the get parameter truly optional by providing a default value
+export const createMiscActions = (set: any, get: any = undefined) => ({
   // Enhanced setDailyPriorities function with consistent date formatting
   setDailyPriorities: (priorities: DailyPriority) => {
     // Ensure date is in YYYY-MM-DD format (remove any time component)
