@@ -1,14 +1,12 @@
 
 import { v4 as uuidv4 } from "uuid";
-import { DailyPriority, UserProfile } from "../types";
+import { MiscState, SetFunction } from '../types';
+import { DailyPriority, UserProfile } from '../../types';
 
-// Simplified to only use the set parameter which is essential
-type SetFunction = (fn: (state: any) => any) => void;
-
-// Remove the get parameter which is causing the error and isn't essential
-export const createMiscActions = (set: SetFunction) => ({
-  // Enhanced setDailyPriorities function with consistent date formatting
-  setDailyPriorities: (priorities: DailyPriority) => {
+export const createMiscSlice = (set: SetFunction): MiscState => ({
+  // Daily Priorities
+  dailyPriorities: [],
+  setDailyPriorities: (priorities) => {
     // Ensure date is in YYYY-MM-DD format (remove any time component)
     const formattedDate = priorities.date.split('T')[0];
     
@@ -51,13 +49,30 @@ export const createMiscActions = (set: SetFunction) => ({
     });
   },
   
-  updateProfile: (profileUpdate: Partial<UserProfile>) => {
+  // User profile
+  profile: {
+    name: 'Usuário',
+    points: 0,
+    streak: 0,
+    lastActivity: new Date().toISOString(),
+    totalTasksCompleted: 0,
+    totalPomodorosCompleted: 0
+  },
+  updateProfile: (profileUpdate) => {
     set((state: any) => ({
       profile: { ...state.profile, ...profileUpdate },
     }));
   },
   
-  updateSettings: (settingsUpdate: any) => {
+  // App settings
+  settings: {
+    pomodoroDuration: 25,
+    shortBreakDuration: 5,
+    longBreakDuration: 15,
+    theme: 'system',
+    notificationsEnabled: true,
+  },
+  updateSettings: (settingsUpdate) => {
     set((state: any) => ({
       settings: { ...state.settings, ...settingsUpdate },
     }));
