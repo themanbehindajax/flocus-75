@@ -12,10 +12,11 @@ import {
   isToday
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Task, Project } from "@/lib/types";
+import { Task, Project, CalendarEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { CalendarTaskCard } from "./CalendarTaskCard";
+import { useAppStore } from "@/lib/store";
 
 interface FullCalendarViewProps {
   selectedDate: Date;
@@ -39,12 +40,25 @@ export function FullCalendarView({
 
   const days = getDaysToDisplay(selectedDate);
   const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const { calendarEvents } = useAppStore();
   
   // Get tasks for a specific day
   const getTasksForDay = (day: Date) => {
     return tasks.filter(task => 
       task.dueDate && isSameDay(new Date(task.dueDate), day)
     );
+  };
+  
+  // Get calendar events for a specific day
+  const getEventsForDay = (day: Date) => {
+    return calendarEvents.filter(event => {
+      const eventStart = new Date(event.startDate);
+      const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+      
+      // Check if this day falls within the event's range
+      return isSameDay(day, eventStart) || 
+        (event.endDate && eventStart <= day && day <= eventEnd);
+    });
   };
   
   return (
@@ -65,6 +79,8 @@ export function FullCalendarView({
       <div className="grid grid-cols-7 auto-rows-fr border-t">
         {days.map((day, i) => {
           const tasksForDay = getTasksForDay(day);
+          const eventsForDay = getEventsForDay(day);
+          const totalItems = tasksForDay.length + eventsForDay.length;
           const isCurrentMonth = isSameMonth(day, selectedDate);
           const isSelected = isSameDay(day, selectedDate);
           
@@ -90,20 +106,33 @@ export function FullCalendarView({
                   {format(day, "d")}
                 </div>
                 
-                {tasksForDay.length > 0 && (
-                  <Badge className="text-[10px] h-5">{tasksForDay.length}</Badge>
+                {totalItems > 0 && (
+                  <Badge className="text-[10px] h-5">{totalItems}</Badge>
                 )}
               </div>
               
               <div className="mt-1 space-y-1 max-h-[70px] overflow-hidden">
-                {tasksForDay.slice(0, 2).map(task => (
+                {/* Display calendar events */}
+                {eventsForDay.slice(0, 2).map(event => (
+                  <div 
+                    key={event.id} 
+                    className="text-xs p-1 rounded truncate" 
+                    style={{ backgroundColor: `${event.color}20`, color: event.color }}
+                  >
+                    {event.title}
+                  </div>
+                ))}
+                
+                {/* Display tasks */}
+                {tasksForDay.slice(0, Math.max(0, 2 - eventsForDay.length)).map(task => (
                   <div key={task.id} className="text-xs p-1 rounded bg-primary/10 truncate">
                     {task.title}
                   </div>
                 ))}
-                {tasksForDay.length > 2 && (
+                
+                {totalItems > 2 && (
                   <div className="text-xs text-muted-foreground text-center">
-                    +{tasksForDay.length - 2} mais
+                    +{totalItems - 2} mais
                   </div>
                 )}
               </div>
@@ -112,17 +141,53 @@ export function FullCalendarView({
         })}
       </div>
       
-      {/* Selected day tasks */}
-      {getTasksForDay(selectedDate).length > 0 && (
+      {/* Selected day items */}
+      {(getTasksForDay(selectedDate).length > 0 || getEventsForDay(selectedDate).length > 0) && (
         <div className="p-4 border-t">
           <h3 className="text-sm font-medium mb-2">
-            Tarefas para {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
+            Itens para {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
           </h3>
-          <div className="space-y-2">
-            {getTasksForDay(selectedDate).map(task => (
-              <CalendarTaskCard key={task.id} task={task} projects={projects} />
-            ))}
-          </div>
+          
+          {/* Show calendar events */}
+          {getEventsForDay(selectedDate).length > 0 && (
+            <div className="space-y-2 mb-4">
+              <h4 className="text-xs font-medium text-muted-foreground">Eventos</h4>
+              {getEventsForDay(selectedDate).map(event => (
+                <div 
+                  key={event.id}
+                  className="p-3 rounded-lg border"
+                  style={{ borderLeftWidth: '4px', borderLeftColor: event.color }}
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium">{event.title}</h3>
+                    {!event.allDay && (
+                      <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                        {format(new Date(event.startDate), "HH:mm")}
+                        {event.endDate && ` - ${format(new Date(event.endDate), "HH:mm")}`}
+                      </span>
+                    )}
+                  </div>
+                  {event.description && (
+                    <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Show tasks */}
+          {getTasksForDay(selectedDate).length > 0 && (
+            <>
+              {getEventsForDay(selectedDate).length > 0 && (
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Tarefas</h4>
+              )}
+              <div className="space-y-2">
+                {getTasksForDay(selectedDate).map(task => (
+                  <CalendarTaskCard key={task.id} task={task} projects={projects} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

@@ -31,7 +31,6 @@ interface WeekEventDisplay {
 
 export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }: WeekCalendarViewProps) {
   const [weekEvents, setWeekEvents] = useState<WeekEventDisplay[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { calendarEvents } = useAppStore();
   
   // Calculate week start (Sunday) and generate week days
@@ -159,19 +158,18 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                   height = Math.max(height, 24);
                 }
                 
-                const projectColor = event.projectId
-                  ? projects.find(p => p.id === event.projectId)?.name
-                  : undefined;
-
                 // Determine background color
                 let bgColorClass = "";
+                let bgColor = undefined;
+                let textColor = "text-white";
+                
                 if (event.isTask) {
                   bgColorClass = event.completed 
                     ? "bg-muted text-muted-foreground line-through" 
-                    : "bg-blue-500 text-white";
+                    : "bg-blue-500";
                 } else {
-                  // For calendar events, use the event color with some opacity
-                  bgColorClass = "text-white";
+                  // For calendar events, use the event color directly
+                  bgColor = event.color;
                 }
                 
                 return (
@@ -179,12 +177,13 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                     key={event.id}
                     className={cn(
                       "absolute left-1 right-1 rounded-md p-1 text-xs overflow-hidden shadow-sm",
-                      bgColorClass
+                      bgColorClass,
+                      textColor
                     )}
                     style={{
                       top: `${top}px`,
                       height: `${height}px`,
-                      backgroundColor: !event.isTask ? event.color : undefined
+                      backgroundColor: bgColor
                     }}
                     title={event.title}
                   >
@@ -201,6 +200,25 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                   </div>
                 );
               })}
+              
+            {/* All-day events */}
+            {weekEvents
+              .filter(event => 
+                event.allDay && 
+                isSameDay(event.start, day)
+              )
+              .map((event, idx) => (
+                <div
+                  key={`all-day-${event.id}`}
+                  className="absolute top-0 left-0 right-0 px-1 py-0.5 text-xs text-white truncate"
+                  style={{
+                    backgroundColor: event.color,
+                    zIndex: 20
+                  }}
+                >
+                  {event.title}
+                </div>
+              ))}
           </div>
         ))}
       </div>

@@ -4,9 +4,10 @@ import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Task, Project } from "@/lib/types";
+import { Task, Project, CalendarEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CalendarTaskCard } from "./CalendarTaskCard";
+import { useAppStore } from "@/lib/store";
 
 interface DayCalendarViewProps {
   selectedDate: Date;
@@ -22,14 +23,17 @@ interface DayEvent {
   end?: Date;
   isTask: boolean;
   taskData?: Task;
+  color?: string;
+  allDay?: boolean;
 }
 
 export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarViewProps) {
   const [dayEvents, setDayEvents] = useState<DayEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { calendarEvents } = useAppStore();
   
-  // Convert tasks to events
+  // Convert tasks and calendar events to display events
   useEffect(() => {
+    // Process tasks to events
     const taskEvents: DayEvent[] = tasks
       .filter(task => task.dueDate && isSameDay(new Date(task.dueDate), selectedDate))
       .map(task => ({
@@ -41,8 +45,32 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
         taskData: task,
       }));
     
-    setDayEvents(taskEvents);
-  }, [tasks, selectedDate]);
+    // Process calendar events
+    const calendarDisplayEvents: DayEvent[] = calendarEvents
+      .filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+        return isSameDay(eventStart, selectedDate) || 
+               (event.endDate && eventStart <= selectedDate && selectedDate <= eventEnd);
+      })
+      .map(event => ({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        start: new Date(event.startDate),
+        end: event.endDate ? new Date(event.endDate) : undefined,
+        isTask: false,
+        color: event.color || "#6366f1",
+        allDay: event.allDay
+      }));
+    
+    // Combine and sort by time
+    const combinedEvents = [...taskEvents, ...calendarDisplayEvents].sort((a, b) => 
+      a.start.getTime() - b.start.getTime()
+    );
+    
+    setDayEvents(combinedEvents);
+  }, [tasks, calendarEvents, selectedDate]);
   
   // Get hours for the day
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -83,13 +111,15 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
               const minute = event.start.getMinutes();
               const top = (hour * 60 + minute) * (16 / 60); // 16px per hour
               
+              // Calculate height based on duration (for calendar events)
+              let height = 60; // Default height (1 hour)
+              if (event.end) {
+                const durationMinutes = (event.end.getTime() - event.start.getTime()) / (60 * 1000);
+                height = Math.max(30, durationMinutes * (16 / 60)); // Minimum height of 30px
+              }
+              
               // If it's a task, render a task card
               if (event.isTask && event.taskData) {
-                const taskData = event.taskData;
-                const projectName = taskData.projectId 
-                  ? projects.find(p => p.id === taskData.projectId)?.name 
-                  : undefined;
-                
                 return (
                   <div 
                     key={event.id}
@@ -99,12 +129,35 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
                       zIndex: 10
                     }}
                   >
-                    <CalendarTaskCard task={taskData} projects={projects} />
+                    <CalendarTaskCard task={event.taskData} projects={projects} />
                   </div>
                 );
               }
               
-              return null;
+              // Render calendar event
+              return (
+                <div
+                  key={event.id}
+                  className="absolute left-2 right-2 rounded-lg p-2 text-white"
+                  style={{
+                    top: `${top}px`,
+                    height: `${event.allDay ? 40 : height}px`,
+                    backgroundColor: event.color,
+                    zIndex: 5
+                  }}
+                >
+                  <div className="flex justify-between">
+                    <p className="font-medium text-sm">{event.title}</p>
+                    <p className="text-xs opacity-90">
+                      {format(event.start, "HH:mm")}
+                      {event.end && ` - ${format(event.end, "HH:mm")}`}
+                    </p>
+                  </div>
+                  {event.description && (
+                    <p className="text-xs mt-1 opacity-80 line-clamp-2">{event.description}</p>
+                  )}
+                </div>
+              );
             })}
             
             {dayEvents.length === 0 && (
