@@ -192,20 +192,24 @@ export const TodayPriorities = () => {
           
           <div className="space-y-2">
             {priorityTasks.map((task) => (
-              <div 
+              <motion.div 
                 key={task.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
                 className="flex items-center gap-3 py-2"
               >
                 <button 
                   onClick={() => handleToggleTaskCompletion(task.id)}
                   className="flex items-center justify-center"
+                  aria-label={task.completed ? "Marcar tarefa como não concluída" : "Marcar tarefa como concluída"}
                 >
                   <div 
                     className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center",
+                      "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200",
                       task.completed 
-                        ? "bg-primary text-primary-foreground" 
-                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-500"
+                        ? "bg-primary text-primary-foreground shadow-sm" 
+                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-500 hover:bg-blue-200 dark:hover:bg-blue-800/50"
                     )}
                   >
                     <CheckCircle 
@@ -221,13 +225,13 @@ export const TodayPriorities = () => {
                 </button>
                 <span 
                   className={cn(
-                    "text-base transition-colors",
+                    "text-base transition-colors duration-200",
                     task.completed && "line-through text-muted-foreground"
                   )}
                 >
                   {task.title}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </CardContent>
