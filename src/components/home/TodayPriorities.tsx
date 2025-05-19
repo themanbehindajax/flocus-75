@@ -5,7 +5,6 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ListChecks, ArrowRight, CheckCircle, Trophy } from "lucide-react";
-import { TaskCardCompact } from "../tasks/TaskCardCompact";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -86,28 +85,6 @@ export const TodayPriorities = () => {
     }
   };
 
-  // Animation variants for Framer Motion
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.3 }
-    }
-  };
-
   // Load existing priority tasks
   if (priorityTasks.length === 0) {
     return (
@@ -146,9 +123,9 @@ export const TodayPriorities = () => {
 
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
       <Card className="col-span-full shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 bg-gradient-to-br from-card to-background/80 backdrop-blur-sm border border-border/50 rounded-3xl overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/30">
@@ -213,20 +190,46 @@ export const TodayPriorities = () => {
             </div>
           </div>
           
-          <motion.div className="space-y-3" variants={containerVariants}>
-            {priorityTasks.map((task, index) => (
-              <motion.div
+          <div className="space-y-2">
+            {priorityTasks.map((task) => (
+              <div 
                 key={task.id}
-                variants={itemVariants}
-                custom={index}
+                className="flex items-center gap-3 py-2"
               >
-                <TaskCardCompact
-                  task={task}
-                  onComplete={() => handleToggleTaskCompletion(task.id)}
-                />
-              </motion.div>
+                <button 
+                  onClick={() => handleToggleTaskCompletion(task.id)}
+                  className="flex items-center justify-center"
+                >
+                  <div 
+                    className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center",
+                      task.completed 
+                        ? "bg-primary text-primary-foreground" 
+                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-500"
+                    )}
+                  >
+                    <CheckCircle 
+                      size={16} 
+                      className={cn(
+                        "transition-all",
+                        task.completed 
+                          ? "opacity-100" 
+                          : "opacity-80"
+                      )} 
+                    />
+                  </div>
+                </button>
+                <span 
+                  className={cn(
+                    "text-base transition-colors",
+                    task.completed && "line-through text-muted-foreground"
+                  )}
+                >
+                  {task.title}
+                </span>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
