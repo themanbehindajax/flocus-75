@@ -31,6 +31,29 @@ const Index = () => {
 
   const [quickTasks, setQuickTasks] = useState<string[]>([]);
 
+  // Function to get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+  };
+
+  // Function to capitalize first letter of weekday
+  const formatWeekday = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long' 
+    };
+    
+    // Get formatted date string in lowercase first
+    const dateStr = date.toLocaleDateString('pt-BR', options);
+    
+    // Capitalize first letter
+    return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+  };
+
   useEffect(() => {
     // Setup user profile on first visit - only if name is exactly "Usuário"
     if (profile.name === "Usuário") {
@@ -103,14 +126,10 @@ const Index = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
           <div>
             <h1 className="text-3xl font-bold tracking-tight animate-fade-in">
-              Olá, {profile.name}
+              {getGreeting()}, {profile.name}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {new Date().toLocaleDateString('pt-BR', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long' 
-              })}
+              {formatWeekday(new Date())}
             </p>
           </div>
           
