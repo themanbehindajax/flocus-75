@@ -14,7 +14,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Task } from "@/lib/types";
 
 export const TodayPriorities = () => {
-  const { tasks, dailyPriorities, toggleTaskCompletion, profile } = useAppStore();
+  const { tasks, dailyPriorities, toggleTaskCompletion } = useAppStore();
   const [todaysPriorities, setTodaysPriorities] = useState<string[]>([]);
   const [animateProgress, setAnimateProgress] = useState(false);
   
@@ -22,43 +22,36 @@ export const TodayPriorities = () => {
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split("T")[0];
     
-    console.log("[DEBUG] TodayPriorities - Today's date (formatted):", today);
+    console.log("[DEBUG] TodayPriorities - Today's date (YYYY-MM-DD):", today);
     console.log("[DEBUG] TodayPriorities - All daily priorities:", dailyPriorities);
     
     // Find today's priorities with consistent date format comparison
     const todaysPriorityList = dailyPriorities.find(dp => {
       // Normalize both dates to YYYY-MM-DD format for comparison
       const dpDate = dp.date.split('T')[0];
-      const isMatch = dpDate === today;
-      console.log(`[DEBUG] Checking priority date: ${dpDate} against today ${today}, match: ${isMatch}`);
-      return isMatch;
+      console.log(`[DEBUG] Checking priority date: ${dpDate} against today ${today}, match: ${dpDate === today}`);
+      return dpDate === today;
     });
     
     if (todaysPriorityList && Array.isArray(todaysPriorityList.taskIds)) {
       console.log("[DEBUG] Found priority list for today:", todaysPriorityList);
       setTodaysPriorities(todaysPriorityList.taskIds);
+      console.log("[DEBUG] Set today's priorities to:", todaysPriorityList.taskIds);
     } else {
-      console.log("[DEBUG] No priority list found for today. Date:", today);
+      console.log("[DEBUG] No priority list found for today. Using empty array.");
       setTodaysPriorities([]);
     }
-    
-    // More detailed logging
-    console.log("[DEBUG] TodayPriorities - Today's priority list:", todaysPriorityList);
-    console.log("[DEBUG] TodayPriorities - Priority task IDs:", todaysPriorityList?.taskIds || []);
-    console.log("[DEBUG] TodayPriorities - All tasks:", tasks);
-    console.log("[DEBUG] TodayPriorities - All task IDs:", tasks.map(t => t.id));
-  }, [dailyPriorities, tasks]);
+  }, [dailyPriorities]);
   
-  // Get the priority tasks with improved validation
+  // Get the priority tasks with improved validation and logging
   const priorityTasks = tasks.filter(task => {
     if (!todaysPriorities || !Array.isArray(todaysPriorities)) {
+      console.log("[DEBUG] todaysPriorities is not valid:", todaysPriorities);
       return false;
     }
     
     const isInPriorities = todaysPriorities.includes(task.id);
-    if (isInPriorities) {
-      console.log("[DEBUG] Task included in priorities:", task.id, task.title);
-    }
+    console.log(`[DEBUG] Task ${task.id} (${task.title}) is in priorities: ${isInPriorities}`);
     return isInPriorities;
   });
   

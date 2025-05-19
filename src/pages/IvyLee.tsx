@@ -40,21 +40,23 @@ const IvyLee = () => {
     console.log("[DEBUG IvyLee] Loading priorities for date:", date);
     console.log("[DEBUG IvyLee] All daily priorities:", dailyPriorities);
     
+    // Always ensure date is in YYYY-MM-DD format
+    const formattedDate = date.split('T')[0];
+    
     // Find priorities with consistent date formatting
     const selectedDatePriorities = dailyPriorities.find(dp => {
       const formattedDpDate = dp.date.split('T')[0]; 
-      const formattedSelectedDate = date.split('T')[0];
-      const isMatch = formattedDpDate === formattedSelectedDate;
+      const isMatch = formattedDpDate === formattedDate;
       
-      console.log(`[DEBUG IvyLee] Comparing: ${formattedDpDate} with ${formattedSelectedDate}, match: ${isMatch}`);
+      console.log(`[DEBUG IvyLee] Comparing: ${formattedDpDate} with ${formattedDate}, match: ${isMatch}`);
       return isMatch;
     });
     
     if (selectedDatePriorities && Array.isArray(selectedDatePriorities.taskIds)) {
-      console.log("[DEBUG IvyLee] Found priorities for date:", date, selectedDatePriorities);
+      console.log("[DEBUG IvyLee] Found priorities for date:", formattedDate, selectedDatePriorities);
       setSelectedTaskIds(selectedDatePriorities.taskIds);
     } else {
-      console.log("[DEBUG IvyLee] No priorities found for date:", date);
+      console.log("[DEBUG IvyLee] No priorities found for date:", formattedDate);
       setSelectedTaskIds([]);
     }
   }, [date, dailyPriorities]);
