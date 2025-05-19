@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PomodoroMiniWidget } from "@/components/pomodoro/PomodoroMiniWidget";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -34,6 +35,13 @@ export function AppLayout({ children }: AppLayoutProps) {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Define animation variants for page transitions
+  const pageVariants = {
+    initial: { opacity: 0, y: 10 },
+    enter: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, y: 10, transition: { duration: 0.2, ease: "easeIn" } }
+  };
+
   return (
     <div className={cn(
       "flex h-screen w-full overflow-hidden",
@@ -42,14 +50,40 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Background decorative elements - only when not on pomodoro page */}
       {!isPomodoroPage && (
         <div className="absolute inset-0 overflow-hidden -z-10">
-          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl"></div>
-          <div className="absolute top-1/3 -left-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl"></div>
-          <div className="absolute -bottom-20 right-1/3 w-80 h-80 rounded-full bg-primary/5 blur-3xl"></div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+            className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl"
+          ></motion.div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.2 }}
+            className="absolute top-1/3 -left-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl"
+          ></motion.div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.4 }}
+            className="absolute -bottom-20 right-1/3 w-80 h-80 rounded-full bg-primary/5 blur-3xl"
+          ></motion.div>
         </div>
       )}
       
       {/* Sidebar */}
-      {sidebarOpen && <AppSidebar activePath={location.pathname} />}
+      <AnimatePresence mode="wait">
+        {sidebarOpen && (
+          <motion.div
+            initial={{ x: isMobile ? -240 : 0, opacity: isMobile ? 0 : 1 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -240, opacity: 0 }}
+            transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
+          >
+            <AppSidebar activePath={location.pathname} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Overlay for mobile when sidebar is open */}
       <AnimatePresence>
@@ -68,10 +102,10 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main content - only this part animates on route change */}
       <motion.main 
         key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        variants={pageVariants}
         className={cn(
           "flex-1 overflow-auto transition-all duration-300",
           sidebarCollapsed ? "ml-0" : ""
@@ -101,8 +135,30 @@ export function AppLayout({ children }: AppLayoutProps) {
           <h1 className="ml-3 font-bold text-xl text-primary">Flocus</h1>
         </div>
 
+        {/* Desktop sidebar toggle button - when sidebar is collapsed */}
+        {!sidebarOpen && !isMobile && (
+          <motion.div 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="fixed top-4 left-4 z-10"
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-full w-10 h-10 p-0 bg-card/80 backdrop-blur-sm border shadow-sm"
+              onClick={toggleSidebar}
+            >
+              <ChevronRight size={18} />
+            </Button>
+          </motion.div>
+        )}
+
         {children}
       </motion.main>
+
+      {/* Floating Pomodoro Widget - Always present but conditionally visible */}
+      <PomodoroMiniWidget />
     </div>
   );
 }

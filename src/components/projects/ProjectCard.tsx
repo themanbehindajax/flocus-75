@@ -32,8 +32,26 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
     return format(date, "dd/MM/yyyy");
   };
 
+  // Generate a subtle background color based on project name for visual categorization
+  const getProjectColor = () => {
+    const hash = project.name.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+    
+    const hue = Math.abs(hash) % 360;
+    return `hsla(${hue}, 70%, 92%, 0.5)`;
+  };
+
   return (
-    <Card className="project-card animate-fade-in">
+    <Card 
+      className="project-card animate-fade-in group hover:shadow-elevated transition-all duration-300" 
+      gradient
+    >
+      <div 
+        className="absolute top-0 left-0 h-1 w-full rounded-t-2xl" 
+        style={{ background: getProjectColor() }} 
+      />
+      
       <CardHeader className="pb-2">
         <CardTitle>{project.name}</CardTitle>
         {project.goal && (
@@ -45,7 +63,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
       
       <CardContent>
         <div className="flex items-center justify-between text-sm mb-2">
-          <div>{completedTasks.length}/{projectTasks.length} tarefas</div>
+          <div className="font-medium">{completedTasks.length}/{projectTasks.length} tarefas</div>
           {project.dueDate && (
             <div className="flex items-center text-muted-foreground">
               <Clock className="h-3 w-3 mr-1" />
@@ -61,7 +79,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
           <Button 
             size="icon" 
             variant="outline" 
-            className="h-8 w-8"
+            className="h-8 w-8 opacity-70 group-hover:opacity-100 transition-opacity"
             onClick={() => onEdit(project)}
           >
             <Pencil className="h-4 w-4" />
@@ -69,13 +87,16 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
           <Button 
             size="icon" 
             variant="outline" 
-            className="h-8 w-8 text-destructive"
+            className="h-8 w-8 text-destructive opacity-70 group-hover:opacity-100 transition-opacity"
             onClick={() => onDelete(project.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-        <Button asChild>
+        <Button 
+          asChild
+          className="bg-primary/90 hover:bg-primary transition-colors"
+        >
           <Link to={`/projects/${project.id}`}>Abrir</Link>
         </Button>
       </CardFooter>

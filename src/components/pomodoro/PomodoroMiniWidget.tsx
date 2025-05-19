@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { formatTime } from '@/hooks/usePomodoro';
 import { useAppStore } from '@/lib/store';
@@ -121,6 +122,16 @@ export const PomodoroMiniWidget = () => {
     // Don't change visibility state here
   };
 
+  // Helper to get timer mode color
+  const getTimerColor = () => {
+    switch(timerMode) {
+      case 'pomodoro': return 'from-blue-500/70 to-blue-600/70';
+      case 'shortBreak': return 'from-green-500/70 to-green-600/70';
+      case 'longBreak': return 'from-indigo-500/70 to-indigo-600/70';
+      default: return 'from-blue-500/70 to-blue-600/70';
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -135,7 +146,7 @@ export const PomodoroMiniWidget = () => {
             transition={{ duration: 0.2 }}
           >
             <Card 
-              className="bg-blue-500/70 backdrop-blur-xl shadow-lg border-white/20 rounded-3xl"
+              className={`bg-gradient-to-r ${getTimerColor()} backdrop-blur-xl shadow-lg border-white/20 rounded-3xl`}
             >
               <div className="flex items-center gap-2 px-3 py-2">
                 <span className="font-mono font-bold text-white">
@@ -167,7 +178,7 @@ export const PomodoroMiniWidget = () => {
             style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
           >
             <Card 
-              className="w-64 p-4 bg-blue-500/70 backdrop-blur-xl shadow-lg border-white/20 rounded-3xl"
+              className={`w-64 p-4 bg-gradient-to-r ${getTimerColor()} backdrop-blur-xl shadow-lg border-white/20 rounded-3xl`}
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -201,17 +212,46 @@ export const PomodoroMiniWidget = () => {
                   </span>
                 </div>
                 
+                <motion.div 
+                  className="w-full h-1 bg-white/20 rounded-full overflow-hidden mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <motion.div 
+                    className="h-full bg-white"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${(1 - timeRemaining / (timerMode === 'pomodoro' ? 1500 : 300)) * 100}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </motion.div>
+                
                 <div className="flex justify-center gap-2">
                   {timerState === "running" ? (
-                    <Button onClick={pauseTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
+                    <Button 
+                      onClick={pauseTimer} 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
+                    >
                       <Pause className="h-4 w-4 mr-1" /> Pausar
                     </Button>
                   ) : (
-                    <Button onClick={startTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
+                    <Button 
+                      onClick={startTimer} 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
+                    >
                       <Play className="h-4 w-4 mr-1" /> {timerState === "paused" ? "Continuar" : "Iniciar"}
                     </Button>
                   )}
-                  <Button onClick={handleReset} size="sm" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10">
+                  <Button 
+                    onClick={handleReset} 
+                    size="sm" 
+                    variant="outline" 
+                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
+                  >
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </div>

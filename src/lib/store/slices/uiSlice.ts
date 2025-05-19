@@ -17,4 +17,12 @@ export const createUISlice = (set: SetFunction): UIState => ({
   // Notifications
   notificationsEnabled: true,
   setNotificationsEnabled: (enabled) => set((state) => ({ notificationsEnabled: enabled })),
+  
+  // UI Preferences
+  colorMode: 'light',
+  setColorMode: (mode) => set((state) => ({ colorMode: mode })),
+  accentColor: 'blue',
+  setAccentColor: (color) => set((state) => ({ accentColor: color })),
+  animationsEnabled: true,
+  setAnimationsEnabled: (enabled) => set((state) => ({ animationsEnabled: enabled })),
 });
