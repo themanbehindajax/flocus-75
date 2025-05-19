@@ -145,9 +145,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main content - only this part animates on route change */}
       <motion.main 
         key={location.pathname}
-        initial={animationsEnabled ? "initial" : false}
-        animate={animationsEnabled ? "enter" : false}
-        exit={animationsEnabled ? "exit" : false}
+        initial={animationsEnabled ? "initial" : undefined}
+        animate={animationsEnabled ? "enter" : undefined}
+        exit={animationsEnabled ? "exit" : undefined}
         variants={pageVariants}
         className={cn(
           "flex-1 overflow-auto transition-all duration-300",
