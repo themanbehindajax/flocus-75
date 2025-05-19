@@ -122,7 +122,7 @@ export const useAppStore = create<AppState>()(
       const tagActions = createTagActions(set, get);
       // Initialize pomodoro-related actions
       const pomodoroActions = createPomodoroActions(set, get);
-      // Initialize misc actions
+      // Initialize misc actions - fix here: only passing set parameter
       const miscActions = createMiscActions(set);
       // Initialize calendar actions
       const calendarActions = createCalendarActions(set, get);
