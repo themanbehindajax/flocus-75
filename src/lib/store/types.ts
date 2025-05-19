@@ -60,7 +60,6 @@ export interface MiscState {
     longBreakDuration: number;
     theme: 'light' | 'dark' | 'system';
     notificationsEnabled: boolean;
-    spotifyAuth?: any;
   };
   updateSettings: (settings: Partial<MiscState['settings']>) => void;
 }
@@ -90,19 +89,6 @@ export interface CalendarState {
   deleteCalendarEvent: (eventId: string) => void;
 }
 
-export interface SpotifyState {
-  spotifyAuth: any | null;
-  setSpotifyAuth: (auth: any) => void;
-  clearSpotifyAuth: () => void;
-  getCurrentTrack: () => any;
-  playTrack: (trackId: string) => void;
-  pauseTrack: () => void;
-  nextTrack: () => void;
-  previousTrack: () => void;
-  getUserPlaylists: () => any[];
-  playPlaylist: (playlistId: string) => void;
-}
-
 // Combined state type that represents the entire app state
 export type AppState = UIState & 
   TasksState & 
@@ -110,8 +96,7 @@ export type AppState = UIState &
   TagsState & 
   MiscState & 
   PomodoroState & 
-  CalendarState & 
-  SpotifyState;
+  CalendarState;
 
 // Helper type for create function parameters
 export type SetFunction = (fn: (state: any) => any) => void;

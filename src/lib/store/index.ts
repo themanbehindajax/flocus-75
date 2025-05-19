@@ -9,7 +9,6 @@ import { createTagsSlice } from './slices/tagsSlice';
 import { createPomodoroSlice } from './slices/pomodoroSlice';
 import { createMiscSlice } from './slices/miscSlice';
 import { createCalendarSlice } from './slices/calendarSlice';
-import { createSpotifySlice } from './slices/spotifySlice';
 import { AppState } from './types';
 
 export const useAppStore = create<AppState>()(
@@ -22,7 +21,6 @@ export const useAppStore = create<AppState>()(
       ...createMiscSlice(set), // Fixed: Only passing set parameter
       ...createTagsSlice(set),
       ...createCalendarSlice(set, get),
-      ...createSpotifySlice(set, get),
     }),
     {
       name: 'flocus-app-storage',
@@ -32,7 +30,6 @@ export const useAppStore = create<AppState>()(
         sidebarCollapsed: state.sidebarCollapsed,
         notificationsEnabled: state.notificationsEnabled,
         pomodoroSettings: state.pomodoroSettings,
-        spotifyAuth: state.spotifyAuth,
         tasks: state.tasks,
         projects: state.projects,
         tags: state.tags,
