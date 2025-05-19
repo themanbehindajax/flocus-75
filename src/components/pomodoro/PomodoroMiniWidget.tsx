@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { formatTime } from '@/hooks/usePomodoro';
 import { useAppStore } from '@/lib/store';
-import { X, Maximize2, Play, Pause } from 'lucide-react';
+import { X, Maximize2, Play, Pause, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -19,9 +19,14 @@ export const PomodoroMiniWidget = () => {
   
   // Get pomodoro state from store
   const { 
-    isActive, timeRemaining, timerMode,
+    isActive, isPaused, timeRemaining, timerMode,
     startTimer, pauseTimer, resetTimer
   } = usePomodoroStore();
+  
+  // Compute timerState from isActive and isPaused
+  const timerState = isActive 
+    ? (isPaused ? "paused" : "running") 
+    : (timeRemaining === 0 ? "completed" : "idle");
 
   // Hide widget on pomodoro page
   useEffect(() => {
@@ -190,17 +195,18 @@ export const PomodoroMiniWidget = () => {
               </div>
               
               <div className="flex justify-center gap-2">
-                <motion.div whileTap={{ scale: 0.95 }} className="w-full">
-                  {isActive ? (
-                    <Button onClick={pauseTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
-                      <Pause className="h-4 w-4 mr-1" /> Pausar
-                    </Button>
-                  ) : (
-                    <Button onClick={startTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
-                      <Play className="h-4 w-4 mr-1" /> Iniciar
-                    </Button>
-                  )}
-                </motion.div>
+                {timerState === "running" ? (
+                  <Button onClick={pauseTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
+                    <Pause className="h-4 w-4 mr-1" /> Pausar
+                  </Button>
+                ) : (
+                  <Button onClick={startTimer} size="sm" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10">
+                    <Play className="h-4 w-4 mr-1" /> {timerState === "paused" ? "Continuar" : "Iniciar"}
+                  </Button>
+                )}
+                <Button onClick={resetTimer} size="sm" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10">
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           )}
