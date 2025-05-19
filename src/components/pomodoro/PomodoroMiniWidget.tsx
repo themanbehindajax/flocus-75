@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { formatTime } from '@/hooks/usePomodoro';
 import { useAppStore } from '@/lib/store';
@@ -28,8 +27,9 @@ export const PomodoroMiniWidget = () => {
     ? (isPaused ? "paused" : "running") 
     : (timeRemaining === 0 ? "completed" : "idle");
 
-  // Hide widget on pomodoro page
+  // Hide widget on pomodoro page, but keep it visible when timer is active
   useEffect(() => {
+    // Only show widget when we're not on the pomodoro page AND timer is or has been active
     setIsVisible(location.pathname !== '/pomodoro' && isActive);
   }, [location.pathname, isActive]);
 
@@ -113,6 +113,12 @@ export const PomodoroMiniWidget = () => {
   
   const handleMinimize = () => {
     setIsMinimized(true);
+  };
+  
+  // Modified handler for reset - we need to keep the widget visible
+  const handleReset = () => {
+    resetTimer();
+    // Don't change visibility state here
   };
 
   if (!isVisible) return null;
@@ -205,7 +211,7 @@ export const PomodoroMiniWidget = () => {
                       <Play className="h-4 w-4 mr-1" /> {timerState === "paused" ? "Continuar" : "Iniciar"}
                     </Button>
                   )}
-                  <Button onClick={resetTimer} size="sm" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10">
+                  <Button onClick={handleReset} size="sm" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10">
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </div>
