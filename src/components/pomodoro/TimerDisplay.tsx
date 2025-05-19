@@ -61,15 +61,9 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
       
       {/* Time display */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <motion.span 
-          key={timeRemaining}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.2 }}
-          className="text-5xl font-mono font-bold text-white"
-        >
+        <span className="text-5xl font-mono font-bold text-white">
           {formatTime(timeRemaining)}
-        </motion.span>
+        </span>
         <span className="text-xs font-medium text-white/70 uppercase tracking-wider mt-2">
           {getModeText()}
         </span>

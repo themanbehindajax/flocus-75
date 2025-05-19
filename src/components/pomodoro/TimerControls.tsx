@@ -21,9 +21,20 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
     <div className="flex justify-center gap-4">
       <motion.div whileTap={{ scale: 0.95 }}>
         {timerState === "running" ? (
-          <Button size="lg" onClick={onPause} className="relative overflow-hidden bg-white text-blue-700 hover:bg-white/90 rounded-full font-medium shadow-lg">
+          <Button size="lg" onClick={onPause} className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg">
             <Pause className="mr-2 h-4 w-4" />
             Pausar
+            <motion.div
+              className="absolute inset-0 bg-primary-600 -z-10"
+              initial={{ scale: 0, opacity: 0.5 }}
+              animate={{ scale: [0, 1.5], opacity: [0.5, 0] }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 1.5, 
+                ease: "easeOut",
+                repeatDelay: 1
+              }}
+            />
           </Button>
         ) : (
           <Button size="lg" onClick={onStart} className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg">
