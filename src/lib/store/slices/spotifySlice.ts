@@ -5,9 +5,7 @@ import { fetchSpotifyApi } from '../../spotifyApi';
 export const createSpotifySlice = (set: SetFunction, get: GetFunction): SpotifyState => ({
   spotifyAuth: null,
   
-  setSpotifyAuth: (auth) => set(() => ({
-    spotifyAuth: auth
-  })),
+  setSpotifyAuth: (auth) => set({ spotifyAuth: auth }),
   
   clearSpotifyAuth: () => set({ spotifyAuth: null }),
   
@@ -95,8 +93,8 @@ export const createSpotifySlice = (set: SetFunction, get: GetFunction): SpotifyS
         method: 'GET',
         token: spotifyAuth.accessToken
       });
-      // Ensures we return an array even if response.items is undefined
-      return response?.items || [];
+      // We need to make sure we return an array synchronously
+      return Promise.resolve(response?.items || []);
     } catch (error) {
       console.error('Error fetching playlists:', error);
       return [];
