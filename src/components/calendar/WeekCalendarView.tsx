@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { formatInTimeZone } from "date-fns-tz";
 import { useAppStore } from "@/lib/store";
+import { CalendarEventForm } from "./CalendarEventForm";
 
 interface WeekCalendarViewProps {
   selectedDate: Date;
@@ -27,11 +28,14 @@ interface WeekEventDisplay {
   projectId?: string;
   color?: string;
   allDay?: boolean;
+  originalEvent?: CalendarEvent;
 }
 
 export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }: WeekCalendarViewProps) {
   const [weekEvents, setWeekEvents] = useState<WeekEventDisplay[]>([]);
   const { calendarEvents } = useAppStore();
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   
   // Calculate week start (Sunday) and generate week days
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
@@ -62,7 +66,8 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
         end: calEvent.endDate ? new Date(calEvent.endDate) : undefined,
         isTask: false,
         color: calEvent.color || "#6366f1",
-        allDay: calEvent.allDay
+        allDay: calEvent.allDay,
+        originalEvent: calEvent
       }));
     
     // Combine and sort events
@@ -72,6 +77,13 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
     
     setWeekEvents(combinedEvents);
   }, [tasks, calendarEvents]);
+
+  const handleEventClick = (event: WeekEventDisplay) => {
+    if (!event.isTask && event.originalEvent) {
+      setEditingEvent(event.originalEvent);
+      setIsEventFormOpen(true);
+    }
+  };
   
   // Get hours for time grid
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -176,7 +188,7 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                   <div 
                     key={event.id}
                     className={cn(
-                      "absolute left-1 right-1 rounded-md p-1 text-xs overflow-hidden shadow-sm",
+                      "absolute left-1 right-1 rounded-md p-1 text-xs overflow-hidden shadow-sm cursor-pointer hover:opacity-90 transition-opacity",
                       bgColorClass,
                       textColor
                     )}
@@ -186,6 +198,7 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                       backgroundColor: bgColor
                     }}
                     title={event.title}
+                    onClick={() => !event.isTask && handleEventClick(event)}
                   >
                     <div className="flex items-center gap-1">
                       <span className="truncate">
@@ -210,11 +223,12 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
               .map((event, idx) => (
                 <div
                   key={`all-day-${event.id}`}
-                  className="absolute top-0 left-0 right-0 px-1 py-0.5 text-xs text-white truncate"
+                  className="absolute top-0 left-0 right-0 px-1 py-0.5 text-xs text-white truncate cursor-pointer hover:opacity-90 transition-opacity"
                   style={{
                     backgroundColor: event.color,
                     zIndex: 20
                   }}
+                  onClick={() => !event.isTask && handleEventClick(event)}
                 >
                   {event.title}
                 </div>
@@ -222,6 +236,14 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
           </div>
         ))}
       </div>
+
+      {/* Event Form Dialog for editing */}
+      <CalendarEventForm 
+        open={isEventFormOpen} 
+        onOpenChange={setIsEventFormOpen} 
+        selectedDate={selectedDate} 
+        editEvent={editingEvent}
+      />
     </div>
   );
 }

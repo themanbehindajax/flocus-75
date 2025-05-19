@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { CalendarTaskCard } from "./CalendarTaskCard";
 import { useAppStore } from "@/lib/store";
+import { CalendarEventForm } from "./CalendarEventForm";
 
 interface FullCalendarViewProps {
   selectedDate: Date;
@@ -31,6 +32,9 @@ export function FullCalendarView({
   tasks, 
   projects 
 }: FullCalendarViewProps) {
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  
   // Get days for the calendar grid
   const getDaysToDisplay = (date: Date) => {
     const start = startOfWeek(startOfMonth(date), { weekStartsOn: 0 });
@@ -59,6 +63,11 @@ export function FullCalendarView({
       return isSameDay(day, eventStart) || 
         (event.endDate && eventStart <= day && day <= eventEnd);
     });
+  };
+
+  const handleEventClick = (event: CalendarEvent) => {
+    setEditingEvent(event);
+    setIsEventFormOpen(true);
   };
   
   return (
@@ -116,8 +125,12 @@ export function FullCalendarView({
                 {eventsForDay.slice(0, 2).map(event => (
                   <div 
                     key={event.id} 
-                    className="text-xs p-1 rounded truncate" 
+                    className="text-xs p-1 rounded truncate cursor-pointer hover:bg-opacity-80"
                     style={{ backgroundColor: `${event.color}20`, color: event.color }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEventClick(event);
+                    }}
                   >
                     {event.title}
                   </div>
@@ -155,8 +168,9 @@ export function FullCalendarView({
               {getEventsForDay(selectedDate).map(event => (
                 <div 
                   key={event.id}
-                  className="p-3 rounded-lg border"
+                  className="p-3 rounded-lg border cursor-pointer hover:bg-muted/20 transition-colors"
                   style={{ borderLeftWidth: '4px', borderLeftColor: event.color }}
+                  onClick={() => handleEventClick(event)}
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium">{event.title}</h3>
@@ -190,6 +204,14 @@ export function FullCalendarView({
           )}
         </div>
       )}
+
+      {/* Event Form Dialog for editing */}
+      <CalendarEventForm 
+        open={isEventFormOpen} 
+        onOpenChange={setIsEventFormOpen} 
+        selectedDate={selectedDate} 
+        editEvent={editingEvent}
+      />
     </div>
   );
 }

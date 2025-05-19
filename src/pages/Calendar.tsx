@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks } from "date-fns";
 import { ptBR } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FullCalendarView } from "@/components/calendar/FullCalendarView";
 import { WeekCalendarView } from "@/components/calendar/WeekCalendarView";
@@ -19,7 +19,7 @@ import { DayCalendarView } from "@/components/calendar/DayCalendarView";
 import { toast } from "sonner";
 import { CalendarEventForm } from "@/components/calendar/CalendarEventForm";
 import { formatInTimeZone } from "date-fns-tz";
-import { useEffect } from "react";
+import { requestNotificationPermission } from "@/lib/notifications";
 
 const Calendar = () => {
   const { tasks, projects, calendarEvents } = useAppStore();
@@ -36,6 +36,24 @@ const Calendar = () => {
     }, 60000); // 60000ms = 1 minuto
     
     return () => clearInterval(timer);
+  }, []);
+
+  // Solicitar permissão de notificação quando o componente montar
+  useEffect(() => {
+    const checkNotificationPermission = async () => {
+      const hasPermission = await requestNotificationPermission();
+      if (!hasPermission) {
+        toast.warning("As notificações estão desativadas. Você não receberá lembretes de eventos.", {
+          duration: 5000,
+          action: {
+            label: "Ativar",
+            onClick: () => requestNotificationPermission()
+          }
+        });
+      }
+    };
+    
+    checkNotificationPermission();
   }, []);
   
   // Formatar data e horário com o fuso horário de São Paulo
@@ -77,11 +95,6 @@ const Calendar = () => {
 
   const handleAddEvent = () => {
     setEditingEvent(null);
-    setIsEventFormOpen(true);
-  };
-  
-  const handleEditEvent = (event: any) => {
-    setEditingEvent(event);
     setIsEventFormOpen(true);
   };
   

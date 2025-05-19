@@ -28,6 +28,14 @@ export const showNotification = (title: string, body: string, icon?: string) => 
     // Auto close after 5 seconds
     setTimeout(() => notification.close(), 5000);
     
+    // Play sound if available
+    try {
+      const audio = new Audio('/notification.mp3');
+      audio.play().catch(e => console.log('Não foi possível tocar som de notificação:', e));
+    } catch (e) {
+      console.log('Erro ao tocar som de notificação:', e);
+    }
+    
     return notification;
   }
   
@@ -72,6 +80,7 @@ export const scheduleNotification = (
     if (index !== -1) {
       pendingNotifications.splice(index, 1);
     }
+    console.log(`Notificação exibida: ${title} - ${body}`);
   }, timeUntilNotification);
   
   // Store the pending notification
@@ -83,6 +92,8 @@ export const scheduleNotification = (
     timeoutId,
   });
   
+  console.log(`Notificação agendada para ${scheduledTime.toLocaleString()} (em ${Math.floor(timeUntilNotification/60000)} minutos)`);
+  
   return id;
 };
 
@@ -91,6 +102,7 @@ export const cancelScheduledNotification = (id: string) => {
   if (index !== -1) {
     window.clearTimeout(pendingNotifications[index].timeoutId);
     pendingNotifications.splice(index, 1);
+    console.log(`Notificação cancelada: ${id}`);
     return true;
   }
   return false;

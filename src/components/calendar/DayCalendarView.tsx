@@ -8,6 +8,7 @@ import { Task, Project, CalendarEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CalendarTaskCard } from "./CalendarTaskCard";
 import { useAppStore } from "@/lib/store";
+import { CalendarEventForm } from "./CalendarEventForm";
 
 interface DayCalendarViewProps {
   selectedDate: Date;
@@ -25,11 +26,14 @@ interface DayEvent {
   taskData?: Task;
   color?: string;
   allDay?: boolean;
+  originalEvent?: CalendarEvent;
 }
 
 export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarViewProps) {
   const [dayEvents, setDayEvents] = useState<DayEvent[]>([]);
   const { calendarEvents } = useAppStore();
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   
   // Convert tasks and calendar events to display events
   useEffect(() => {
@@ -61,7 +65,8 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
         end: event.endDate ? new Date(event.endDate) : undefined,
         isTask: false,
         color: event.color || "#6366f1",
-        allDay: event.allDay
+        allDay: event.allDay,
+        originalEvent: event
       }));
     
     // Combine and sort by time
@@ -72,6 +77,13 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
     setDayEvents(combinedEvents);
   }, [tasks, calendarEvents, selectedDate]);
   
+  const handleEventClick = (event: DayEvent) => {
+    if (!event.isTask && event.originalEvent) {
+      setEditingEvent(event.originalEvent);
+      setIsEventFormOpen(true);
+    }
+  };
+
   // Get hours for the day
   const hours = Array.from({ length: 24 }, (_, i) => i);
   
@@ -138,13 +150,14 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
               return (
                 <div
                   key={event.id}
-                  className="absolute left-2 right-2 rounded-lg p-2 text-white"
+                  className="absolute left-2 right-2 rounded-lg p-2 text-white cursor-pointer hover:opacity-90 transition-opacity"
                   style={{
                     top: `${top}px`,
                     height: `${event.allDay ? 40 : height}px`,
                     backgroundColor: event.color,
                     zIndex: 5
                   }}
+                  onClick={() => handleEventClick(event)}
                 >
                   <div className="flex justify-between">
                     <p className="font-medium text-sm">{event.title}</p>
@@ -170,6 +183,14 @@ export function DayCalendarView({ selectedDate, tasks, projects }: DayCalendarVi
           </div>
         </div>
       </CardContent>
+
+      {/* Event Form Dialog for editing */}
+      <CalendarEventForm 
+        open={isEventFormOpen} 
+        onOpenChange={setIsEventFormOpen} 
+        selectedDate={selectedDate} 
+        editEvent={editingEvent}
+      />
     </Card>
   );
 }
