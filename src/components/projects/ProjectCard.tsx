@@ -32,26 +32,13 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
     return format(date, "dd/MM/yyyy");
   };
 
-  // Generate a subtle background color based on project name for visual categorization
-  const getProjectColor = () => {
-    const hash = project.name.split("").reduce((acc, char) => {
-      return char.charCodeAt(0) + ((acc << 5) - acc);
-    }, 0);
-    
-    const hue = Math.abs(hash) % 360;
-    return `hsla(${hue}, 70%, 92%, 0.5)`;
-  };
-
   return (
     <Card 
-      className="project-card animate-fade-in group hover:shadow-elevated transition-all duration-300" 
+      className="project-card group hover:shadow-elevated transition-all duration-300"
       gradient
-    >
-      <div 
-        className="absolute top-0 left-0 h-1 w-full rounded-t-2xl" 
-        style={{ background: getProjectColor() }} 
-      />
-      
+      glass
+      floating
+    >      
       <CardHeader className="pb-2">
         <CardTitle>{project.name}</CardTitle>
         {project.goal && (
@@ -95,7 +82,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
         </div>
         <Button 
           asChild
-          className="bg-primary/90 hover:bg-primary transition-colors"
+          className="bg-primary/90 hover:bg-primary transition-colors backdrop-blur-sm"
         >
           <Link to={`/projects/${project.id}`}>Abrir</Link>
         </Button>

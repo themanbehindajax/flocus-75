@@ -6,12 +6,14 @@ import { cn } from "@/lib/utils"
 interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag'> {
   animate?: boolean;
   gradient?: boolean;
+  glass?: boolean;
+  floating?: boolean;
 }
 
 const Card = React.forwardRef<
   HTMLDivElement,
   CardProps
->(({ className, animate = false, gradient = false, ...props }, ref) => {
+>(({ className, animate = false, gradient = false, glass = false, floating = false, ...props }, ref) => {
   if (animate) {
     const CardComponent = motion.div;
     
@@ -19,7 +21,10 @@ const Card = React.forwardRef<
       initial: { opacity: 0, y: 10 },
       animate: { opacity: 1, y: 0 },
       transition: { duration: 0.3 },
-      whileHover: { y: -2, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)" },
+      whileHover: { 
+        y: floating ? -5 : -2, 
+        boxShadow: "0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.05)" 
+      },
     };
     
     return (
@@ -27,7 +32,9 @@ const Card = React.forwardRef<
         ref={ref}
         className={cn(
           "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300",
-          gradient && "bg-gradient-to-br from-card to-background/80 backdrop-blur-sm",
+          gradient && "bg-gradient-to-br from-card to-background/80",
+          glass && "backdrop-blur-lg bg-card/70 border-opacity-40",
+          floating && "hover:shadow-elegant",
           className
         )}
         {...animateProps}
@@ -41,7 +48,9 @@ const Card = React.forwardRef<
       ref={ref}
       className={cn(
         "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md",
-        gradient && "bg-gradient-to-br from-card to-background/80 backdrop-blur-sm",
+        gradient && "bg-gradient-to-br from-card to-background/80",
+        glass && "backdrop-blur-lg bg-card/70 border-opacity-40",
+        floating && "hover:-translate-y-1 hover:shadow-elegant transition-transform",
         className
       )}
       {...props}

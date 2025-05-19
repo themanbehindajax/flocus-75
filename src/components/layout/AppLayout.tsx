@@ -18,7 +18,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
-  const { sidebarCollapsed } = useAppStore();
+  const { sidebarCollapsed, animationsEnabled } = useAppStore();
   
   // Check if current page is pomodoro to avoid applying the background
   const isPomodoroPage = location.pathname === "/pomodoro";
@@ -55,19 +55,61 @@ export function AppLayout({ children }: AppLayoutProps) {
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
             className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl"
-          ></motion.div>
+          />
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, delay: 0.2 }}
             className="absolute top-1/3 -left-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl"
-          ></motion.div>
+          />
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, delay: 0.4 }}
             className="absolute -bottom-20 right-1/3 w-80 h-80 rounded-full bg-primary/5 blur-3xl"
-          ></motion.div>
+          />
+          
+          {/* New floating elements */}
+          <motion.div 
+            animate={{ 
+              y: [0, -10, 0],
+              opacity: [0.5, 0.7, 0.5],
+            }} 
+            transition={{ 
+              repeat: Infinity, 
+              duration: 8, 
+              ease: "easeInOut" 
+            }}
+            className="absolute top-1/4 right-1/4 w-40 h-40 rounded-full bg-primary/5 blur-2xl"
+          />
+          
+          <motion.div 
+            animate={{ 
+              y: [0, 15, 0],
+              opacity: [0.3, 0.6, 0.3],
+            }} 
+            transition={{ 
+              repeat: Infinity, 
+              duration: 10, 
+              ease: "easeInOut",
+              delay: 1
+            }}
+            className="absolute bottom-1/3 left-1/4 w-56 h-56 rounded-full bg-primary/8 blur-2xl"
+          />
+          
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.05, 1],
+              opacity: [0.4, 0.6, 0.4],
+            }} 
+            transition={{ 
+              repeat: Infinity, 
+              duration: 12, 
+              ease: "easeInOut",
+              delay: 2
+            }}
+            className="absolute top-2/3 right-1/5 w-48 h-48 rounded-full bg-primary/10 blur-3xl"
+          />
         </div>
       )}
       
@@ -79,6 +121,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -240, opacity: 0 }}
             transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
+            className="backdrop-blur-sm bg-background/70 dark:bg-background/50 border-r border-border/40 z-20"
           >
             <AppSidebar activePath={location.pathname} />
           </motion.div>
@@ -102,9 +145,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main content - only this part animates on route change */}
       <motion.main 
         key={location.pathname}
-        initial="initial"
-        animate="enter"
-        exit="exit"
+        initial={animationsEnabled ? "initial" : false}
+        animate={animationsEnabled ? "enter" : false}
+        exit={animationsEnabled ? "exit" : false}
         variants={pageVariants}
         className={cn(
           "flex-1 overflow-auto transition-all duration-300",
@@ -112,7 +155,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
       >
         {/* Mobile header with menu button */}
-        <div className="md:hidden flex items-center p-4 border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="md:hidden flex items-center p-4 border-b bg-card/80 backdrop-blur-md sticky top-0 z-10">
           <button
             onClick={toggleSidebar}
             className="p-2 rounded-lg hover:bg-muted transition-colors duration-200"
@@ -146,7 +189,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full w-10 h-10 p-0 bg-card/80 backdrop-blur-sm border shadow-sm"
+              className="rounded-full w-10 h-10 p-0 bg-card/80 backdrop-blur-md border shadow-sm hover:shadow-md hover:bg-card/90 transition-all duration-300"
               onClick={toggleSidebar}
             >
               <ChevronRight size={18} />
