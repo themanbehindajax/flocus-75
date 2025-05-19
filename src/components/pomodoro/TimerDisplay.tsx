@@ -41,7 +41,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           className="text-white/20"
         />
         
-        {/* Progress circle */}
+        {/* Progress circle with improved animation */}
         <motion.circle
           cx="50"
           cy="50"
@@ -54,16 +54,27 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: dashoffset }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          transition={{ 
+            duration: 0.5, 
+            ease: "linear",
+            // Remove any springiness to avoid visual jitter
+            type: "tween" 
+          }}
           transform="rotate(-90, 50, 50)"
         />
       </svg>
       
-      {/* Time display */}
+      {/* Time display with smooth updating */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-5xl font-mono font-bold text-white">
+        <motion.span 
+          key={timeRemaining}
+          initial={{ opacity: 0.8, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+          className="text-5xl font-mono font-bold text-white"
+        >
           {formatTime(timeRemaining)}
-        </span>
+        </motion.span>
         <span className="text-xs font-medium text-white/70 uppercase tracking-wider mt-2">
           {getModeText()}
         </span>

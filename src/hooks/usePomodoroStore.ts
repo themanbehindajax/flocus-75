@@ -131,6 +131,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         const now = Date.now();
         const deltaSeconds = Math.floor((now - lastTickTime) / 1000);
         
+        // Only update if at least 1 second has passed
         if (deltaSeconds >= 1) {
           const newTimeRemaining = Math.max(0, timeRemaining - deltaSeconds);
           
@@ -202,13 +203,25 @@ export const usePomodoroStore = create<PomodoroState>()(
   )
 );
 
-// Create a worker function that runs the pomodoro timer in the background
+// Use requestAnimationFrame instead of setInterval for more accurate timing
 if (typeof window !== 'undefined') {
-  // Run tick every second
-  setInterval(() => {
-    const store = usePomodoroStore.getState();
-    if (store.isActive && !store.isPaused) {
-      store.tick();
+  let lastTime = 0;
+  
+  // Animation frame loop for more consistent timing
+  const timerLoop = (timestamp: number) => {
+    // Run roughly every 500ms for better performance while maintaining accuracy
+    if (timestamp - lastTime >= 500) {
+      const store = usePomodoroStore.getState();
+      if (store.isActive && !store.isPaused) {
+        store.tick();
+      }
+      lastTime = timestamp;
     }
-  }, 1000);
+    
+    // Continue the animation frame loop
+    window.requestAnimationFrame(timerLoop);
+  };
+  
+  // Start the animation frame loop
+  window.requestAnimationFrame(timerLoop);
 }

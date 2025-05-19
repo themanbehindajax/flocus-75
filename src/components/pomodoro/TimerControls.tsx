@@ -21,7 +21,13 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
     <div className="flex justify-center gap-4">
       <motion.div whileTap={{ scale: 0.95 }}>
         {timerState === "running" ? (
-          <Button size="lg" onClick={onPause} className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg">
+          <Button 
+            size="lg" 
+            onClick={onPause} 
+            className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg"
+            // Add focus to make it easier to click
+            tabIndex={0}
+          >
             <Pause className="mr-2 h-4 w-4" />
             Pausar
             <motion.div
@@ -37,7 +43,13 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
             />
           </Button>
         ) : (
-          <Button size="lg" onClick={onStart} className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg">
+          <Button 
+            size="lg" 
+            onClick={onStart} 
+            className="relative overflow-hidden bg-blue-600 text-white hover:bg-blue-700 rounded-full font-medium shadow-lg"
+            // Add focus to make it easier to click
+            tabIndex={0}
+          >
             <Play className="mr-2 h-4 w-4" />
             {timerState === "paused" ? "Continuar" : "Iniciar"}
             <motion.div
@@ -56,7 +68,13 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
       </motion.div>
       
       <motion.div whileTap={{ scale: 0.95 }}>
-        <Button size="lg" variant="outline" onClick={onReset} className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all">
+        <Button 
+          size="lg" 
+          variant="outline" 
+          onClick={onReset} 
+          className="border-white/30 bg-transparent text-white hover:bg-white/10 rounded-full transition-all"
+          tabIndex={0}
+        >
           <RotateCcw className="mr-2 h-4 w-4" />
           Reiniciar
         </Button>

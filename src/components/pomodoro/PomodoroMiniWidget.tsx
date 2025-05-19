@@ -16,7 +16,6 @@ export const PomodoroMiniWidget = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   
   // Get pomodoro state from store
   const { 
@@ -102,13 +101,21 @@ export const PomodoroMiniWidget = () => {
   const handleDragEnd = () => {
     setIsDragging(false);
   };
+  
+  const handleMaximize = () => {
+    setIsMinimized(false);
+  };
+  
+  const handleMinimize = () => {
+    setIsMinimized(true);
+  };
 
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
-        key="pomodoro-widget"
+        key={`pomodoro-widget-${isMinimized ? 'min' : 'max'}`}
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -141,7 +148,7 @@ export const PomodoroMiniWidget = () => {
                 {formatTime(timeRemaining)}
               </span>
               <Button 
-                onClick={() => setIsMinimized(false)} 
+                onClick={handleMaximize} 
                 size="sm" 
                 variant="ghost"
                 className="text-white hover:bg-white/10 h-7 w-7 p-0"
@@ -155,7 +162,7 @@ export const PomodoroMiniWidget = () => {
                 <h3 className="font-medium text-white">Pomodoro Timer</h3>
                 <div className="flex gap-1">
                   <Button 
-                    onClick={() => setIsMinimized(true)} 
+                    onClick={handleMinimize} 
                     size="sm" 
                     variant="ghost"
                     className="h-6 w-6 p-0 text-white hover:bg-white/10"
