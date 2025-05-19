@@ -30,7 +30,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         tags: [],
         subtasks: [],
         isQuick: isQuick,
-        completed: false,
+        // Removed the completed property as it's not allowed in the type
       });
       
       console.log("Tarefa rápida criada com ID:", taskId);
