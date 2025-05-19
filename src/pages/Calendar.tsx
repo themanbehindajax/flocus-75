@@ -18,6 +18,8 @@ import { WeekCalendarView } from "@/components/calendar/WeekCalendarView";
 import { DayCalendarView } from "@/components/calendar/DayCalendarView";
 import { toast } from "sonner";
 import { CalendarEventForm } from "@/components/calendar/CalendarEventForm";
+import { formatInTimeZone } from "date-fns-tz";
+import { useEffect } from "react";
 
 const Calendar = () => {
   const { tasks, projects, calendarEvents } = useAppStore();
@@ -25,6 +27,26 @@ const Calendar = () => {
   const [view, setView] = useState<"day" | "week" | "month">("month");
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  
+  // Atualizar o horário atual a cada minuto
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // 60000ms = 1 minuto
+    
+    return () => clearInterval(timer);
+  }, []);
+  
+  // Formatar data e horário com o fuso horário de São Paulo
+  const formatLocalDateTime = (date: Date, formatStr: string) => {
+    return formatInTimeZone(date, 'America/Sao_Paulo', formatStr, { locale: ptBR });
+  };
+  
+  // Obter o dia da semana em português
+  const getCurrentDayOfWeek = () => {
+    return formatInTimeZone(currentTime, 'America/Sao_Paulo', 'EEEE', { locale: ptBR });
+  };
   
   // Navigation functions
   const goToToday = () => setSelectedDate(new Date());
@@ -67,12 +89,20 @@ const Calendar = () => {
     <AppLayout>
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Calendário</h1>
-            <p className="text-muted-foreground mt-1">
-              Visualize suas tarefas e eventos
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-muted-foreground mt-1">
+              <p>
+                {formatLocalDateTime(currentTime, 'PPP')}
+              </p>
+              <p className="hidden sm:block">•</p>
+              <p className="flex items-center gap-1.5">
+                <span className="capitalize">{getCurrentDayOfWeek()}</span>
+                <span className="font-medium text-foreground">{formatLocalDateTime(currentTime, 'HH:mm')}</span>
+                <span className="text-xs">({formatLocalDateTime(currentTime, 'OOOO')})</span>
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button onClick={handleAddEvent}>
@@ -93,9 +123,9 @@ const Calendar = () => {
             </Button>
             <Button variant="outline" onClick={goToToday}>Hoje</Button>
             <h2 className="text-xl font-semibold ml-2">
-              {view === "day" && format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-              {view === "week" && `${format(startOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM", { locale: ptBR })} - ${format(endOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM", { locale: ptBR })}`}
-              {view === "month" && format(selectedDate, "MMMM yyyy", { locale: ptBR })}
+              {view === "day" && formatLocalDateTime(selectedDate, "dd 'de' MMMM 'de' yyyy")}
+              {view === "week" && `${formatLocalDateTime(startOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM")} - ${formatLocalDateTime(endOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM")}`}
+              {view === "month" && formatLocalDateTime(selectedDate, "MMMM yyyy")}
             </h2>
           </div>
           

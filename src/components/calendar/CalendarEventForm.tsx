@@ -22,13 +22,14 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, parse, set } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Bell, X } from "lucide-react";
+import { CalendarIcon, Bell, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CalendarEvent } from "@/lib/types";
 import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
+import { formatInTimeZone } from "date-fns-tz";
 
 interface CalendarEventFormProps {
   open: boolean;
@@ -45,11 +46,30 @@ export const CalendarEventForm = ({
 }: CalendarEventFormProps) => {
   const { addCalendarEvent, updateCalendarEvent } = useAppStore();
   
+  // Parse times from event if editing
+  const getInitialStartTime = () => {
+    if (editEvent?.startDate) {
+      const date = new Date(editEvent.startDate);
+      return format(date, "HH:mm");
+    }
+    return "09:00";
+  };
+
+  const getInitialEndTime = () => {
+    if (editEvent?.endDate) {
+      const date = new Date(editEvent.endDate);
+      return format(date, "HH:mm");
+    }
+    return "10:00";
+  };
+  
   const [eventData, setEventData] = useState<{
     title: string;
     description: string;
     startDate: Date;
     endDate?: Date;
+    startTime: string;
+    endTime: string;
     allDay: boolean;
     repeat: "none" | "daily" | "weekly" | "monthly" | "yearly";
     repeatUntil?: Date;
@@ -60,6 +80,8 @@ export const CalendarEventForm = ({
     description: editEvent?.description || "",
     startDate: editEvent ? new Date(editEvent.startDate) : selectedDate || new Date(),
     endDate: editEvent?.endDate ? new Date(editEvent.endDate) : undefined,
+    startTime: getInitialStartTime(),
+    endTime: getInitialEndTime(),
     allDay: editEvent?.allDay || false,
     repeat: editEvent?.repeat || "none",
     repeatUntil: editEvent?.repeatUntil ? new Date(editEvent.repeatUntil) : undefined,
@@ -77,6 +99,8 @@ export const CalendarEventForm = ({
       description: "",
       startDate: selectedDate || new Date(),
       endDate: undefined,
+      startTime: "09:00",
+      endTime: "10:00",
       allDay: false,
       repeat: "none",
       repeatUntil: undefined,
@@ -121,11 +145,45 @@ export const CalendarEventForm = ({
       return;
     }
 
+    // Combine date and time for start and end
+    let finalStartDate = new Date(eventData.startDate);
+    let finalEndDate = eventData.endDate ? new Date(eventData.endDate) : new Date(eventData.startDate);
+
+    if (!eventData.allDay) {
+      // Parse start time
+      const [startHours, startMinutes] = eventData.startTime.split(':').map(Number);
+      finalStartDate = set(finalStartDate, { 
+        hours: startHours, 
+        minutes: startMinutes,
+        seconds: 0,
+        milliseconds: 0 
+      });
+
+      // Parse end time
+      const [endHours, endMinutes] = eventData.endTime.split(':').map(Number);
+      finalEndDate = set(finalEndDate, { 
+        hours: endHours, 
+        minutes: endMinutes,
+        seconds: 0,
+        milliseconds: 0
+      });
+
+      // Validate that end time is after start time on the same day
+      if (finalEndDate < finalStartDate) {
+        toast.error("O horário de término deve ser após o horário de início");
+        return;
+      }
+    } else {
+      // For all-day events, set time to midnight
+      finalStartDate = set(finalStartDate, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+      finalEndDate = set(finalEndDate, { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 });
+    }
+
     const newEventData = {
       title: eventData.title.trim(),
       description: eventData.description.trim() || undefined,
-      startDate: eventData.startDate.toISOString(),
-      endDate: eventData.endDate?.toISOString(),
+      startDate: finalStartDate.toISOString(),
+      endDate: finalEndDate.toISOString(),
       allDay: eventData.allDay,
       repeat: eventData.repeat,
       repeatUntil: eventData.repeatUntil?.toISOString(),
@@ -146,6 +204,11 @@ export const CalendarEventForm = ({
     
     resetForm();
     onOpenChange(false);
+  };
+
+  // Format date for display with São Paulo timezone
+  const formatLocalDate = (date: Date) => {
+    return formatInTimeZone(date, 'America/Sao_Paulo', 'PPP', { locale: ptBR });
   };
 
   return (
@@ -204,7 +267,7 @@ export const CalendarEventForm = ({
                       className={cn("w-full justify-start text-left font-normal")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(eventData.startDate, "PPP", { locale: ptBR })}
+                      {formatLocalDate(eventData.startDate)}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -229,7 +292,7 @@ export const CalendarEventForm = ({
                       className={cn("w-full justify-start text-left font-normal")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {eventData.endDate ? format(eventData.endDate, "PPP", { locale: ptBR }) : "Não definido"}
+                      {eventData.endDate ? formatLocalDate(eventData.endDate) : "Não definido"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -246,6 +309,38 @@ export const CalendarEventForm = ({
                 </Popover>
               </div>
             </div>
+
+            {!eventData.allDay && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="start-time">Horário de Início</Label>
+                  <div className="flex items-center">
+                    <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="start-time"
+                      type="time"
+                      value={eventData.startTime}
+                      onChange={(e) => setEventData({ ...eventData, startTime: e.target.value })}
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="end-time">Horário de Término</Label>
+                  <div className="flex items-center">
+                    <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="end-time"
+                      type="time"
+                      value={eventData.endTime}
+                      onChange={(e) => setEventData({ ...eventData, endTime: e.target.value })}
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="grid gap-2">
               <Label htmlFor="repeat">Repetir</Label>
@@ -276,7 +371,7 @@ export const CalendarEventForm = ({
                       className={cn("w-full justify-start text-left font-normal")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {eventData.repeatUntil ? format(eventData.repeatUntil, "PPP", { locale: ptBR }) : "Selecione uma data"}
+                      {eventData.repeatUntil ? formatLocalDate(eventData.repeatUntil) : "Selecione uma data"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">

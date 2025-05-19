@@ -1,8 +1,8 @@
 
-import { v4 as uuidv4 } from "uuid";
 import { CalendarState, SetFunction, GetFunction } from '../types';
 import { CalendarEvent } from '../../types';
 import { scheduleNotification } from '../../notifications';
+import { formatInTimeZone } from 'date-fns-tz';
 
 export const createCalendarSlice = (set: SetFunction, get: GetFunction): CalendarState => ({
   calendarEvents: [],
@@ -24,11 +24,18 @@ export const createCalendarSlice = (set: SetFunction, get: GetFunction): Calenda
       const reminderDate = new Date(eventDate.getTime() - eventData.reminder * 60 * 1000);
       
       if (reminderDate > new Date()) {
+        // Format time for notification using São Paulo timezone
+        const eventTime = formatInTimeZone(eventDate, 'America/Sao_Paulo', 'HH:mm');
+        
         scheduleNotification(
           `Lembrete: ${eventData.title}`,
-          `O evento "${eventData.title}" começará em breve.`,
+          `O evento "${eventData.title}" começará às ${eventTime}.`,
           reminderDate
         );
+        
+        console.log(`Notificação agendada para ${reminderDate.toLocaleString()} (${eventData.reminder} minutos antes do evento)`);
+      } else {
+        console.log("Não foi possível agendar notificação: data de lembrete já passou");
       }
     }
     
@@ -48,11 +55,18 @@ export const createCalendarSlice = (set: SetFunction, get: GetFunction): Calenda
       const reminderDate = new Date(eventDate.getTime() - event.reminder * 60 * 1000);
       
       if (reminderDate > new Date()) {
+        // Format time for notification using São Paulo timezone
+        const eventTime = formatInTimeZone(eventDate, 'America/Sao_Paulo', 'HH:mm');
+        
         scheduleNotification(
           `Lembrete: ${event.title}`,
-          `O evento "${event.title}" começará em breve.`,
+          `O evento "${event.title}" começará às ${eventTime}.`,
           reminderDate
         );
+        
+        console.log(`Notificação atualizada para ${reminderDate.toLocaleString()} (${event.reminder} minutos antes do evento)`);
+      } else {
+        console.log("Não foi possível agendar notificação: data de lembrete já passou");
       }
     }
   },

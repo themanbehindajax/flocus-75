@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent } from "@/components/ui/card";
-import { Task, Project } from "@/lib/types";
+import { Task, Project, CalendarEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { formatInTimeZone } from "date-fns-tz";
+import { useAppStore } from "@/lib/store";
 
 interface WeekCalendarViewProps {
   selectedDate: Date;
@@ -14,7 +16,7 @@ interface WeekCalendarViewProps {
   projects: Project[];
 }
 
-interface WeekEvent {
+interface WeekEventDisplay {
   id: string;
   title: string;
   description?: string;
@@ -23,19 +25,23 @@ interface WeekEvent {
   isTask: boolean;
   completed?: boolean;
   projectId?: string;
+  color?: string;
+  allDay?: boolean;
 }
 
 export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }: WeekCalendarViewProps) {
-  const [weekEvents, setWeekEvents] = useState<WeekEvent[]>([]);
+  const [weekEvents, setWeekEvents] = useState<WeekEventDisplay[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { calendarEvents } = useAppStore();
   
   // Calculate week start (Sunday) and generate week days
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   
-  // Convert tasks to events
+  // Convert tasks and calendar events to display events
   useEffect(() => {
-    const taskEvents: WeekEvent[] = tasks
+    // Process tasks
+    const taskEvents: WeekEventDisplay[] = tasks
       .filter(task => task.dueDate)
       .map(task => ({
         id: task.id,
@@ -47,11 +53,34 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
         projectId: task.projectId,
       }));
     
-    setWeekEvents(taskEvents);
-  }, [tasks]);
+    // Process calendar events
+    const calendarEventDisplays: WeekEventDisplay[] = calendarEvents
+      .map(calEvent => ({
+        id: calEvent.id,
+        title: calEvent.title,
+        description: calEvent.description,
+        start: new Date(calEvent.startDate),
+        end: calEvent.endDate ? new Date(calEvent.endDate) : undefined,
+        isTask: false,
+        color: calEvent.color || "#6366f1",
+        allDay: calEvent.allDay
+      }));
+    
+    // Combine and sort events
+    const combinedEvents = [...taskEvents, ...calendarEventDisplays].sort((a, b) => 
+      a.start.getTime() - b.start.getTime()
+    );
+    
+    setWeekEvents(combinedEvents);
+  }, [tasks, calendarEvents]);
   
   // Get hours for time grid
   const hours = Array.from({ length: 24 }, (_, i) => i);
+  
+  // Format time with timezone
+  const formatTime = (date: Date) => {
+    return formatInTimeZone(date, 'America/Sao_Paulo', 'HH:mm');
+  };
   
   return (
     <div className="bg-background border rounded-md overflow-hidden">
@@ -121,32 +150,54 @@ export function WeekCalendarView({ selectedDate, onSelectDate, tasks, projects }
                 const minute = event.start.getMinutes();
                 const top = (hour * 60 + minute) * (12 / 60); // 12px per hour
                 
+                // Calculate event height based on duration
+                let height = 24; // Default height
+                if (event.end) {
+                  const durationMinutes = (event.end.getTime() - event.start.getTime()) / (60 * 1000);
+                  height = durationMinutes * (12 / 60);
+                  // Ensure minimum height
+                  height = Math.max(height, 24);
+                }
+                
                 const projectColor = event.projectId
                   ? projects.find(p => p.id === event.projectId)?.name
                   : undefined;
+
+                // Determine background color
+                let bgColorClass = "";
+                if (event.isTask) {
+                  bgColorClass = event.completed 
+                    ? "bg-muted text-muted-foreground line-through" 
+                    : "bg-blue-500 text-white";
+                } else {
+                  // For calendar events, use the event color with some opacity
+                  bgColorClass = "text-white";
+                }
                 
                 return (
                   <div 
                     key={event.id}
                     className={cn(
-                      "absolute left-1 right-1 rounded-md p-1 text-xs overflow-hidden",
-                      event.isTask 
-                        ? event.completed 
-                          ? "bg-muted text-muted-foreground line-through" 
-                          : "bg-blue-500 text-white"
-                        : "bg-green-500 text-white"
+                      "absolute left-1 right-1 rounded-md p-1 text-xs overflow-hidden shadow-sm",
+                      bgColorClass
                     )}
                     style={{
                       top: `${top}px`,
-                      height: "24px"
+                      height: `${height}px`,
+                      backgroundColor: !event.isTask ? event.color : undefined
                     }}
                     title={event.title}
                   >
                     <div className="flex items-center gap-1">
                       <span className="truncate">
-                        {format(event.start, "HH:mm")} {event.title}
+                        {formatTime(event.start)} {event.title}
                       </span>
                     </div>
+                    {event.end && !event.isTask && (
+                      <div className="text-xs opacity-80 overflow-hidden text-ellipsis">
+                        até {formatTime(event.end)}
+                      </div>
+                    )}
                   </div>
                 );
               })}
