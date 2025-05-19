@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "@/lib/store";
@@ -16,6 +17,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { TodayPriorities } from "@/components/home/TodayPriorities";
 import { requestNotificationPermission } from "@/lib/notifications";
+import { toast } from "sonner";
 
 const Index = () => {
   const {
@@ -24,6 +26,7 @@ const Index = () => {
     profile,
     pomodoroSessions,
     updateProfile,
+    toggleTaskCompletion,
   } = useAppStore();
 
   const [quickTasks, setQuickTasks] = useState<string[]>([]);
@@ -73,6 +76,22 @@ const Index = () => {
   const todayPoints = (todayCompletedTasks * 5) + (todayPomodoros * 10);
   const totalPoints = profile.points;
   const totalPomodoros = profile.totalPomodorosCompleted;
+
+  // New function to handle completing quick tasks
+  const handleCompleteQuickTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      toggleTaskCompletion(taskId);
+      
+      toast.success(`Tarefa "${task.title}" concluída!`, {
+        duration: 2000,
+        position: "bottom-right",
+      });
+      
+      // Remove the task from the quick tasks list to update UI immediately
+      setQuickTasks(prev => prev.filter(id => id !== taskId));
+    }
+  };
   
   console.log("Index - Total points calculated:", totalPoints);
   console.log("Index - Today points calculated:", todayPoints);
@@ -173,7 +192,7 @@ const Index = () => {
                     if (!task) return null;
                     
                     return (
-                      <Card key={task.id} className="hover-card">
+                      <Card key={task.id} className="hover-card transition-all duration-200 hover:shadow-md">
                         <CardContent className="p-4 flex justify-between items-center">
                           <div className="flex items-center">
                             <Zap className="h-5 w-5 text-amber-500 mr-3" />
@@ -182,7 +201,9 @@ const Index = () => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="rounded-full h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                            className="rounded-full h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors"
+                            onClick={() => handleCompleteQuickTask(task.id)}
+                            aria-label="Concluir tarefa"
                           >
                             <CheckCircle className="h-5 w-5" />
                           </Button>
