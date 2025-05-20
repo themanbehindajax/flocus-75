@@ -183,14 +183,14 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p>Configurações</p>
+                <p>Settings</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         ) : (
           <SidebarItem
             icon={<Settings className="w-5 h-5" />}
-            label="Configurações"
+            label="Settings"
             to="/settings"
             active={activePath === "/settings"}
             collapsed={sidebarCollapsed}
