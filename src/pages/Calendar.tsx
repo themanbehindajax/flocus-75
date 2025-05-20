@@ -10,7 +10,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks } from "date-fns";
-import { ptBR } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FullCalendarView } from "@/components/calendar/FullCalendarView";
@@ -29,24 +29,24 @@ const Calendar = () => {
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   
-  // Atualizar o horário atual a cada minuto
+  // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // 60000ms = 1 minuto
+    }, 60000); // 60000ms = 1 minute
     
     return () => clearInterval(timer);
   }, []);
 
-  // Solicitar permissão de notificação quando o componente montar
+  // Request notification permission when component mounts
   useEffect(() => {
     const checkNotificationPermission = async () => {
       const hasPermission = await requestNotificationPermission();
       if (!hasPermission) {
-        toast.warning("As notificações estão desativadas. Você não receberá lembretes de eventos.", {
+        toast.warning("Notifications are disabled. You will not receive event reminders.", {
           duration: 5000,
           action: {
-            label: "Ativar",
+            label: "Enable",
             onClick: () => requestNotificationPermission()
           }
         });
@@ -56,14 +56,14 @@ const Calendar = () => {
     checkNotificationPermission();
   }, []);
   
-  // Formatar data e horário com o fuso horário de São Paulo
+  // Format date and time with user's timezone
   const formatLocalDateTime = (date: Date, formatStr: string) => {
-    return formatInTimeZone(date, 'America/Sao_Paulo', formatStr, { locale: ptBR });
+    return formatInTimeZone(date, Intl.DateTimeFormat().resolvedOptions().timeZone, formatStr, { locale: enUS });
   };
   
-  // Obter o dia da semana em português
+  // Get the day of the week in English
   const getCurrentDayOfWeek = () => {
-    return formatInTimeZone(currentTime, 'America/Sao_Paulo', 'EEEE', { locale: ptBR });
+    return formatInTimeZone(currentTime, Intl.DateTimeFormat().resolvedOptions().timeZone, 'EEEE', { locale: enUS });
   };
   
   // Navigation functions
@@ -104,14 +104,14 @@ const Calendar = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Calendário</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-muted-foreground mt-1">
               <p>
                 {formatLocalDateTime(currentTime, 'PPP')}
               </p>
               <p className="hidden sm:block">•</p>
               <p className="flex items-center gap-1.5">
-                <span className="capitalize">{getCurrentDayOfWeek()}</span>
+                <span>{getCurrentDayOfWeek()}</span>
                 <span className="font-medium text-foreground">{formatLocalDateTime(currentTime, 'HH:mm')}</span>
                 <span className="text-xs">({formatLocalDateTime(currentTime, 'OOOO')})</span>
               </p>
@@ -120,7 +120,7 @@ const Calendar = () => {
           <div className="flex items-center gap-2">
             <Button onClick={handleAddEvent}>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Novo Evento
+              New Event
             </Button>
           </div>
         </div>
@@ -134,19 +134,19 @@ const Calendar = () => {
             <Button variant="outline" size="icon" onClick={navigateNext}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" onClick={goToToday}>Hoje</Button>
+            <Button variant="outline" onClick={goToToday}>Today</Button>
             <h2 className="text-xl font-semibold ml-2">
-              {view === "day" && formatLocalDateTime(selectedDate, "dd 'de' MMMM 'de' yyyy")}
-              {view === "week" && `${formatLocalDateTime(startOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM")} - ${formatLocalDateTime(endOfWeek(selectedDate, { weekStartsOn: 0 }), "dd MMM")}`}
+              {view === "day" && formatLocalDateTime(selectedDate, "MMMM d, yyyy")}
+              {view === "week" && `${formatLocalDateTime(startOfWeek(selectedDate, { weekStartsOn: 0 }), "MMM d")} - ${formatLocalDateTime(endOfWeek(selectedDate, { weekStartsOn: 0 }), "MMM d")}`}
               {view === "month" && formatLocalDateTime(selectedDate, "MMMM yyyy")}
             </h2>
           </div>
           
           <Tabs defaultValue="month" value={view} onValueChange={(v) => setView(v as "day" | "week" | "month")}>
             <TabsList>
-              <TabsTrigger value="day">Dia</TabsTrigger>
-              <TabsTrigger value="week">Semana</TabsTrigger>
-              <TabsTrigger value="month">Mês</TabsTrigger>
+              <TabsTrigger value="day">Day</TabsTrigger>
+              <TabsTrigger value="week">Week</TabsTrigger>
+              <TabsTrigger value="month">Month</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

@@ -34,12 +34,12 @@ const Index = () => {
   // Function to get time-based greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Bom dia";
-    if (hour < 18) return "Boa tarde";
-    return "Boa noite";
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   };
 
-  // Function to capitalize first letter of weekday
+  // Function to format weekday with first letter capitalized
   const formatWeekday = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
@@ -47,15 +47,15 @@ const Index = () => {
       month: 'long' 
     };
     
-    // Get formatted date string in lowercase first
-    const dateStr = date.toLocaleDateString('pt-BR', options);
+    // Get formatted date string in English
+    const dateStr = date.toLocaleDateString('en-US', options);
     
-    // Capitalize first letter
-    return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    // Capitalize first letter (already done in English format)
+    return dateStr;
   };
 
   useEffect(() => {
-    // Setup user profile on first visit - only if name is exactly "Usuário"
+    // Setup user profile on first visit - only if name is exactly "User"
     if (profile.name === "Usuário") {
       const username = localStorage.getItem("username");
       if (username && username !== "Usuário") {
@@ -106,7 +106,7 @@ const Index = () => {
     if (task) {
       toggleTaskCompletion(taskId);
       
-      toast.success(`Tarefa "${task.title}" concluída!`, {
+      toast.success(`Task "${task.title}" completed!`, {
         duration: 2000,
         position: "bottom-right",
       });
@@ -135,8 +135,8 @@ const Index = () => {
           
           <div className="flex items-center space-x-2">
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Streak atual</p>
-              <p className="text-2xl font-bold text-primary">{profile.streak} dias</p>
+              <p className="text-sm text-muted-foreground">Current streak</p>
+              <p className="text-2xl font-bold text-primary">{profile.streak} days</p>
             </div>
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Trophy className="h-6 w-6 text-primary animate-pulse-light" />
@@ -149,7 +149,7 @@ const Index = () => {
           <Card className="hover-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Tarefas Concluídas
+                Completed Tasks
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -166,7 +166,7 @@ const Index = () => {
           <Card className="hover-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pontos Hoje
+                Points Today
               </CardTitle>
             </CardHeader>
             <CardContent className="flex justify-between items-center">
@@ -180,7 +180,7 @@ const Index = () => {
           <Card className="hover-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pomodoros Hoje
+                Pomodoros Today
               </CardTitle>
             </CardHeader>
             <CardContent className="flex justify-between items-center">
@@ -202,7 +202,7 @@ const Index = () => {
             
             {/* Quick Tasks Section */}
             <div>
-              <h2 className="text-xl font-bold mb-4">Tarefas Rápidas</h2>
+              <h2 className="text-xl font-bold mb-4">Quick Tasks</h2>
               
               {quickTasks.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -222,7 +222,7 @@ const Index = () => {
                             variant="ghost"
                             className="rounded-full h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors"
                             onClick={() => handleCompleteQuickTask(task.id)}
-                            aria-label="Concluir tarefa"
+                            aria-label="Complete task"
                           >
                             <CheckCircle className="h-5 w-5" />
                           </Button>
@@ -235,10 +235,10 @@ const Index = () => {
                 <Card className="text-center py-6">
                   <CardContent>
                     <p className="text-muted-foreground">
-                      Nenhuma tarefa rápida encontrada. Adicione tarefas para começar.
+                      No quick tasks found. Add tasks to get started.
                     </p>
                     <Button variant="outline" className="mt-4" asChild>
-                      <Link to="/tasks">Adicionar tarefas</Link>
+                      <Link to="/tasks">Add tasks</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -251,9 +251,9 @@ const Index = () => {
             {/* Projects Section */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Seus Projetos</h2>
+                <h2 className="text-xl font-bold">Your Projects</h2>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/projects">Ver todos</Link>
+                  <Link to="/projects">View all</Link>
                 </Button>
               </div>
               
@@ -265,7 +265,7 @@ const Index = () => {
                         <div>
                           <h3 className="font-medium">{project.name}</h3>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {project.tasks.length} tarefas
+                            {project.tasks.length} tasks
                           </p>
                         </div>
                         <Button size="sm" variant="ghost" asChild>
@@ -292,12 +292,12 @@ const Index = () => {
                 {projects.length === 0 && (
                   <Card className="text-center p-6">
                     <FolderKanban className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <h3 className="font-medium">Nenhum projeto</h3>
+                    <h3 className="font-medium">No projects</h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Crie seu primeiro projeto
+                      Create your first project
                     </p>
                     <Button variant="outline" className="mt-4" asChild>
-                      <Link to="/projects">Criar projeto</Link>
+                      <Link to="/projects">Create project</Link>
                     </Button>
                   </Card>
                 )}
@@ -306,7 +306,7 @@ const Index = () => {
             
             {/* Quick Links */}
             <div>
-              <h2 className="text-xl font-bold mb-4">Acesso Rápido</h2>
+              <h2 className="text-xl font-bold mb-4">Quick Access</h2>
               
               <div className="grid grid-cols-2 gap-3">
                 <Card className="hover-card">
@@ -314,7 +314,7 @@ const Index = () => {
                     <Clock className="h-6 w-6 mb-2" />
                     <h3 className="font-medium">Pomodoro</h3>
                     <Button variant="ghost" size="sm" className="mt-2" asChild>
-                      <Link to="/pomodoro">Iniciar</Link>
+                      <Link to="/pomodoro">Start</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -322,9 +322,9 @@ const Index = () => {
                 <Card className="hover-card">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <ListTodo className="h-6 w-6 mb-2" />
-                    <h3 className="font-medium">Tarefas</h3>
+                    <h3 className="font-medium">Tasks</h3>
                     <Button variant="ghost" size="sm" className="mt-2" asChild>
-                      <Link to="/tasks">Ver</Link>
+                      <Link to="/tasks">View</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -332,9 +332,9 @@ const Index = () => {
                 <Card className="hover-card">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <Calendar className="h-6 w-6 mb-2" />
-                    <h3 className="font-medium">Calendário</h3>
+                    <h3 className="font-medium">Calendar</h3>
                     <Button variant="ghost" size="sm" className="mt-2" asChild>
-                      <Link to="/calendar">Ver</Link>
+                      <Link to="/calendar">View</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -342,9 +342,9 @@ const Index = () => {
                 <Card className="hover-card">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <Trophy className="h-6 w-6 mb-2" />
-                    <h3 className="font-medium">Conquistas</h3>
+                    <h3 className="font-medium">Achievements</h3>
                     <Button variant="ghost" size="sm" className="mt-2" asChild>
-                      <Link to="/achievements">Ver</Link>
+                      <Link to="/achievements">View</Link>
                     </Button>
                   </CardContent>
                 </Card>

@@ -43,30 +43,30 @@ const Tasks = () => {
       task.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setDisplayedTasks(filtered);
-    console.log("Atualizando lista de tarefas:", filtered);
+    console.log("Updating task list:", filtered);
   }, [tasks, searchQuery]);
 
   const handleTaskCreated = () => {
-    // Fecha o diálogo
+    // Close the dialog
     setIsAddDialogOpen(false);
     
-    // Atualização explícita das tarefas após criar uma nova
+    // Explicit update of tasks after creating a new one
     setTimeout(() => {
       const currentTasks = useAppStore.getState().tasks.filter((task) => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log("Atualizando lista após criar nova tarefa:", currentTasks);
+      console.log("Updating list after creating new task:", currentTasks);
       setDisplayedTasks(currentTasks);
     }, 100);
   };
 
   const handleQuickTaskAdded = () => {
-    // Atualização explícita das tarefas após adicionar uma rápida
+    // Explicit update of tasks after adding a quick one
     setTimeout(() => {
       const currentTasks = useAppStore.getState().tasks.filter((task) => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log("Atualizando lista após adicionar tarefa rápida:", currentTasks);
+      console.log("Updating list after adding quick task:", currentTasks);
       setDisplayedTasks(currentTasks);
     }, 100);
   };
@@ -77,9 +77,9 @@ const Tasks = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tarefas</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
             <p className="text-muted-foreground mt-1">
-              Gerencie suas tarefas diárias
+              Manage your daily tasks
             </p>
           </div>
           
@@ -87,7 +87,7 @@ const Tasks = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar tarefas..."
+                placeholder="Search tasks..."
                 className="pl-10 w-full sm:w-[250px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -117,14 +117,14 @@ const Tasks = () => {
               <DialogTrigger asChild>
                 <Button>
                   <ListPlus className="mr-2 h-4 w-4" />
-                  Nova Tarefa
+                  New Task
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Criar Nova Tarefa</DialogTitle>
+                  <DialogTitle>Create New Task</DialogTitle>
                   <DialogDescription>
-                    Adicione os detalhes da sua nova tarefa.
+                    Add details for your new task.
                   </DialogDescription>
                 </DialogHeader>
                 <TaskForm onComplete={handleTaskCreated} />
@@ -136,7 +136,7 @@ const Tasks = () => {
         {/* Quick Add Task */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Adicionar Tarefa</CardTitle>
+            <CardTitle className="text-lg">Add Task</CardTitle>
           </CardHeader>
           <CardContent>
             <QuickAddTask onTaskAdded={handleQuickTaskAdded} />

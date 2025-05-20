@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ const Pomodoro = () => {
     setSelectedProjectId,
   } = usePomodoroStore();
 
-  // Atualiza as tarefas do projeto selecionado
+  // Update the selected project's tasks
   useEffect(() => {
     if (selectedProjectId) {
       const filteredTasks = tasks.filter(
@@ -44,7 +45,7 @@ const Pomodoro = () => {
     }
   }, [selectedProjectId, tasks]);
 
-  // Calcular o progresso com base no tempo atual e duração total
+  // Calculate progress based on current time and total duration
   const getDuration = () => {
     const settings = useAppStore.getState().settings;
     switch (timerMode) {
@@ -61,7 +62,7 @@ const Pomodoro = () => {
     : (timeRemaining === 0 ? "completed" : "idle");
   
   const handleTaskAdded = () => {
-    // Atualizar a lista de tarefas quando uma nova tarefa for adicionada
+    // Update the task list when a new task is added
     if (selectedProjectId) {
       const updatedTasks = useAppStore.getState().tasks.filter(
         task => task.projectId === selectedProjectId && !task.completed
@@ -70,7 +71,7 @@ const Pomodoro = () => {
     }
   };
 
-  // Handler para marcar tarefa como concluída
+  // Handler to mark task as completed
   const handleCompleteTask = (taskId: string) => {
     toggleTaskCompletion(taskId);
   };
@@ -81,20 +82,20 @@ const Pomodoro = () => {
     <AppLayout>
       <PageTransition>
         <div className="relative min-h-screen flex flex-col overflow-hidden">
-          {/* Fundo com gradiente que vai até a extrema esquerda */}
+          {/* Background with gradient that extends to extreme left */}
           <div className="absolute inset-0 -left-[100vw] -right-[100vw] bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 z-0" />
           
-          {/* Conteúdo centralizado verticalmente e horizontalmente */}
+          {/* Content vertically and horizontally centered */}
           <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4 py-12">
             <div className="max-w-5xl w-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-              {/* Coluna da esquerda - Timer */}
+              {/* Left Column - Timer */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="flex flex-col items-center w-full md:w-1/2"
               >
-                {/* Seletor de modo do timer */}
+                {/* Timer mode selector */}
                 <div className="w-full mb-6">
                   <TimerModeSelector 
                     currentMode={timerMode}
@@ -103,7 +104,7 @@ const Pomodoro = () => {
                   />
                 </div>
                 
-                {/* Timer circular */}
+                {/* Circular timer */}
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -117,7 +118,7 @@ const Pomodoro = () => {
                   />
                 </motion.div>
                 
-                {/* Controles do timer */}
+                {/* Timer controls */}
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -132,13 +133,13 @@ const Pomodoro = () => {
                   />
                 </motion.div>
                 
-                {/* Contador de pomodoros */}
+                {/* Pomodoro counter */}
                 <div className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-white">
-                  Pomodoros completados hoje: {pomodoroCount}
+                  Pomodoros completed today: {pomodoroCount}
                 </div>
               </motion.div>
               
-              {/* Coluna da direita - Projetos e Tarefas */}
+              {/* Right Column - Projects and Tasks */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -146,7 +147,7 @@ const Pomodoro = () => {
                 className="backdrop-blur-xl bg-white/5 border border-white/20 p-6 rounded-3xl w-full md:w-1/2 shadow-xl"
               >
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4 text-white">Escolha seu foco</h2>
+                  <h2 className="text-xl font-bold mb-4 text-white">Choose your focus</h2>
                   
                   <TaskSelection
                     selectedTaskId={selectedTaskId}
@@ -160,11 +161,11 @@ const Pomodoro = () => {
                   />
                 </div>
                 
-                {/* Lista de tarefas do projeto */}
+                {/* Project task list */}
                 {selectedProjectId && projectTasks.length > 0 && (
                   <div className="mb-6">
                     <h3 className="text-lg font-medium mb-3 flex items-center text-white">
-                      <span>Tarefas do projeto</span>
+                      <span>Project tasks</span>
                       <span className="ml-2 bg-white/10 text-xs rounded-full px-2 py-0.5">{projectTasks.length}</span>
                     </h3>
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar rounded-xl">
@@ -197,10 +198,10 @@ const Pomodoro = () => {
                   </div>
                 )}
                 
-                {/* Tarefa atual selecionada */}
+                {/* Current selected task */}
                 {selectedTaskId && selectedTask && (
                   <div className="mb-6 p-3 rounded-xl bg-white/5 backdrop-blur-md">
-                    <h3 className="text-sm font-medium text-white mb-1">Tarefa atual</h3>
+                    <h3 className="text-sm font-medium text-white mb-1">Current task</h3>
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-white">{selectedTask.title}</p>
                       <Button 
@@ -208,7 +209,7 @@ const Pomodoro = () => {
                         variant="ghost" 
                         className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10"
                         onClick={() => handleCompleteTask(selectedTaskId)}
-                        title="Marcar como concluída"
+                        title="Mark as completed"
                       >
                         <CheckCircle2 className={`h-5 w-5 ${selectedTask.completed ? 'fill-green-500 text-white' : ''}`} />
                       </Button>
@@ -216,10 +217,10 @@ const Pomodoro = () => {
                   </div>
                 )}
                 
-                {/* Adicionar tarefa rápida */}
+                {/* Add quick task */}
                 {selectedProjectId && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3 text-white">Adicionar tarefa</h3>
+                    <h3 className="text-lg font-medium mb-3 text-white">Add task</h3>
                     <QuickAddTask 
                       projectId={selectedProjectId} 
                       onTaskAdded={handleTaskAdded}
@@ -229,7 +230,7 @@ const Pomodoro = () => {
               </motion.div>
             </div>
             
-            {/* Botão de tela cheia */}
+            {/* Fullscreen button */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -25,25 +25,25 @@ export const ProjectProgressCard = ({ project, projectTasks }: ProjectProgressCa
   return (
     <Card className="md:col-span-1">
       <CardHeader className="pb-2">
-        <h3 className="text-lg font-medium">Progresso</h3>
+        <h3 className="text-lg font-medium">Progress</h3>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           <Progress value={progress} className="h-2" />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{completedTasks.length}/{projectTasks.length} tarefas</span>
+            <span>{completedTasks.length}/{projectTasks.length} tasks</span>
             <span>{progress}%</span>
           </div>
         </div>
         {project.dueDate && (
           <div className="flex items-center mt-4 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 mr-2" />
-            <span>Vence em: {new Date(project.dueDate).toLocaleDateString("pt-BR")}</span>
+            <span>Due: {new Date(project.dueDate).toLocaleDateString()}</span>
           </div>
         )}
         <div className="mt-4">
           <Button className="w-full" onClick={handleStartPomodoro}>
-            Iniciar Pomodoro
+            Start Pomodoro
           </Button>
         </div>
       </CardContent>

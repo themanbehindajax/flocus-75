@@ -51,7 +51,7 @@ const Login = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="text-muted-foreground text-lg mt-3"
               >
-                Sua ferramenta de produtividade pessoal
+                Your personal productivity tool
               </motion.p>
             </motion.div>
           </div>

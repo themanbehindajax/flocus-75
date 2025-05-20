@@ -59,7 +59,7 @@ const Settings = () => {
       updateProfile(profileUpdates);
     }
     
-    toast.success("Configurações atualizadas com sucesso!");
+    toast.success("Settings updated successfully!");
   };
 
   const handleAvatarClick = () => {
@@ -85,14 +85,14 @@ const Settings = () => {
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Perfil</CardTitle>
+            <CardTitle>Profile</CardTitle>
             <CardDescription>
-              Configure suas informações pessoais
+              Configure your personal information
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -133,7 +133,7 @@ const Settings = () => {
 
               <div className="w-full space-y-4">
                 <div>
-                  <Label htmlFor="name">Nome</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
                     value={name}
@@ -143,13 +143,13 @@ const Settings = () => {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">Seus pontos:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.points} pontos</p>
+                    <h3 className="font-medium">Your points:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.points} points</p>
                   </div>
                   
                   <div>
-                    <h3 className="font-medium">Streak atual:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.streak} dias</p>
+                    <h3 className="font-medium">Current streak:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.streak} days</p>
                   </div>
                 </div>
               </div>
@@ -160,16 +160,16 @@ const Settings = () => {
         {/* Pomodoro Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Configurações do Pomodoro</CardTitle>
+            <CardTitle>Pomodoro Settings</CardTitle>
             <CardDescription>
-              Ajuste os tempos de foco e descanso
+              Adjust focus and break times
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="pomodoro-duration">Duração do Pomodoro</Label>
+                  <Label htmlFor="pomodoro-duration">Pomodoro Duration</Label>
                   <span className="text-muted-foreground">{formSettings.pomodoroDuration} min</span>
                 </div>
                 <Slider
@@ -184,7 +184,7 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="short-break">Pausa Curta</Label>
+                  <Label htmlFor="short-break">Short Break</Label>
                   <span className="text-muted-foreground">{formSettings.shortBreakDuration} min</span>
                 </div>
                 <Slider
@@ -199,7 +199,7 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="long-break">Pausa Longa</Label>
+                  <Label htmlFor="long-break">Long Break</Label>
                   <span className="text-muted-foreground">{formSettings.longBreakDuration} min</span>
                 </div>
                 <Slider
@@ -218,31 +218,31 @@ const Settings = () => {
         {/* Appearance Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Aparência</CardTitle>
+            <CardTitle>Appearance</CardTitle>
             <CardDescription>
-              Personalize a aparência do aplicativo
+              Customize the appearance of the application
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="theme">Tema</Label>
+              <Label htmlFor="theme">Theme</Label>
               <Select
                 value={formSettings.theme}
                 onValueChange={(value) => setFormSettings({ ...formSettings, theme: value as "light" | "dark" | "system" })}
               >
                 <SelectTrigger id="theme">
-                  <SelectValue placeholder="Selecione um tema" />
+                  <SelectValue placeholder="Select a theme" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="dark">Escuro</SelectItem>
-                  <SelectItem value="system">Sistema</SelectItem>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notifications">Notificações</Label>
+              <Label htmlFor="notifications">Notifications</Label>
               <Select
                 value={formSettings.notificationsEnabled ? "enabled" : "disabled"}
                 onValueChange={(value) => setFormSettings({ 
@@ -251,11 +251,11 @@ const Settings = () => {
                 })}
               >
                 <SelectTrigger id="notifications">
-                  <SelectValue placeholder="Configurar notificações" />
+                  <SelectValue placeholder="Configure notifications" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enabled">Ativadas</SelectItem>
-                  <SelectItem value="disabled">Desativadas</SelectItem>
+                  <SelectItem value="enabled">Enabled</SelectItem>
+                  <SelectItem value="disabled">Disabled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -264,7 +264,7 @@ const Settings = () => {
         
         <div className="flex justify-end">
           <Button onClick={handleSaveSettings}>
-            Salvar Configurações
+            Save Settings
           </Button>
         </div>
       </div>

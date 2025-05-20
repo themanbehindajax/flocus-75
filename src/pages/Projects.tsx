@@ -38,8 +38,8 @@ const Projects = () => {
   
   const handleCreateProject = (projectData: Parameters<typeof addProject>[0]) => {
     const newProject = addProject(projectData);
-    toast.success(`Projeto "${projectData.name}" criado com sucesso`);
-    setIsAddDialogOpen(false); // Fechar o diálogo após criar o projeto
+    toast.success(`Project "${projectData.name}" created successfully`);
+    setIsAddDialogOpen(false); // Close the dialog after creating the project
   };
   
   const handleEditProject = (project: typeof projects[0]) => {
@@ -53,7 +53,7 @@ const Projects = () => {
         ...currentProject,
         ...projectData
       });
-      toast.success(`Projeto "${projectData.name}" atualizado com sucesso`);
+      toast.success(`Project "${projectData.name}" updated successfully`);
       setIsEditDialogOpen(false);
       setCurrentProject(null);
     }
@@ -63,9 +63,9 @@ const Projects = () => {
     const project = projects.find(p => p.id === projectId);
     if (project) {
       // Confirm deletion
-      if (window.confirm(`Tem certeza que deseja excluir o projeto "${project.name}"?`)) {
+      if (window.confirm(`Are you sure you want to delete the project "${project.name}"?`)) {
         deleteProject(projectId);
-        toast.success(`Projeto "${project.name}" excluído com sucesso`);
+        toast.success(`Project "${project.name}" deleted successfully`);
       }
     }
   };
@@ -129,9 +129,9 @@ const Projects = () => {
           className="flex flex-col md:flex-row justify-between md:items-center gap-4"
         >
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Projetos</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
             <p className="text-muted-foreground mt-1">
-              Crie e gerencie seus projetos
+              Create and manage your projects
             </p>
           </div>
           
@@ -139,7 +139,7 @@ const Projects = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar projetos..."
+                placeholder="Search projects..."
                 className="pl-10 w-full sm:w-[250px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -151,14 +151,14 @@ const Projects = () => {
                 <DialogTrigger asChild>
                   <Button variant="outline" className="flex-shrink-0">
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
-                    Ordenar
+                    Sort
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Ordenar Projetos</DialogTitle>
+                    <DialogTitle>Sort Projects</DialogTitle>
                     <DialogDescription>
-                      Escolha como os projetos devem ser ordenados.
+                      Choose how projects should be sorted.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
@@ -168,21 +168,21 @@ const Projects = () => {
                         onClick={() => setSortBy("name")}
                         className="justify-start"
                       >
-                        Por Nome
+                        By Name
                       </Button>
                       <Button 
                         variant={sortBy === "date" ? "default" : "outline"}
                         onClick={() => setSortBy("date")}
                         className="justify-start"
                       >
-                        Por Data de Criação
+                        By Creation Date
                       </Button>
                       <Button 
                         variant={sortBy === "progress" ? "default" : "outline"}
                         onClick={() => setSortBy("progress")}
                         className="justify-start"
                       >
-                        Por Progresso
+                        By Progress
                       </Button>
                     </div>
                   </div>
@@ -193,14 +193,14 @@ const Projects = () => {
                 <DialogTrigger asChild>
                   <Button>
                     <FolderPlus className="mr-2 h-4 w-4" />
-                    Novo Projeto
+                    New Project
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Criar Novo Projeto</DialogTitle>
+                    <DialogTitle>Create New Project</DialogTitle>
                     <DialogDescription>
-                      Adicione detalhes para o seu novo projeto.
+                      Add details for your new project.
                     </DialogDescription>
                   </DialogHeader>
                   <ProjectForm 
@@ -215,9 +215,9 @@ const Projects = () => {
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Editar Projeto</DialogTitle>
+                  <DialogTitle>Edit Project</DialogTitle>
                   <DialogDescription>
-                    Atualize os detalhes do projeto.
+                    Update project details.
                   </DialogDescription>
                 </DialogHeader>
                 {currentProject && (
@@ -225,7 +225,7 @@ const Projects = () => {
                     initialProject={currentProject}
                     onSubmit={handleUpdateProject}
                     onCancel={() => setIsEditDialogOpen(false)}
-                    submitButtonText="Atualizar Projeto"
+                    submitButtonText="Update Project"
                   />
                 )}
               </DialogContent>
@@ -266,14 +266,14 @@ const Projects = () => {
             <div className="h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-pulse">
               <FolderPlus className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Nenhum projeto encontrado</h3>
+            <h3 className="text-xl font-medium mb-2">No projects found</h3>
             {searchQuery ? (
               <p className="text-muted-foreground mb-6">
-                Nenhum projeto corresponde à sua busca. Tente outros termos.
+                No projects match your search. Try other terms.
               </p>
             ) : (
               <p className="text-muted-foreground mb-6">
-                Crie seu primeiro projeto para começar a gerenciar suas tarefas.
+                Create your first project to start managing your tasks.
               </p>
             )}
             <Button 
@@ -281,7 +281,7 @@ const Projects = () => {
               className="animate-pulse-light"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Criar Projeto
+              Create Project
             </Button>
           </motion.div>
         )}

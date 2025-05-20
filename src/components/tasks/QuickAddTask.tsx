@@ -18,7 +18,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (taskTitle.trim()) {
-      console.log("Adicionando tarefa rápida com projectId:", projectId);
+      console.log("Adding quick task with projectId:", projectId);
       
       const taskId = addTask({
         title: taskTitle,
@@ -32,7 +32,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         isQuick: isQuick,
       });
       
-      console.log("Tarefa rápida criada com ID:", taskId);
+      console.log("Quick task created with ID:", taskId);
       setTaskTitle("");
       setIsQuick(false);
       
@@ -47,7 +47,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
       <Input
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
-        placeholder="Adicionar nova tarefa..."
+        placeholder="Add new task..."
         className="flex-grow text-foreground placeholder:text-muted-foreground w-full"
       />
       <Button
@@ -56,7 +56,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         variant={isQuick ? "default" : "outline"}
         onClick={() => setIsQuick((v) => !v)}
         className={`text-yellow-500 ${isQuick ? "bg-yellow-100 dark:bg-yellow-950/40" : ""}`}
-        title="Tarefa rápida (até 2 minutos)"
+        title="Quick task (under 2 minutes)"
       >
         <Zap className="w-4 h-4" />
       </Button>
@@ -67,7 +67,7 @@ export const QuickAddTask = ({ projectId, onTaskAdded }: QuickAddTaskProps) => {
         className="whitespace-nowrap"
       >
         <Bolt className="w-4 h-4 mr-1" />
-        Adicionar
+        Add
       </Button>
     </form>
   );

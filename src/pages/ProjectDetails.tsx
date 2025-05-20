@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -23,17 +24,17 @@ const ProjectDetails = () => {
 
   const project = projects.find(p => p.id === projectId);
 
-  // Função para atualizar as tarefas do projeto
+  // Function to update project tasks
   const updateProjectTasks = () => {
     if (projectId) {
-      // Usa getState para garantir o estado mais recente
+      // Uses getState to ensure the most recent state
       const currentTasks = useAppStore.getState().tasks.filter(task => task.projectId === projectId);
-      console.log("Atualizando tarefas do projeto:", projectId, currentTasks);
+      console.log("Updating project tasks:", projectId, currentTasks);
       setProjectTasks(currentTasks);
     }
   };
 
-  // Carrega as tarefas do projeto quando a página é carregada ou quando tasks muda
+  // Load project tasks when the page is loaded or when tasks change
   useEffect(() => {
     updateProjectTasks();
   }, [tasks, projectId]);
@@ -47,15 +48,15 @@ const ProjectDetails = () => {
               <span className="mr-2">
                 <svg width={16} height={16}><path d="M10 6L6 10M6 6l4 4" /></svg>
               </span>
-              Voltar
+              Back
             </Button>
           </div>
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <h3 className="text-xl font-medium mb-2">Projeto não encontrado</h3>
+            <h3 className="text-xl font-medium mb-2">Project not found</h3>
             <p className="text-muted-foreground mb-6">
-              O projeto que você está procurando não existe ou foi removido.
+              The project you're looking for doesn't exist or has been removed.
             </p>
-            <Button onClick={() => navigate("/projects")}>Ver todos os projetos</Button>
+            <Button onClick={() => navigate("/projects")}>View all projects</Button>
           </div>
         </div>
       </AppLayout>
@@ -63,17 +64,17 @@ const ProjectDetails = () => {
   }
 
   const handleTaskCreated = () => {
-    // Fecha o diálogo de adição de tarefa
+    // Close the task addition dialog
     setIsAddDialogOpen(false);
     
-    // Força atualização explícita das tarefas do projeto após a criação
-    // Usando setTimeout para garantir que o store foi atualizado antes de buscar as tarefas
+    // Force explicit update of project tasks after creation
+    // Using setTimeout to ensure the store was updated before fetching tasks
     setTimeout(() => {
       updateProjectTasks();
       
       toast({
-        title: "Tarefa criada",
-        description: "Tarefa adicionada ao projeto com sucesso.",
+        title: "Task created",
+        description: "Task successfully added to the project.",
       });
     }, 100);
   };
@@ -92,21 +93,21 @@ const ProjectDetails = () => {
             setView={setView}
             setIsAddDialogOpen={setIsAddDialogOpen}
             isAddDialogOpen={isAddDialogOpen}
-            onTaskAdded={updateProjectTasks} // Para atualizar tarefas quando adicionadas via QuickAdd
+            onTaskAdded={updateProjectTasks} // To update tasks when added via QuickAdd
           >
-            {/* Children: botão de nova tarefa com modal */}
+            {/* Children: new task button with modal */}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <ListPlus className="mr-2 h-4 w-4" />
-                  Nova Tarefa
+                  New Task
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Criar Nova Tarefa</DialogTitle>
+                  <DialogTitle>Create New Task</DialogTitle>
                   <DialogDescription>
-                    Adicione os detalhes da sua nova tarefa.
+                    Add details for your new task.
                   </DialogDescription>
                 </DialogHeader>
                 <TaskForm

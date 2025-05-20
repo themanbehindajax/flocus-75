@@ -19,8 +19,8 @@ interface ProjectTaskListProps {
   setView: (view: "list" | "kanban") => void;
   setIsAddDialogOpen: (open: boolean) => void;
   isAddDialogOpen: boolean;
-  children: React.ReactNode; // for renderização do dialog/modal
-  onTaskAdded?: () => void; // Novo callback para quando uma tarefa é adicionada
+  children: React.ReactNode; // for dialog/modal rendering
+  onTaskAdded?: () => void; // New callback for when a task is added
 }
 
 export const ProjectTaskList = ({
@@ -36,14 +36,14 @@ export const ProjectTaskList = ({
     toggleTaskCompletion(task.id);
     if (!task.completed) {
       toast({
-        title: "Tarefa concluída",
-        description: `A tarefa "${task.title}" foi marcada como concluída.`,
+        title: "Task completed",
+        description: `The task "${task.title}" has been marked as completed.`,
         className: "toast-success"
       });
     } else {
       toast({
-        title: "Tarefa reaberta",
-        description: `A tarefa "${task.title}" foi desmarcada como concluída.`,
+        title: "Task reopened",
+        description: `The task "${task.title}" has been unmarked as completed.`,
         className: "toast-info"
       });
     }
@@ -65,9 +65,9 @@ export const ProjectTaskList = ({
     
     toast({
       title: updatedTask.subtasks.find(s => s.id === subtaskId)?.completed 
-        ? "Subtarefa concluída" 
-        : "Subtarefa reaberta",
-      description: `A subtarefa foi ${updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "marcada como concluída" : "reaberta"}.`,
+        ? "Subtask completed" 
+        : "Subtask reopened",
+      description: `The subtask has been ${updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "marked as completed" : "reopened"}.`,
       className: updatedTask.subtasks.find(s => s.id === subtaskId)?.completed ? "toast-success" : "toast-info"
     });
   };
@@ -86,7 +86,7 @@ export const ProjectTaskList = ({
   return (
     <div className="md:col-span-3 animate-fade-in">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-foreground">Tarefas</h3>
+        <h3 className="text-lg font-medium text-foreground">Tasks</h3>
         <div className="flex gap-2">
           <div className="flex items-center border rounded-md overflow-hidden">
             <Button
@@ -116,11 +116,11 @@ export const ProjectTaskList = ({
             projectId={projectId}
             onTaskAdded={() => {
               toast({
-                title: "Tarefa adicionada",
-                description: "Tarefa adicionada ao projeto com sucesso.",
+                title: "Task added",
+                description: "Task successfully added to the project.",
                 className: "toast-success"
               });
-              // Notificar o componente pai que uma tarefa foi adicionada
+              // Notify parent component that a task was added
               if (onTaskAdded) {
                 onTaskAdded();
               }
@@ -131,10 +131,10 @@ export const ProjectTaskList = ({
 
       {projectTasks.length === 0 ? (
         <div className="text-center py-10 px-4 border rounded-lg bg-muted/20 transition-all animate-fade-in">
-          <p className="text-muted-foreground mb-4">Nenhuma tarefa adicionada a este projeto</p>
+          <p className="text-muted-foreground mb-4">No tasks added to this project</p>
           <Button onClick={() => setIsAddDialogOpen(true)} className="btn-transition">
             <ListPlus className="mr-2 h-4 w-4" />
-            Adicionar Tarefa
+            Add Task
           </Button>
         </div>
       ) : (
@@ -172,30 +172,30 @@ export const ProjectTaskList = ({
                         <span className={`text-foreground ${task.completed ? "line-through text-muted-foreground" : "font-medium"}`}>
                           {task.title}
                         </span>
-                        {/* Badge de tarefa rápida */}
+                        {/* Quick task badge */}
                         {task.isQuick && (
-                          <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5">⚡ Rápida</Badge>
+                          <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5">⚡ Quick</Badge>
                         )}
                       </div>
                       {task.dueDate && (
                         <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/30 rounded-full">
-                          {new Date(task.dueDate).toLocaleDateString("pt-BR")}
+                          {new Date(task.dueDate).toLocaleDateString()}
                         </span>
                       )}
                     </div>
                     
-                    {/* Exibindo descrição se existir */}
+                    {/* Display description if exists */}
                     {task.description && (
                       <div className="mt-2 text-sm text-muted-foreground">
                         {task.description}
                       </div>
                     )}
                     
-                    {/* Exibindo subtarefas se existirem */}
+                    {/* Display subtasks if they exist */}
                     {task.subtasks && task.subtasks.length > 0 && (
                       <div className="mt-3 pl-8 space-y-1.5">
                         <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Subtarefas ({task.subtasks.filter(s => s.completed).length}/{task.subtasks.length})
+                          Subtasks ({task.subtasks.filter(s => s.completed).length}/{task.subtasks.length})
                         </p>
                         {task.subtasks.map(subtask => (
                           <div 

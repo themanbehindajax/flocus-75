@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -64,8 +65,8 @@ const IvyLee = () => {
   const handleAddTask = (taskId: string) => {
     if (selectedTaskIds.length >= MAX_PRIORITIES) {
       toast({
-        title: "Limite atingido",
-        description: `O método Ivy Lee permite no máximo ${MAX_PRIORITIES} prioridades por dia.`,
+        title: "Limit reached",
+        description: `The Ivy Lee method allows at most ${MAX_PRIORITIES} priorities per day.`,
         variant: "destructive",
       });
       return;
@@ -76,7 +77,7 @@ const IvyLee = () => {
     const newSelectedTaskIds = [...selectedTaskIds, taskId];
     setSelectedTaskIds(newSelectedTaskIds);
     
-    // Garantindo formato de data consistente
+    // Ensuring consistent date format
     const formattedDate = date.split('T')[0];
     const existingPriority = dailyPriorities.find(dp => dp.date.split('T')[0] === formattedDate);
     
@@ -91,8 +92,8 @@ const IvyLee = () => {
     });
     
     toast({
-      title: "Tarefa adicionada",
-      description: "Tarefa adicionada às prioridades do dia.",
+      title: "Task added",
+      description: "Task added to today's priorities.",
     });
   };
 
@@ -114,16 +115,16 @@ const IvyLee = () => {
     });
     
     toast({
-      title: "Tarefa removida",
-      description: "Tarefa removida das prioridades do dia.",
+      title: "Task removed",
+      description: "Task removed from today's priorities.",
     });
   };
 
   const handleCompleteTask = (taskId: string) => {
     completeTask(taskId);
     toast({
-      title: "Tarefa concluída",
-      description: "Parabéns por completar esta tarefa!",
+      title: "Task completed",
+      description: "Congratulations on completing this task!",
     });
   };
   
@@ -167,7 +168,7 @@ const IvyLee = () => {
         {/* Header */}
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">Método Ivy Lee</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Ivy Lee Method</h1>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -176,13 +177,13 @@ const IvyLee = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-sm">
-                  <p>O método Ivy Lee consiste em escolher as 6 tarefas mais importantes para serem concluídas no dia seguinte, organizadas por ordem de prioridade.</p>
+                  <p>The Ivy Lee method consists of choosing the 6 most important tasks to be completed the next day, organized by priority order.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
           <p className="text-muted-foreground mt-1">
-            Defina até 6 prioridades para o dia e foque nelas
+            Set up to 6 priorities for the day and focus on them
           </p>
         </div>
 
@@ -190,7 +191,7 @@ const IvyLee = () => {
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <label htmlFor="date-select" className="text-sm font-medium">
-              Selecione a data
+              Select date
             </label>
             <input
               id="date-select"
@@ -201,7 +202,7 @@ const IvyLee = () => {
             />
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Tarefas selecionadas</p>
+            <p className="text-sm text-muted-foreground">Selected tasks</p>
             <p className="text-2xl font-bold">{selectedTaskIds.length}/{MAX_PRIORITIES}</p>
           </div>
         </div>
@@ -210,9 +211,9 @@ const IvyLee = () => {
           {/* Priority List */}
           <Card>
             <CardHeader>
-              <CardTitle>Prioridades do Dia</CardTitle>
+              <CardTitle>Daily Priorities</CardTitle>
               <CardDescription>
-                Organize suas tarefas por ordem de importância
+                Organize your tasks by order of importance
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -259,9 +260,9 @@ const IvyLee = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <ListChecks className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="font-medium mb-1">Nenhuma prioridade definida</h3>
+                  <h3 className="font-medium mb-1">No priorities defined</h3>
                   <p className="text-sm text-muted-foreground">
-                    Selecione tarefas da lista para definir suas prioridades
+                    Select tasks from the list to set your priorities
                   </p>
                 </div>
               )}
@@ -271,9 +272,9 @@ const IvyLee = () => {
           {/* Available Tasks */}
           <Card>
             <CardHeader>
-              <CardTitle>Tarefas Disponíveis</CardTitle>
+              <CardTitle>Available Tasks</CardTitle>
               <CardDescription>
-                Escolha entre suas tarefas não concluídas
+                Choose from your uncompleted tasks
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -290,7 +291,7 @@ const IvyLee = () => {
                           <p>{task.title}</p>
                           {task.projectId && (
                             <p className="text-xs text-muted-foreground">
-                              Projeto: {task.projectId}
+                              Project: {task.projectId}
                             </p>
                           )}
                         </div>
@@ -300,16 +301,16 @@ const IvyLee = () => {
                           onClick={() => handleAddTask(task.id)}
                           disabled={selectedTaskIds.length >= MAX_PRIORITIES}
                         >
-                          Adicionar
+                          Add
                         </Button>
                       </li>
                   ))}
                 </ul>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <h3 className="font-medium mb-1">Nenhuma tarefa disponível</h3>
+                  <h3 className="font-medium mb-1">No available tasks</h3>
                   <p className="text-sm text-muted-foreground">
-                    Todas as tarefas já foram concluídas ou adicionadas às prioridades
+                    All tasks have been completed or added to priorities
                   </p>
                 </div>
               )}

@@ -12,13 +12,13 @@ export const EmptyTasksPlaceholder = ({ onCreateTask }: EmptyTasksPlaceholderPro
       <div className="h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
         <ListPlus className="h-12 w-12 text-primary" />
       </div>
-      <h3 className="text-xl font-medium mb-2">Nenhuma tarefa encontrada</h3>
+      <h3 className="text-xl font-medium mb-2">No tasks found</h3>
       <p className="text-muted-foreground mb-6">
-        Crie sua primeira tarefa para começar a gerenciar suas atividades.
+        Create your first task to start managing your activities.
       </p>
       <Button onClick={onCreateTask}>
         <Plus className="mr-2 h-4 w-4" />
-        Criar Tarefa
+        Create Task
       </Button>
     </div>
   );

@@ -15,7 +15,7 @@ export const ProjectHeader = ({ project }: ProjectHeaderProps) => {
     <div className="flex items-center gap-4">
       <Button variant="outline" size="sm" onClick={() => navigate("/projects")}>
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Voltar
+        Back
       </Button>
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
