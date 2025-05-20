@@ -78,12 +78,12 @@ export function AppSidebar({ activePath }: AppSidebarProps) {
   
   const sidebarItems = [
     { icon: <Home className="w-5 h-5" />, label: "Dashboard", to: "/" },
-    { icon: <FolderKanban className="w-5 h-5" />, label: "Projetos", to: "/projects" },
-    { icon: <ListTodo className="w-5 h-5" />, label: "Tarefas", to: "/tasks" },
+    { icon: <FolderKanban className="w-5 h-5" />, label: "Projects", to: "/projects" },
+    { icon: <ListTodo className="w-5 h-5" />, label: "Tasks", to: "/tasks" },
     { icon: <CheckSquare className="w-5 h-5" />, label: "Ivy Lee", to: "/ivy-lee" },
     { icon: <Clock className="w-5 h-5" />, label: "Pomodoro", to: "/pomodoro" },
-    { icon: <Calendar className="w-5 h-5" />, label: "Calendário", to: "/calendar" },
-    { icon: <Trophy className="w-5 h-5" />, label: "Conquistas", to: "/achievements" },
+    { icon: <Calendar className="w-5 h-5" />, label: "Calendar", to: "/calendar" },
+    { icon: <Trophy className="w-5 h-5" />, label: "Achievements", to: "/achievements" },
   ];
 
   const sidebarVariants = {

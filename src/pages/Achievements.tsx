@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -23,7 +24,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { 
   Trophy, 
   Flame, 
@@ -56,7 +57,7 @@ const Achievements = () => {
   const completedPomodoros = pomodoroSessions.filter(session => session.completed).length;
 
   // Generate data for weekly tasks and pomodoros
-  const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   
   const getCurrentWeekData = () => {
     const today = new Date();
@@ -133,7 +134,7 @@ const Achievements = () => {
   // Chart configs
   const weeklyChartConfig = {
     tasks: { 
-      label: "Tarefas", 
+      label: "Tasks", 
       theme: { light: "#0EA5E9", dark: "#38BDF8" }
     },
     pomodoros: { 
@@ -144,19 +145,19 @@ const Achievements = () => {
 
   const tasksByDayConfig = {
     completed: { 
-      label: "Concluídas", 
+      label: "Completed", 
       theme: { light: "#0EA5E9", dark: "#38BDF8" }
     }
   };
 
   // Badge data
   const badges = [
-    { id: 1, name: "Produtividade Excelente", icon: "🏆", achieved: profile.points > 500, description: "Complete mais de 500 pontos de produtividade" },
-    { id: 2, name: "Mestre do Foco", icon: "🧠", achieved: completedPomodoros > 50, description: "Complete 50 sessões de pomodoro" },
-    { id: 3, name: "Consistência Diária", icon: "🔥", achieved: profile.streak > 7, description: "Mantenha uma sequência de 7 dias" },
-    { id: 4, name: "Organizador", icon: "📊", achieved: projects.length > 3, description: "Crie e organize mais de 3 projetos" },
-    { id: 5, name: "Velocidade", icon: "⚡", achieved: false, description: "Complete 5 tarefas em um único dia" },
-    { id: 6, name: "Maratonista", icon: "🏃", achieved: false, description: "Use o app por 30 dias consecutivos" },
+    { id: 1, name: "Excellent Productivity", icon: "🏆", achieved: profile.points > 500, description: "Complete more than 500 productivity points" },
+    { id: 2, name: "Focus Master", icon: "🧠", achieved: completedPomodoros > 50, description: "Complete 50 pomodoro sessions" },
+    { id: 3, name: "Daily Consistency", icon: "🔥", achieved: profile.streak > 7, description: "Maintain a 7-day streak" },
+    { id: 4, name: "Organizer", icon: "📊", achieved: projects.length > 3, description: "Create and organize more than 3 projects" },
+    { id: 5, name: "Speed", icon: "⚡", achieved: false, description: "Complete 5 tasks in a single day" },
+    { id: 6, name: "Marathon Runner", icon: "🏃", achieved: false, description: "Use the app for 30 consecutive days" },
   ];
 
   // Helper for time range button styling
@@ -186,7 +187,7 @@ const Achievements = () => {
 
   return (
     <AppLayout>
-      {/* Background gradient - agora usando a classe CSS reutilizável */}
+      {/* Background gradient - using reusable CSS class */}
       <div className="achievements-gradient" />
       
       <div className="relative z-10 p-4 md:p-6 max-w-7xl mx-auto">
@@ -199,10 +200,10 @@ const Achievements = () => {
           {/* Header with blue gradient text */}
           <motion.div variants={itemVariants} className="text-center mb-4">
             <h1 className="text-4xl font-bold tracking-tight font-satoshi dark:title-gradient-dark title-gradient-light">
-              Conquistas & Análises
+              Achievements & Analytics
             </h1>
             <p className="text-muted-foreground mt-2">
-              Monitore seu progresso e visualize suas conquistas
+              Monitor your progress and visualize your achievements
             </p>
           </motion.div>
           
@@ -219,7 +220,7 @@ const Achievements = () => {
               >
                 <span className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
-                  Semana
+                  Week
                 </span>
               </button>
               <button 
@@ -232,7 +233,7 @@ const Achievements = () => {
               >
                 <span className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
-                  Mês
+                  Month
                 </span>
               </button>
               <button 
@@ -265,7 +266,7 @@ const Achievements = () => {
                 <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <Trophy className="mr-2 h-5 w-5 text-blue-400" />
-                    Pontos
+                    Points
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center text-center">
@@ -278,7 +279,7 @@ const Achievements = () => {
                     {profile.points}
                   </motion.div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Ganho com tarefas concluídas
+                    Earned from completed tasks
                   </p>
                 </CardContent>
               </Card>
@@ -293,7 +294,7 @@ const Achievements = () => {
                 <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <Flame className="mr-2 h-5 w-5 text-orange-400" />
-                    Streak Atual
+                    Current Streak
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center text-center">
@@ -303,10 +304,10 @@ const Achievements = () => {
                     transition={{ delay: 0.3, type: "spring" }}
                     className="text-3xl font-bold dark:text-gradient dark:from-orange-300 dark:to-red-500 text-gradient from-orange-500 to-red-600"
                   >
-                    {profile.streak} dias
+                    {profile.streak} days
                   </motion.div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Última atividade: {formatDistanceToNow(new Date(profile.lastActivity), { locale: ptBR, addSuffix: true })}
+                    Last activity: {formatDistanceToNow(new Date(profile.lastActivity), { locale: enUS, addSuffix: true })}
                   </p>
                 </CardContent>
               </Card>
@@ -321,7 +322,7 @@ const Achievements = () => {
                 <CardHeader className="pb-2 flex flex-col items-center text-center">
                   <CardTitle className="flex items-center text-xl">
                     <CheckCircle2 className="mr-2 h-5 w-5 text-teal-400" />
-                    Tarefas Concluídas
+                    Completed Tasks
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center text-center">
@@ -334,7 +335,7 @@ const Achievements = () => {
                     {completedTasks}
                   </motion.div>
                   <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                    <span>Taxa de conclusão:</span>
+                    <span>Completion rate:</span>
                     <span className="ml-1 font-medium dark:text-teal-300 text-teal-600">{completionRate.toFixed(0)}%</span>
                   </div>
                 </CardContent>
@@ -363,7 +364,7 @@ const Achievements = () => {
                     {completedPomodoros}
                   </motion.div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Total de sessões concluídas
+                    Total completed sessions
                   </p>
                 </CardContent>
               </Card>
@@ -383,10 +384,10 @@ const Achievements = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="flex items-center text-xl justify-center">
                     <ChartLine className="mr-2 h-5 w-5 text-blue-400" />
-                    Progresso Semanal
+                    Weekly Progress
                   </CardTitle>
                   <CardDescription>
-                    Tarefas e pomodoros concluídos por dia
+                    Tasks and pomodoros completed per day
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-72">
@@ -453,10 +454,10 @@ const Achievements = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="flex items-center text-xl justify-center">
                     <ChartBar className="mr-2 h-5 w-5 text-blue-400" />
-                    Produtividade por Dia
+                    Productivity by Day
                   </CardTitle>
                   <CardDescription>
-                    Número de tarefas concluídas por dia
+                    Number of tasks completed by day
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-72">
@@ -522,10 +523,10 @@ const Achievements = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="flex items-center text-xl justify-center">
                     <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
-                    Distribuição por Projeto
+                    Distribution by Project
                   </CardTitle>
                   <CardDescription>
-                    Número de tarefas por projeto
+                    Number of tasks by project
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
@@ -562,7 +563,7 @@ const Achievements = () => {
                             ))}
                           </Pie>
                           <Tooltip 
-                            formatter={(value) => [`${value} tarefas`, ""]}
+                            formatter={(value) => [`${value} tasks`, ""]}
                             contentStyle={{ 
                               backgroundColor: "var(--tooltip-bg, rgba(255, 255, 255, 0.1))",
                               backdropFilter: "blur(8px)",
@@ -579,7 +580,7 @@ const Achievements = () => {
                   ) : (
                     <div className="text-center p-8">
                       <p className="text-muted-foreground">
-                        Nenhum projeto com tarefas ainda.
+                        No projects with tasks yet.
                       </p>
                     </div>
                   )}
@@ -592,10 +593,10 @@ const Achievements = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="flex items-center text-xl justify-center">
                     <ChartPie className="mr-2 h-5 w-5 text-blue-400" />
-                    Distribuição por Tag
+                    Distribution by Tag
                   </CardTitle>
                   <CardDescription>
-                    Número de tarefas por tag
+                    Number of tasks by tag
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-[280px] flex items-center justify-center">
@@ -632,7 +633,7 @@ const Achievements = () => {
                             ))}
                           </Pie>
                           <Tooltip 
-                            formatter={(value) => [`${value} tarefas`, ""]}
+                            formatter={(value) => [`${value} tasks`, ""]}
                             contentStyle={{ 
                               backgroundColor: "var(--tooltip-bg, rgba(255, 255, 255, 0.1))",
                               backdropFilter: "blur(8px)",
@@ -649,7 +650,7 @@ const Achievements = () => {
                   ) : (
                     <div className="text-center p-8">
                       <p className="text-muted-foreground">
-                        Nenhuma tarefa com tags ainda.
+                        No tasks with tags yet.
                       </p>
                     </div>
                   )}
@@ -658,10 +659,10 @@ const Achievements = () => {
             </motion.div>
           </motion.div>
 
-          {/* Conquistas/Badges Section - centralized */}
+          {/* Achievements/Badges Section - centralized */}
           <motion.div variants={itemVariants} className="text-center">
             <h2 className="text-2xl font-bold mb-4 inline-block dark:title-gradient-dark title-gradient-light">
-              Conquistas
+              Achievements
             </h2>
             
             <motion.div 
@@ -694,7 +695,7 @@ const Achievements = () => {
                               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                               className="mt-2 px-2 py-0.5 rounded-full dark:bg-blue-500/20 dark:text-blue-300 bg-blue-100 text-blue-600 text-xs"
                             >
-                              Conquistado
+                              Achieved
                             </motion.div>
                           )}
                         </CardContent>
@@ -710,9 +711,9 @@ const Achievements = () => {
                       </div>
                       <div className="mt-3 text-xs text-muted-foreground flex justify-end">
                         {badge.achieved ? (
-                          <span className="dark:text-green-400 text-green-600">Conquistado</span>
+                          <span className="dark:text-green-400 text-green-600">Achieved</span>
                         ) : (
-                          <span>Em progresso</span>
+                          <span>In progress</span>
                         )}
                       </div>
                     </HoverCardContent>
