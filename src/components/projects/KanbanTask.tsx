@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarIcon, Clock, GripVertical, CheckSquare, Square } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { useAppStore } from '@/lib/store';
 import { TaskDetailDrawer } from '@/components/tasks/TaskDetailDrawer';
 
@@ -36,7 +36,7 @@ export const KanbanTask = ({
   const formattedDate = task.dueDate
     ? formatDistanceToNow(new Date(task.dueDate), {
         addSuffix: true,
-        locale: ptBR,
+        locale: enUS,
       })
     : null;
 
@@ -110,6 +110,9 @@ export const KanbanTask = ({
     alta: 'bg-red-500',
     media: 'bg-yellow-500',
     baixa: 'bg-green-500',
+    high: 'bg-red-500',
+    medium: 'bg-yellow-500',
+    low: 'bg-green-500',
   };
 
   // Calculate subtasks completion
@@ -158,9 +161,9 @@ export const KanbanTask = ({
                   <GripVertical size={14} />
                 </div>
                 <span className="font-medium text-sm">{task.title}</span>
-                {/* Badge de tarefa rápida */}
+                {/* Quick task badge */}
                 {task.isQuick && (
-                  <Badge variant="outline" className="ml-1 text-xs px-2 py-0.5">⚡ Rápida</Badge>
+                  <Badge variant="outline" className="ml-1 text-xs px-2 py-0.5">⚡ Quick</Badge>
                 )}
               </div>
               {task.priority && (
@@ -181,7 +184,7 @@ export const KanbanTask = ({
             {task.subtasks && task.subtasks.length > 0 && (
               <div className="mt-1.5 space-y-1">
                 <div className="flex items-center text-xs text-muted-foreground">
-                  <span>Subtarefas: {completedSubtasks}/{totalSubtasks}</span>
+                  <span>Subtasks: {completedSubtasks}/{totalSubtasks}</span>
                 </div>
                 
                 {/* Display first 2 subtasks only to save space */}
@@ -207,7 +210,7 @@ export const KanbanTask = ({
                   {/* Show counter if there are more subtasks */}
                   {task.subtasks.length > 2 && (
                     <div className="text-xs text-muted-foreground pl-5">
-                      + {task.subtasks.length - 2} mais
+                      + {task.subtasks.length - 2} more
                     </div>
                   )}
                 </div>

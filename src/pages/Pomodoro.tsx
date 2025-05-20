@@ -17,6 +17,8 @@ import { TimerControls } from "@/components/pomodoro/TimerControls";
 const Pomodoro = () => {
   const { projects, tasks, completeTask, toggleTaskCompletion } = useAppStore();
   const [projectTasks, setProjectTasks] = useState<any[]>([]);
+  
+  // Get pomodoro state from store
   const {
     isActive,
     isPaused,

@@ -71,8 +71,8 @@ export const PomodoroMiniWidget = () => {
       const audio = new Audio('/notification.mp3');
       audio.play().catch(err => console.error('Could not play notification sound', err));
       
-      const title = timerMode === 'pomodoro' ? 'Pomodoro concluído!' : 'Pausa concluída!';
-      const message = timerMode === 'pomodoro' ? 'Hora de fazer uma pausa.' : 'Hora de voltar ao trabalho.';
+      const title = timerMode === 'pomodoro' ? 'Pomodoro completed!' : 'Break completed!';
+      const message = timerMode === 'pomodoro' ? 'Time to take a break.' : 'Time to get back to work.';
       
       showNotification(title, message);
       
@@ -234,7 +234,7 @@ export const PomodoroMiniWidget = () => {
                       variant="outline" 
                       className="w-full border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
                     >
-                      <Pause className="h-4 w-4 mr-1" /> Pausar
+                      <Pause className="h-4 w-4 mr-1" /> Pause
                     </Button>
                   ) : (
                     <Button 
@@ -243,7 +243,7 @@ export const PomodoroMiniWidget = () => {
                       variant="outline" 
                       className="w-full border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
                     >
-                      <Play className="h-4 w-4 mr-1" /> {timerState === "paused" ? "Continuar" : "Iniciar"}
+                      <Play className="h-4 w-4 mr-1" /> {timerState === "paused" ? "Continue" : "Start"}
                     </Button>
                   )}
                   <Button 

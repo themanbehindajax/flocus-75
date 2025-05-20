@@ -22,12 +22,12 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   const doingTasks = tasks.filter(task => task.status === "doing");
   const doneTasks = tasks.filter(task => task.status === "done");
   
-  // Melhorado: Simplifica o início do arrasto
+  // Improved: Simplifies drag start
   const handleDragStart = (task: Task) => {
     setDraggedTask(task);
     setIsDragging(true);
     
-    // Adiciona classe global para melhorar a UX durante o arrasto
+    // Add global class to improve UX during dragging
     document.body.classList.add('is-dragging');
   };
   
@@ -37,21 +37,21 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     setDragOverColumn(status);
   };
   
-  // Melhorado: Função handleDrop mais intuitiva
+  // Improved: More intuitive handleDrop function
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
     e.preventDefault();
     
-    // Limpa estado global de arrastar
+    // Clear global drag state
     document.body.classList.remove('is-dragging');
     
     if (!draggedTask) return;
     
-    // Reseta o estado do drag
+    // Reset drag state
     setIsDragging(false);
     setDragOverColumn(null);
     
     if (draggedTask.status !== status) {
-      // Atualiza o status da tarefa
+      // Update task status
       const updatedTask = {
         ...draggedTask,
         status,
@@ -60,27 +60,27 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       
       updateTask(updatedTask);
       
-      // Feedback visual e sonoro melhorado
-      // Se movido para o status "done" e não estiver concluído, marca como concluído
+      // Improved visual and audio feedback
+      // If moved to "done" status and not completed, mark as completed
       if (status === "done" && !draggedTask.completed) {
         toggleTaskCompletion(draggedTask.id);
-        toast.success(`Tarefa "${draggedTask.title}" concluída!`, {
+        toast.success(`Task "${draggedTask.title}" completed!`, {
           className: "animate-fade-in",
           duration: 2000
         });
       }
-      // Se movido do "done" para outro status e estiver concluído, desmarca conclusão
+      // If moved from "done" to another status and is completed, unmark completion
       else if (draggedTask.status === "done" && status !== "done" && draggedTask.completed) {
         toggleTaskCompletion(draggedTask.id);
-        toast.info(`Tarefa "${draggedTask.title}" reaberta!`, {
+        toast.info(`Task "${draggedTask.title}" reopened!`, {
           className: "animate-fade-in",
           duration: 2000
         });
       } else {
-        toast.info(`Tarefa movida para ${
-          status === "todo" ? "A Fazer" : 
-          status === "doing" ? "Fazendo" : 
-          "Feito"
+        toast.info(`Task moved to ${
+          status === "todo" ? "To Do" : 
+          status === "doing" ? "In Progress" : 
+          "Done"
         }`, {
           className: "animate-fade-in",
           duration: 2000
@@ -92,14 +92,14 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
   };
 
   const handleDragEnd = () => {
-    // Limpeza completa do estado de arrastar
+    // Complete cleanup of drag state
     setIsDragging(false);
     setDraggedTask(null);
     setDragOverColumn(null);
     document.body.classList.remove('is-dragging');
   };
 
-  // Melhoria de acessibilidade com atalhos de teclado
+  // Accessibility improvement with keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!draggedTask) return;
@@ -115,7 +115,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      // Garante que a classe seja removida ao desmontar
+      // Ensure class is removed when unmounting
       document.body.classList.remove('is-dragging');
     };
   }, [draggedTask]);
@@ -128,7 +128,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       transition={{ duration: 0.3 }}
     >
       <KanbanColumn 
-        title="A Fazer" 
+        title="To Do" 
         tasks={todoTasks}
         status="todo"
         onDragStart={handleDragStart}
@@ -139,7 +139,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       />
       
       <KanbanColumn 
-        title="Fazendo" 
+        title="In Progress" 
         tasks={doingTasks}
         status="doing"
         onDragStart={handleDragStart}
@@ -150,7 +150,7 @@ export const KanbanBoard = ({ tasks, projectId }: KanbanBoardProps) => {
       />
       
       <KanbanColumn 
-        title="Feito" 
+        title="Done" 
         tasks={doneTasks}
         status="done"
         onDragStart={handleDragStart}

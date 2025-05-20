@@ -70,13 +70,13 @@ export const TodayPriorities = () => {
       
       // Show toast notification based on the new state (opposite of the current state)
       if (!task.completed) {
-        toast.success(`Tarefa "${task.title}" concluída!`, {
+        toast.success(`Task "${task.title}" completed!`, {
           className: "toast-success",
           duration: 2000,
           position: "bottom-right",
         });
       } else {
-        toast.info(`Tarefa "${task.title}" reaberta!`, {
+        toast.info(`Task "${task.title}" reopened!`, {
           className: "toast-info",
           duration: 2000,
           position: "bottom-right",
@@ -104,14 +104,14 @@ export const TodayPriorities = () => {
               <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mx-auto mb-6">
                 <ListChecks className="h-10 w-10 text-primary/70" />
               </div>
-              <h3 className="font-medium text-xl mb-2">Sem prioridades definidas</h3>
+              <h3 className="font-medium text-xl mb-2">No priorities defined</h3>
               <p className="text-muted-foreground mt-2 mb-8 max-w-md mx-auto">
-                Defina até 6 tarefas prioritárias para o dia e aumente sua produtividade
+                Define up to 6 priority tasks for the day to increase your productivity
               </p>
             </motion.div>
             <Button variant="default" size="lg" className="gap-2 px-6 rounded-full shadow-[0_4px_12px_rgba(59,130,246,0.25)]" asChild>
               <Link to="/ivy-lee">
-                Definir prioridades
+                Set priorities
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </Button>
@@ -131,7 +131,7 @@ export const TodayPriorities = () => {
         <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/30">
           <div className="space-y-1">
             <h2 className="text-xl font-semibold leading-none tracking-tight inline-flex items-center gap-2">
-              Prioridades de Hoje
+              Today's Priorities
               {completionPercentage === 100 && (
                 <HoverCard>
                   <HoverCardTrigger asChild>
@@ -140,18 +140,18 @@ export const TodayPriorities = () => {
                     </div>
                   </HoverCardTrigger>
                   <HoverCardContent className="w-60 p-3 text-sm">
-                    Parabéns! Você completou todas as tarefas prioritárias de hoje.
+                    Congratulations! You've completed all your priority tasks for today.
                   </HoverCardContent>
                 </HoverCard>
               )}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {completedTasks} de {totalTasks} tarefas concluídas
+              {completedTasks} of {totalTasks} tasks completed
             </p>
           </div>
           <Button variant="ghost" size="sm" className="gap-1.5 hover:bg-primary/10 hover:text-primary transition-colors rounded-full" asChild>
             <Link to="/ivy-lee">
-              Gerenciar
+              Manage
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -160,7 +160,7 @@ export const TodayPriorities = () => {
         <CardContent className="pt-4">
           <div className="mb-6">
             <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-              <span>Progresso</span>
+              <span>Progress</span>
               <motion.span 
                 key={completionPercentage}
                 initial={{ opacity: 0, y: -5 }}
@@ -202,7 +202,7 @@ export const TodayPriorities = () => {
                 <button 
                   onClick={() => handleToggleTaskCompletion(task.id)}
                   className="flex items-center justify-center"
-                  aria-label={task.completed ? "Marcar tarefa como não concluída" : "Marcar tarefa como concluída"}
+                  aria-label={task.completed ? "Mark task as not completed" : "Mark task as completed"}
                 >
                   <div 
                     className={cn(

@@ -60,8 +60,8 @@ export const KanbanColumn = ({
               isDraggingOver ? "border-primary/80 bg-primary/10" : ""
             )}>
               {isDraggingOver ? 
-                <span className="font-medium text-primary">Solte aqui</span> : 
-                <span>Sem tarefas</span>}
+                <span className="font-medium text-primary">Drop here</span> : 
+                <span>No tasks</span>}
             </div>
           )}
         </div>
