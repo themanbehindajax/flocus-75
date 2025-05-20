@@ -20,10 +20,10 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   // Get the appropriate text based on timer mode
   const getModeText = () => {
     switch(timerMode) {
-      case "pomodoro": return "CONCENTRAÇÃO";
-      case "shortBreak": return "PAUSA CURTA";
-      case "longBreak": return "PAUSA LONGA";
-      default: return "CONCENTRAÇÃO";
+      case "pomodoro": return "FOCUS";
+      case "shortBreak": return "SHORT BREAK";
+      case "longBreak": return "LONG BREAK";
+      default: return "FOCUS";
     }
   };
 

@@ -35,17 +35,17 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-2 w-full">
-        <label className="text-sm font-medium text-white">Projeto</label>
+        <label className="text-sm font-medium text-white">Project</label>
         <Select
           value={selectedProjectId || "none"}
           onValueChange={onProjectChange}
           disabled={disabled}
         >
           <SelectTrigger className="bg-white/5 border-white/20 text-white w-full">
-            <SelectValue placeholder="Selecione um projeto" />
+            <SelectValue placeholder="Select a project" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">Sem projeto específico</SelectItem>
+            <SelectItem value="none">No specific project</SelectItem>
             {projects.map(project => (
               <SelectItem key={project.id} value={project.id}>
                 {project.name}
@@ -56,17 +56,17 @@ export const TaskSelection: React.FC<TaskSelectionProps> = ({
       </div>
       
       <div className="space-y-2 w-full">
-        <label className="text-sm font-medium text-white">Tarefa</label>
+        <label className="text-sm font-medium text-white">Task</label>
         <Select
           value={selectedTaskId || "none"}
           onValueChange={onTaskChange}
           disabled={disabled}
         >
           <SelectTrigger className="bg-white/5 border-white/20 text-white w-full">
-            <SelectValue placeholder="Selecione uma tarefa" />
+            <SelectValue placeholder="Select a task" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">Sem tarefa específica</SelectItem>
+            <SelectItem value="none">No specific task</SelectItem>
             {tasks
               .filter(task => !task.completed && (!selectedProjectId || task.projectId === selectedProjectId))
               .map(task => (

@@ -29,7 +29,7 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
             tabIndex={0}
           >
             <Pause className="mr-2 h-4 w-4" />
-            Pausar
+            Pause
             <motion.div
               className="absolute inset-0 bg-primary-600 -z-10"
               initial={{ scale: 0, opacity: 0.5 }}
@@ -51,7 +51,7 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
             tabIndex={0}
           >
             <Play className="mr-2 h-4 w-4" />
-            {timerState === "paused" ? "Continuar" : "Iniciar"}
+            {timerState === "paused" ? "Continue" : "Start"}
             <motion.div
               className="absolute inset-0 bg-primary-600 -z-10"
               initial={{ scale: 0, opacity: 0.5 }}
@@ -76,7 +76,7 @@ export const TimerControls: React.FC<TimerControlsProps> = ({
           tabIndex={0}
         >
           <RotateCcw className="mr-2 h-4 w-4" />
-          Reiniciar
+          Reset
         </Button>
       </motion.div>
     </div>

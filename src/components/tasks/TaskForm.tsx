@@ -27,10 +27,10 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
   const { toast } = useToast();
   const location = useLocation();
 
-  // Determinar projectId com base na ordem de prioridade:
-  // 1. defaultProjectId (passado como prop)
-  // 2. editTask?.projectId (se estiver editando uma tarefa)
-  // 3. URL do projeto atual (se estiver em uma página de projeto)
+  // Determine projectId based on priority order:
+  // 1. defaultProjectId (passed as prop)
+  // 2. editTask?.projectId (if editing a task)
+  // 3. URL of the current project (if on a project page)
   const projectIdFromUrl = location.pathname.startsWith('/projects/') 
     ? location.pathname.split('/projects/')[1]
     : undefined;
@@ -79,7 +79,7 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
     }
   }, [editTask]);
 
-  // Garante que o projectId é atualizado se a prop defaultProjectId mudar
+  // Ensure projectId is updated if the defaultProjectId prop changes
   useEffect(() => {
     if (defaultProjectId) {
       setNewTask(prev => ({
@@ -105,10 +105,10 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
         };
       });
 
-      // Usamos o projectId do estado, que já foi definido corretamente
+      // Use the projectId from state, which has already been set correctly
       const actualProjectId = newTask.projectId;
       
-      console.log("Salvando tarefa com dados. ProjectId=", actualProjectId);
+      console.log("Saving task with data. ProjectId=", actualProjectId);
 
       const taskData = {
         title: newTask.title.trim(),
@@ -123,7 +123,7 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
         completed: false,
       };
 
-      console.log("Salvando tarefa com dados completos:", taskData);
+      console.log("Saving task with complete data:", taskData);
 
       try {
         if (editTask) {
@@ -133,21 +133,21 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
             updatedAt: new Date().toISOString()
           });
           toast({
-            title: "Tarefa atualizada",
-            description: `A tarefa "${taskData.title}" foi atualizada com sucesso.`,
+            title: "Task updated",
+            description: `The task "${taskData.title}" was updated successfully.`,
           });
         } else {
-          // Adiciona a tarefa diretamente usando o método do store
+          // Add the task directly using the store method
           const taskId = addTask(taskData);
-          console.log("Tarefa criada com ID:", taskId);
+          console.log("Task created with ID:", taskId);
           
           toast({
-            title: "Tarefa criada",
-            description: `A tarefa "${taskData.title}" foi criada com sucesso.`,
+            title: "Task created",
+            description: `The task "${taskData.title}" was created successfully.`,
           });
         }
         
-        // Resetamos o formulário
+        // Reset the form
         setNewTask({
           title: "",
           description: "",
@@ -161,22 +161,22 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
         });
         setDate(undefined);
         
-        // Chamamos o callback após a operação ser concluída
+        // Call the callback after the operation is completed
         if (onComplete) {
           onComplete();
         }
       } catch (error) {
-        console.error("Erro ao salvar tarefa:", error);
+        console.error("Error saving task:", error);
         toast({
-          title: "Erro",
-          description: "Ocorreu um erro ao salvar a tarefa.",
+          title: "Error",
+          description: "An error occurred while saving the task.",
           variant: "destructive"
         });
       }
     } else {
       toast({
-        title: "Título obrigatório",
-        description: "Por favor, adicione um título para a tarefa.",
+        title: "Title required",
+        description: "Please add a title for the task.",
         variant: "destructive"
       });
     }
@@ -215,7 +215,7 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
           projectId={newTask.projectId}
           setProjectId={(projectId) => setNewTask({ ...newTask, projectId })}
           projects={projects}
-          disabled={!!defaultProjectId} // Desabilitar se um projectId foi fornecido como prop
+          disabled={!!defaultProjectId} // Disable if a projectId was provided as a prop
         />
         <TaskFormTags
           tags={tags}
@@ -237,10 +237,10 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onComplete}>
-          Cancelar
+          Cancel
         </Button>
         <Button onClick={handleSaveTask}>
-          {editTask ? "Salvar Alterações" : "Criar Tarefa"}
+          {editTask ? "Save Changes" : "Create Task"}
         </Button>
       </DialogFooter>
     </div>

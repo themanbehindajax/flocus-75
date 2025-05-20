@@ -23,7 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, parse, set } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { enUS } from 'date-fns/locale';
 import { CalendarIcon, Bell, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CalendarEvent } from "@/lib/types";
@@ -170,13 +170,13 @@ export const CalendarEventForm = ({
     e.preventDefault();
     
     if (!eventData.title.trim()) {
-      toast.error("O título do evento é obrigatório");
+      toast.error("Event title is required");
       return;
     }
     
     // For repeating events, require a repeat until date
     if (eventData.repeat !== "none" && !eventData.repeatUntil) {
-      toast.error("Para eventos recorrentes, defina até quando o evento se repetirá");
+      toast.error("For recurring events, define when the event will stop repeating");
       return;
     }
 
@@ -205,7 +205,7 @@ export const CalendarEventForm = ({
 
       // Validate that end time is after start time on the same day
       if (finalEndDate < finalStartDate) {
-        toast.error("O horário de término deve ser após o horário de início");
+        toast.error("End time must be after start time");
         return;
       }
     } else {
@@ -231,10 +231,10 @@ export const CalendarEventForm = ({
         ...editEvent,
         ...newEventData
       });
-      toast.success("Evento atualizado com sucesso!");
+      toast.success("Event updated successfully!");
     } else {
       addCalendarEvent(newEventData);
-      toast.success("Evento criado com sucesso!");
+      toast.success("Event created successfully!");
     }
     
     resetForm();
@@ -243,7 +243,7 @@ export const CalendarEventForm = ({
 
   // Format date for display with São Paulo timezone
   const formatLocalDate = (date: Date) => {
-    return formatInTimeZone(date, 'America/Sao_Paulo', 'PPP', { locale: ptBR });
+    return formatInTimeZone(date, 'America/Sao_Paulo', 'PPP', { locale: enUS });
   };
 
   return (
@@ -252,38 +252,38 @@ export const CalendarEventForm = ({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {editEvent ? "Editar Evento" : "Criar Novo Evento"}
+              {editEvent ? "Edit Event" : "Create New Event"}
             </DialogTitle>
             <DialogDescription>
-              Adicione os detalhes do evento no seu calendário
+              Add event details to your calendar
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="title">Título</Label>
+              <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
                 value={eventData.title}
                 onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
-                placeholder="Título do evento"
+                placeholder="Event title"
               />
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="description">Descrição</Label>
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={eventData.description}
                 onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
-                placeholder="Descrição do evento (opcional)"
+                placeholder="Event description (optional)"
                 rows={3}
               />
             </div>
 
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="all-day">Dia Inteiro</Label>
+                <Label htmlFor="all-day">All Day</Label>
                 <Switch
                   id="all-day"
                   checked={eventData.allDay}
@@ -294,7 +294,7 @@ export const CalendarEventForm = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Data de Início</Label>
+                <Label>Start Date</Label>
                 <Popover open={startDatePickerOpen} onOpenChange={setStartDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -311,7 +311,7 @@ export const CalendarEventForm = ({
                       selected={eventData.startDate}
                       onSelect={handleStartDateSelect}
                       initialFocus
-                      locale={ptBR}
+                      locale={enUS}
                       className="pointer-events-auto"
                     />
                   </PopoverContent>
@@ -319,7 +319,7 @@ export const CalendarEventForm = ({
               </div>
 
               <div className="grid gap-2">
-                <Label>Data de Fim</Label>
+                <Label>End Date</Label>
                 <Popover open={endDatePickerOpen} onOpenChange={setEndDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -327,7 +327,7 @@ export const CalendarEventForm = ({
                       className={cn("w-full justify-start text-left font-normal")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {eventData.endDate ? formatLocalDate(eventData.endDate) : "Não definido"}
+                      {eventData.endDate ? formatLocalDate(eventData.endDate) : "Not set"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -337,7 +337,7 @@ export const CalendarEventForm = ({
                       onSelect={handleEndDateSelect}
                       fromDate={eventData.startDate}
                       initialFocus
-                      locale={ptBR}
+                      locale={enUS}
                       className="pointer-events-auto"
                     />
                   </PopoverContent>
@@ -348,7 +348,7 @@ export const CalendarEventForm = ({
             {!eventData.allDay && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="start-time">Horário de Início</Label>
+                  <Label htmlFor="start-time">Start Time</Label>
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -362,7 +362,7 @@ export const CalendarEventForm = ({
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="end-time">Horário de Término</Label>
+                  <Label htmlFor="end-time">End Time</Label>
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -378,27 +378,27 @@ export const CalendarEventForm = ({
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="repeat">Repetir</Label>
+              <Label htmlFor="repeat">Repeat</Label>
               <Select
                 value={eventData.repeat}
                 onValueChange={(value: any) => setEventData({ ...eventData, repeat: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Não repetir" />
+                  <SelectValue placeholder="Don't repeat" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Não repetir</SelectItem>
-                  <SelectItem value="daily">Diariamente</SelectItem>
-                  <SelectItem value="weekly">Semanalmente</SelectItem>
-                  <SelectItem value="monthly">Mensalmente</SelectItem>
-                  <SelectItem value="yearly">Anualmente</SelectItem>
+                  <SelectItem value="none">Don't repeat</SelectItem>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {eventData.repeat !== "none" && (
               <div className="grid gap-2">
-                <Label htmlFor="repeat-until">Repetir Até</Label>
+                <Label htmlFor="repeat-until">Repeat Until</Label>
                 <Popover open={repeatUntilPickerOpen} onOpenChange={setRepeatUntilPickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -406,7 +406,7 @@ export const CalendarEventForm = ({
                       className={cn("w-full justify-start text-left font-normal")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {eventData.repeatUntil ? formatLocalDate(eventData.repeatUntil) : "Selecione uma data"}
+                      {eventData.repeatUntil ? formatLocalDate(eventData.repeatUntil) : "Select a date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -416,7 +416,7 @@ export const CalendarEventForm = ({
                       onSelect={handleRepeatUntilSelect}
                       fromDate={eventData.startDate}
                       initialFocus
-                      locale={ptBR}
+                      locale={enUS}
                       className="pointer-events-auto"
                     />
                   </PopoverContent>
@@ -425,27 +425,27 @@ export const CalendarEventForm = ({
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="reminder">Lembrete</Label>
+              <Label htmlFor="reminder">Reminder</Label>
               <Select
                 value={eventData.reminder?.toString() || "null"}
                 onValueChange={(value) => setEventData({ ...eventData, reminder: value === "null" ? null : parseInt(value) })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sem lembrete" />
+                  <SelectValue placeholder="No reminder" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="null">Sem lembrete</SelectItem>
-                  <SelectItem value="5">5 minutos antes</SelectItem>
-                  <SelectItem value="15">15 minutos antes</SelectItem>
-                  <SelectItem value="30">30 minutos antes</SelectItem>
-                  <SelectItem value="60">1 hora antes</SelectItem>
-                  <SelectItem value="1440">1 dia antes</SelectItem>
+                  <SelectItem value="null">No reminder</SelectItem>
+                  <SelectItem value="5">5 minutes before</SelectItem>
+                  <SelectItem value="15">15 minutes before</SelectItem>
+                  <SelectItem value="30">30 minutes before</SelectItem>
+                  <SelectItem value="60">1 hour before</SelectItem>
+                  <SelectItem value="1440">1 day before</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="color">Cor</Label>
+              <Label htmlFor="color">Color</Label>
               <div className="flex gap-2">
                 {["#6366f1", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"].map(color => (
                   <button
@@ -465,10 +465,10 @@ export const CalendarEventForm = ({
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit">
-              {editEvent ? "Atualizar Evento" : "Criar Evento"}
+              {editEvent ? "Update Event" : "Create Event"}
             </Button>
           </DialogFooter>
         </form>
