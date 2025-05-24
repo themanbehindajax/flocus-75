@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -24,6 +25,7 @@ import { AppSettings } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, X } from "lucide-react";
 import { TIMEZONE_OPTIONS, getCurrentTimeInTimezone } from "@/lib/timezone";
+import { t } from "@/lib/translations";
 
 const Settings = () => {
   const { settings, updateSettings, profile, updateProfile, timezone, setTimezone } = useAppStore();
@@ -70,7 +72,7 @@ const Settings = () => {
       updateProfile(profileUpdates);
     }
     
-    toast.success("Configurações atualizadas com sucesso!");
+    toast.success(t('settings_saved'));
   };
 
   const handleAvatarClick = () => {
@@ -105,14 +107,14 @@ const Settings = () => {
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('settings_title')}</h1>
         
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Perfil</CardTitle>
+            <CardTitle>{t('profile')}</CardTitle>
             <CardDescription>
-              Configure suas informações pessoais
+              {t('profile_description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -153,7 +155,7 @@ const Settings = () => {
 
               <div className="w-full space-y-4">
                 <div>
-                  <Label htmlFor="name">Nome</Label>
+                  <Label htmlFor="name">{t('name')}</Label>
                   <Input
                     id="name"
                     value={name}
@@ -163,13 +165,13 @@ const Settings = () => {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">Seus pontos:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.points} pontos</p>
+                    <h3 className="font-medium">{t('your_points')}</h3>
+                    <p className="text-muted-foreground text-sm">{profile.points} {t('points')}</p>
                   </div>
                   
                   <div>
-                    <h3 className="font-medium">Sequência atual:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.streak} dias</p>
+                    <h3 className="font-medium">{t('current_streak')}</h3>
+                    <p className="text-muted-foreground text-sm">{profile.streak} {t('days')}</p>
                   </div>
                 </div>
               </div>
@@ -180,17 +182,17 @@ const Settings = () => {
         {/* Pomodoro Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Configurações do Pomodoro</CardTitle>
+            <CardTitle>{t('pomodoro_settings')}</CardTitle>
             <CardDescription>
-              Ajuste os tempos de foco e pausa
+              {t('pomodoro_settings_description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="pomodoro-duration">Pomodoro Duration</Label>
-                  <span className="text-muted-foreground">{formSettings.pomodoroDuration} min</span>
+                  <Label htmlFor="pomodoro-duration">{t('pomodoro_duration')}</Label>
+                  <span className="text-muted-foreground">{formSettings.pomodoroDuration} {t('minutes')}</span>
                 </div>
                 <Slider
                   id="pomodoro-duration"
@@ -204,8 +206,8 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="short-break">Short Break</Label>
-                  <span className="text-muted-foreground">{formSettings.shortBreakDuration} min</span>
+                  <Label htmlFor="short-break">{t('short_break')}</Label>
+                  <span className="text-muted-foreground">{formSettings.shortBreakDuration} {t('minutes')}</span>
                 </div>
                 <Slider
                   id="short-break"
@@ -219,8 +221,8 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="long-break">Long Break</Label>
-                  <span className="text-muted-foreground">{formSettings.longBreakDuration} min</span>
+                  <Label htmlFor="long-break">{t('long_break')}</Label>
+                  <span className="text-muted-foreground">{formSettings.longBreakDuration} {t('minutes')}</span>
                 </div>
                 <Slider
                   id="long-break"
@@ -238,37 +240,37 @@ const Settings = () => {
         {/* Appearance Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Aparência</CardTitle>
+            <CardTitle>{t('appearance')}</CardTitle>
             <CardDescription>
-              Personalize a aparência da aplicação
+              {t('appearance_description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="theme">Tema</Label>
+              <Label htmlFor="theme">{t('theme')}</Label>
               <Select
                 value={formSettings.theme}
                 onValueChange={(value) => setFormSettings({ ...formSettings, theme: value as "light" | "dark" | "system" })}
               >
                 <SelectTrigger id="theme">
-                  <SelectValue placeholder="Selecione um tema" />
+                  <SelectValue placeholder={`${t('select')} ${t('theme').toLowerCase()}`} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="dark">Escuro</SelectItem>
-                  <SelectItem value="system">Sistema</SelectItem>
+                  <SelectItem value="light">{t('light')}</SelectItem>
+                  <SelectItem value="dark">{t('dark')}</SelectItem>
+                  <SelectItem value="system">{t('system')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timezone">Fuso Horário</Label>
+              <Label htmlFor="timezone">{t('timezone')}</Label>
               <Select
                 value={selectedTimezone}
                 onValueChange={handleTimezoneChange}
               >
                 <SelectTrigger id="timezone">
-                  <SelectValue placeholder="Selecione um fuso horário">
+                  <SelectValue placeholder={`${t('select')} ${t('timezone').toLowerCase()}`}>
                     {getSelectedTimezoneLabel()}
                   </SelectValue>
                 </SelectTrigger>
@@ -286,12 +288,12 @@ const Settings = () => {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                Horário atual: {getCurrentTimeInTimezone(selectedTimezone)}
+                {t('timezone_description')} {getCurrentTimeInTimezone(selectedTimezone)}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notifications">Notificações</Label>
+              <Label htmlFor="notifications">{t('notifications')}</Label>
               <Select
                 value={formSettings.notificationsEnabled ? "enabled" : "disabled"}
                 onValueChange={(value) => setFormSettings({ 
@@ -300,11 +302,11 @@ const Settings = () => {
                 })}
               >
                 <SelectTrigger id="notifications">
-                  <SelectValue placeholder="Configure as notificações" />
+                  <SelectValue placeholder={`Configure ${t('notifications').toLowerCase()}`} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enabled">Habilitadas</SelectItem>
-                  <SelectItem value="disabled">Desabilitadas</SelectItem>
+                  <SelectItem value="enabled">{t('enabled')}</SelectItem>
+                  <SelectItem value="disabled">{t('disabled')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -313,7 +315,7 @@ const Settings = () => {
         
         <div className="flex justify-end">
           <Button onClick={handleSaveSettings}>
-            Salvar Configurações
+            {t('save_settings')}
           </Button>
         </div>
       </div>
