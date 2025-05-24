@@ -237,10 +237,10 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onComplete}>
-          Cancel
+          {t('cancel')}
         </Button>
         <Button onClick={handleSaveTask}>
-          {editTask ? "Save Changes" : "Create Task"}
+          {editTask ? t('save_changes') : t('create_task')}
         </Button>
       </DialogFooter>
     </div>

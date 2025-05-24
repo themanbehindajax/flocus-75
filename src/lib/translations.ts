@@ -64,6 +64,42 @@ export const translations = {
   edit_project: "Edit Project",
   tasks_count: "tasks",
   
+  // Tasks
+  create_new_task: "Create New Task",
+  add_task_details: "Add details for your new task.",
+  title: "Title",
+  task_title_placeholder: "Enter task title",
+  description: "Description",
+  task_description_placeholder: "Describe the task",
+  priority: "Priority",
+  status: "Status",
+  due_date: "Due Date",
+  select_due_date: "Select a date",
+  project: "Project",
+  no_project: "No project",
+  select_project: "Select a project",
+  project_preselected: "The project was pre-selected and cannot be changed in this view.",
+  tags: "Tags",
+  new_tag: "New Tag",
+  no_tags_available: "No tags available",
+  quick_task: "Quick Task (2 minutes)",
+  quick_task_description: "Mark tasks that can be completed in 2 minutes or less",
+  subtasks: "Subtasks",
+  add_subtask: "Add Subtask",
+  subtask_placeholder: "Subtask name",
+  create_task: "Create Task",
+  save_changes: "Save Changes",
+  
+  // Priority levels
+  priority_low: "Low",
+  priority_medium: "Medium",
+  priority_high: "High",
+  
+  // Status levels
+  status_todo: "To Do",
+  status_in_progress: "In Progress",
+  status_done: "Done",
+  
   // Timezone options
   timezone_brasilia: "Brasília (UTC-3)",
   timezone_manaus: "Manaus (UTC-4)",

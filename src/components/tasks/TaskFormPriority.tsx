@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PriorityLevel } from "@/lib/types";
+import { t } from "@/lib/translations";
 
 interface TaskFormPriorityProps {
   value: PriorityLevel;
@@ -16,18 +17,18 @@ interface TaskFormPriorityProps {
 
 export const TaskFormPriority = ({ value, onChange }: TaskFormPriorityProps) => (
   <div className="space-y-2">
-    <Label htmlFor="priority">Prioridade</Label>
+    <Label htmlFor="priority">{t('priority')}</Label>
     <Select
       value={value}
       onValueChange={(v) => onChange(v as PriorityLevel)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Selecione" />
+        <SelectValue placeholder={t('select')} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="baixa">Baixa</SelectItem>
-        <SelectItem value="media">Média</SelectItem>
-        <SelectItem value="alta">Alta</SelectItem>
+        <SelectItem value="baixa">{t('priority_low')}</SelectItem>
+        <SelectItem value="media">{t('priority_medium')}</SelectItem>
+        <SelectItem value="alta">{t('priority_high')}</SelectItem>
       </SelectContent>
     </Select>
   </div>
