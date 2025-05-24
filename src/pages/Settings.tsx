@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAppStore } from "@/lib/store";
@@ -24,12 +23,14 @@ import { toast } from "sonner";
 import { AppSettings } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, X } from "lucide-react";
+import { TIMEZONE_OPTIONS, getCurrentTimeInTimezone } from "@/lib/timezone";
 
 const Settings = () => {
-  const { settings, updateSettings, profile, updateProfile } = useAppStore();
+  const { settings, updateSettings, profile, updateProfile, timezone, setTimezone } = useAppStore();
   const [formSettings, setFormSettings] = useState<AppSettings>(settings);
   const [name, setName] = useState(profile.name);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(profile.avatar);
+  const [selectedTimezone, setSelectedTimezone] = useState(timezone || 'America/Sao_Paulo');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -40,8 +41,18 @@ const Settings = () => {
     setAvatarUrl(profile.avatar);
   }, [profile.avatar]);
 
+  useEffect(() => {
+    setSelectedTimezone(timezone || 'America/Sao_Paulo');
+  }, [timezone]);
+
   const handleSaveSettings = () => {
-    updateSettings(formSettings);
+    const updatedSettings = {
+      ...formSettings,
+      timezone: selectedTimezone
+    };
+    
+    updateSettings(updatedSettings);
+    setTimezone(selectedTimezone);
     
     const profileUpdates = {} as any;
     
@@ -59,7 +70,7 @@ const Settings = () => {
       updateProfile(profileUpdates);
     }
     
-    toast.success("Settings updated successfully!");
+    toast.success("Configurações atualizadas com sucesso!");
   };
 
   const handleAvatarClick = () => {
@@ -82,17 +93,26 @@ const Settings = () => {
     setAvatarUrl(undefined);
   };
 
+  const handleTimezoneChange = (newTimezone: string) => {
+    setSelectedTimezone(newTimezone);
+  };
+
+  const getSelectedTimezoneLabel = () => {
+    const option = TIMEZONE_OPTIONS.find(tz => tz.value === selectedTimezone);
+    return option?.label || selectedTimezone;
+  };
+
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
         
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
+            <CardTitle>Perfil</CardTitle>
             <CardDescription>
-              Configure your personal information
+              Configure suas informações pessoais
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -133,7 +153,7 @@ const Settings = () => {
 
               <div className="w-full space-y-4">
                 <div>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name">Nome</Label>
                   <Input
                     id="name"
                     value={name}
@@ -143,13 +163,13 @@ const Settings = () => {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">Your points:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.points} points</p>
+                    <h3 className="font-medium">Seus pontos:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.points} pontos</p>
                   </div>
                   
                   <div>
-                    <h3 className="font-medium">Current streak:</h3>
-                    <p className="text-muted-foreground text-sm">{profile.streak} days</p>
+                    <h3 className="font-medium">Sequência atual:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.streak} dias</p>
                   </div>
                 </div>
               </div>
@@ -160,9 +180,9 @@ const Settings = () => {
         {/* Pomodoro Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Pomodoro Settings</CardTitle>
+            <CardTitle>Configurações do Pomodoro</CardTitle>
             <CardDescription>
-              Adjust focus and break times
+              Ajuste os tempos de foco e pausa
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -218,31 +238,60 @@ const Settings = () => {
         {/* Appearance Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Appearance</CardTitle>
+            <CardTitle>Aparência</CardTitle>
             <CardDescription>
-              Customize the appearance of the application
+              Personalize a aparência da aplicação
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="theme">Theme</Label>
+              <Label htmlFor="theme">Tema</Label>
               <Select
                 value={formSettings.theme}
                 onValueChange={(value) => setFormSettings({ ...formSettings, theme: value as "light" | "dark" | "system" })}
               >
                 <SelectTrigger id="theme">
-                  <SelectValue placeholder="Select a theme" />
+                  <SelectValue placeholder="Selecione um tema" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="light">Claro</SelectItem>
+                  <SelectItem value="dark">Escuro</SelectItem>
+                  <SelectItem value="system">Sistema</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notifications">Notifications</Label>
+              <Label htmlFor="timezone">Fuso Horário</Label>
+              <Select
+                value={selectedTimezone}
+                onValueChange={handleTimezoneChange}
+              >
+                <SelectTrigger id="timezone">
+                  <SelectValue placeholder="Selecione um fuso horário">
+                    {getSelectedTimezoneLabel()}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {TIMEZONE_OPTIONS.map((timezone) => (
+                    <SelectItem key={timezone.value} value={timezone.value}>
+                      <div className="flex justify-between items-center w-full">
+                        <span>{timezone.label}</span>
+                        <span className="text-xs text-muted-foreground ml-2">
+                          {getCurrentTimeInTimezone(timezone.value)}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Horário atual: {getCurrentTimeInTimezone(selectedTimezone)}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notifications">Notificações</Label>
               <Select
                 value={formSettings.notificationsEnabled ? "enabled" : "disabled"}
                 onValueChange={(value) => setFormSettings({ 
@@ -251,11 +300,11 @@ const Settings = () => {
                 })}
               >
                 <SelectTrigger id="notifications">
-                  <SelectValue placeholder="Configure notifications" />
+                  <SelectValue placeholder="Configure as notificações" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enabled">Enabled</SelectItem>
-                  <SelectItem value="disabled">Disabled</SelectItem>
+                  <SelectItem value="enabled">Habilitadas</SelectItem>
+                  <SelectItem value="disabled">Desabilitadas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -264,7 +313,7 @@ const Settings = () => {
         
         <div className="flex justify-end">
           <Button onClick={handleSaveSettings}>
-            Save Settings
+            Salvar Configurações
           </Button>
         </div>
       </div>
