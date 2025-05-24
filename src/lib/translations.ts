@@ -9,6 +9,7 @@ export const translations = {
   update: "Update",
   close: "Close",
   open: "Open",
+  select: "Select",
   
   // Navigation
   home: "Home",
