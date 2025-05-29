@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -25,10 +26,7 @@ import {
   Lightbulb,
   Heart,
   Code,
-  Coffee,
-  Monitor,
-  Tablet,
-  Eye
+  Coffee
 } from "lucide-react";
 
 const LandingPage = () => {
@@ -38,65 +36,32 @@ const LandingPage = () => {
     {
       icon: Target,
       title: "Smart Task Management",
-      description: "Organize your tasks with intelligent priority systems and project tracking that adapts to your workflow.",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop" // Task management interface
+      description: "Organize your tasks with intelligent priority systems and project tracking that adapts to your workflow."
     },
     {
       icon: Clock,
       title: "Pomodoro Timer",
-      description: "Built-in focus sessions with customizable work and break intervals to maximize your productivity.",
-      image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop" // Timer interface
+      description: "Built-in focus sessions with customizable work and break intervals to maximize your productivity."
     },
     {
       icon: Calendar,
       title: "Calendar Integration",
-      description: "Seamlessly sync with your calendar for unified time management across all your devices.",
-      image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&h=400&fit=crop" // Calendar view
+      description: "Seamlessly sync with your calendar for unified time management across all your devices."
     },
     {
       icon: BarChart3,
       title: "Progress Analytics",
-      description: "Track your productivity with detailed insights, streak counters, and performance metrics.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" // Analytics dashboard
+      description: "Track your productivity with detailed insights, streak counters, and performance metrics."
     },
     {
       icon: Trophy,
       title: "Achievement System",
-      description: "Stay motivated with points, streaks, and productivity milestones that celebrate your progress.",
-      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop" // Achievement interface
+      description: "Stay motivated with points, streaks, and productivity milestones that celebrate your progress."
     },
     {
       icon: Zap,
       title: "Quick Actions",
-      description: "Capture thoughts instantly with 2-minute quick tasks and smart shortcuts for rapid productivity.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop" // Quick actions interface
-    }
-  ];
-
-  const platformViews = [
-    {
-      title: "Desktop Dashboard",
-      description: "Complete overview of your productivity metrics and daily tasks",
-      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop",
-      icon: Monitor
-    },
-    {
-      title: "Mobile Experience",
-      description: "Take your productivity on the go with our responsive mobile interface",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop",
-      icon: Smartphone
-    },
-    {
-      title: "Project Management",
-      description: "Organize complex projects with our intuitive kanban boards and timeline views",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop",
-      icon: Target
-    },
-    {
-      title: "Analytics & Insights",
-      description: "Deep dive into your productivity patterns with comprehensive analytics",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-      icon: BarChart3
+      description: "Capture thoughts instantly with 2-minute quick tasks and smart shortcuts for rapid productivity."
     }
   ];
 
@@ -249,7 +214,7 @@ const LandingPage = () => {
         </nav>
       </header>
 
-      {/* Enhanced Hero Section with Platform Preview */}
+      {/* Enhanced Hero Section */}
       <section className="relative z-10 px-4 py-24">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
@@ -327,30 +292,52 @@ const LandingPage = () => {
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Hero Platform Preview - MAIN PLATFORM IMAGE SHOWCASE */}
+          {/* Enhanced App Preview */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="relative max-w-7xl mx-auto"
+            className="relative max-w-6xl mx-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-3xl blur-2xl"></div>
-            <div className="relative glass-effect rounded-3xl p-2 shadow-2xl border border-white/20">
-              {/* Replace this section with actual platform screenshot */}
-              <div className="bg-gradient-to-br from-card via-card/95 to-card/90 rounded-2xl overflow-hidden border border-border/50">
-                <img 
-                  src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1200&h=800&fit=crop"
-                  alt="Flocus Platform Dashboard - Replace with actual screenshot"
-                  className="w-full h-[600px] object-cover rounded-2xl"
-                />
-                {/* Overlay with platform details */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
-                <div className="absolute bottom-6 left-6 text-white">
-                  <div className="text-sm bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full mb-2">
-                    💡 Replace this with your actual platform screenshot
+            <div className="relative glass-effect rounded-3xl p-8 shadow-2xl border border-white/20">
+              <div className="bg-gradient-to-br from-card via-card/95 to-card/90 rounded-2xl p-8 border border-border/50">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-2xl font-semibold">Today's Focus Session</h3>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2">Flocus Dashboard</h3>
-                  <p className="text-white/80">Complete productivity workspace</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    {["Review project proposal", "Team standup meeting", "Complete design mockups", "Client presentation prep"].map((task, i) => (
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 + i * 0.1 }}
+                        className="flex items-center space-x-4 p-4 bg-gradient-to-r from-muted/50 to-muted/30 rounded-xl hover:from-primary/10 hover:to-primary/5 transition-all duration-300"
+                      >
+                        <CheckCircle className="w-6 h-6 text-primary" />
+                        <span className="flex-1">{task}</span>
+                        <span className="text-sm text-muted-foreground">25 min</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <div className="relative">
+                      <div className="w-48 h-48 rounded-full border-8 border-primary/20"></div>
+                      <div className="absolute inset-0 w-48 h-48 rounded-full border-8 border-primary border-t-transparent animate-spin"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold">24:35</div>
+                          <div className="text-sm text-muted-foreground">Focus Session</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -384,7 +371,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Enhanced Features Section with Platform Images */}
+      {/* Enhanced Features Section */}
       <section className="relative z-10 px-4 py-24">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -412,86 +399,15 @@ const LandingPage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="group"
               >
-                <Card className="h-full glass-effect hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-primary/20 overflow-hidden">
-                  {/* Feature Image */}
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={feature.image}
-                      alt={`${feature.title} interface - Replace with actual screenshot`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <feature.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="absolute bottom-2 left-2 text-xs bg-black/20 backdrop-blur-sm text-white px-2 py-1 rounded">
-                      💡 Replace with {feature.title.toLowerCase()} screenshot
-                    </div>
-                  </div>
-                  
+                <Card className="h-full glass-effect hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-primary/20">
                   <CardHeader>
+                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                      <feature.icon className="w-8 h-8 text-white" />
+                    </div>
                     <CardTitle className="text-2xl mb-4">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* New Platform Views Section */}
-      <section className="relative z-10 px-4 py-24">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <div className="inline-flex items-center bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-full px-6 py-3 mb-8 backdrop-blur-sm border border-primary/20">
-              <Eye className="w-5 h-5 text-primary mr-2" />
-              <span className="text-sm font-medium text-primary">See Flocus in action</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-bold font-satoshi mb-8">
-              Platform
-              <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent"> showcase</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Experience Flocus across all your devices with our beautifully designed, intuitive interface.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {platformViews.map((view, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className="group"
-              >
-                <Card className="glass-effect hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-primary/20 overflow-hidden">
-                  <div className="relative h-64 overflow-hidden">
-                    <img 
-                      src={view.image}
-                      alt={`${view.title} - Replace with actual platform screenshot`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                    <div className="absolute top-4 left-4 w-12 h-12 bg-gradient-to-r from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <view.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="absolute bottom-2 left-2 text-xs bg-black/20 backdrop-blur-sm text-white px-2 py-1 rounded">
-                      💡 Replace with {view.title.toLowerCase()} screenshot
-                    </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-2xl font-bold mb-3">{view.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{view.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
