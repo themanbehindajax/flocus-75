@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "react-router-dom";
-import { t } from "@/lib/translations";
 import { TaskFormTitle } from "./TaskFormTitle";
 import { TaskFormDescription } from "./TaskFormDescription";
 import { TaskFormPriority } from "./TaskFormPriority";
@@ -238,10 +237,10 @@ export const TaskForm = ({ onComplete, editTask, defaultProjectId }: TaskFormPro
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onComplete}>
-          {t('cancel')}
+          Cancel
         </Button>
         <Button onClick={handleSaveTask}>
-          {editTask ? t('save_changes') : t('create_task')}
+          {editTask ? "Save Changes" : "Create Task"}
         </Button>
       </DialogFooter>
     </div>

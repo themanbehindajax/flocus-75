@@ -1,7 +1,7 @@
 
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { enUS } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,7 +12,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { t } from "@/lib/translations";
 
 interface TaskFormDueDateProps {
   date: Date | undefined;
@@ -29,7 +28,7 @@ export const TaskFormDueDate = ({ date, setDate }: TaskFormDueDateProps) => {
   
   return (
     <div className="space-y-2">
-      <Label>{t('due_date')}</Label>
+      <Label>Data de entrega</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -40,7 +39,7 @@ export const TaskFormDueDate = ({ date, setDate }: TaskFormDueDateProps) => {
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP", { locale: enUS }) : <span>{t('select_due_date')}</span>}
+            {date ? format(date, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -49,7 +48,7 @@ export const TaskFormDueDate = ({ date, setDate }: TaskFormDueDateProps) => {
             selected={date}
             onSelect={handleDateSelect}
             initialFocus
-            locale={enUS}
+            locale={ptBR}
             className="pointer-events-auto"
           />
         </PopoverContent>

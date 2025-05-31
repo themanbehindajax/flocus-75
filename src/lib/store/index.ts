@@ -29,7 +29,6 @@ export const useAppStore = create<AppState>()(
         sidebarOpen: state.sidebarOpen,
         sidebarCollapsed: state.sidebarCollapsed,
         notificationsEnabled: state.notificationsEnabled,
-        timezone: state.timezone,
         pomodoroSettings: state.pomodoroSettings,
         tasks: state.tasks,
         projects: state.projects,

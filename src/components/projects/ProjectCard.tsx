@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { t } from "@/lib/translations";
 
 interface ProjectCardProps {
   project: Project;
@@ -51,7 +50,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
       
       <CardContent>
         <div className="flex items-center justify-between text-sm mb-2">
-          <div className="font-medium">{completedTasks.length}/{projectTasks.length} {t('tasks_count')}</div>
+          <div className="font-medium">{completedTasks.length}/{projectTasks.length} tarefas</div>
           {project.dueDate && (
             <div className="flex items-center text-muted-foreground">
               <Clock className="h-3 w-3 mr-1" />
@@ -85,7 +84,7 @@ export const ProjectCard = ({ project, projectTasks, onEdit, onDelete }: Project
           asChild
           className="bg-primary/90 hover:bg-primary transition-colors backdrop-blur-sm"
         >
-          <Link to={`/projects/${project.id}`}>{t('open')}</Link>
+          <Link to={`/projects/${project.id}`}>Abrir</Link>
         </Button>
       </CardFooter>
     </Card>

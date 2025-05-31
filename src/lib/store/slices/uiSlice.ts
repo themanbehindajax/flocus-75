@@ -1,6 +1,5 @@
 
 import { UIState, SetFunction } from '../types';
-import { getDefaultTimezone } from '../../timezone';
 
 export const createUISlice = (set: SetFunction): UIState => ({
   // Theme
@@ -18,10 +17,6 @@ export const createUISlice = (set: SetFunction): UIState => ({
   // Notifications
   notificationsEnabled: true,
   setNotificationsEnabled: (enabled) => set((state) => ({ notificationsEnabled: enabled })),
-  
-  // Timezone
-  timezone: getDefaultTimezone(),
-  setTimezone: (timezone) => set((state) => ({ timezone })),
   
   // UI Preferences
   colorMode: 'light',
