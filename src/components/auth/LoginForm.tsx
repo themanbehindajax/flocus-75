@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuthStore } from "@/lib/auth";
 import { useAppStore } from "@/lib/store";
@@ -26,22 +27,22 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
     
     if (isSignUp) {
       if (!name.trim() || !email.trim() || !password.trim()) {
-        toast.error("Please fill in all fields");
+        toast.error("Por favor, preencha todos os campos");
         return;
       }
       
       if (password.length < 6) {
-        toast.error("Password must be at least 6 characters");
+        toast.error("A senha deve ter pelo menos 6 caracteres");
         return;
       }
       
       if (!email.includes('@')) {
-        toast.error("Please enter a valid email");
+        toast.error("Por favor, insira um email válido");
         return;
       }
     } else {
       if (!name.trim()) {
-        toast.error("Please enter your name");
+        toast.error("Por favor, insira seu nome");
         return;
       }
     }
@@ -68,7 +69,7 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
     login(user, "local");
     
     setIsLoading(false);
-    toast.success(isSignUp ? "Registration successful!" : "Login successful!");
+    toast.success(isSignUp ? "Cadastro realizado com sucesso!" : "Login realizado com sucesso!");
   };
 
   return (
@@ -77,11 +78,11 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <User className="w-4 h-4 text-muted-foreground" />
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nome</Label>
           </div>
           <Input
             id="name"
-            placeholder="Your name"
+            placeholder="Seu nome"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -99,7 +100,7 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
               </div>
               <Input
                 id="email"
-                placeholder="your.email@example.com"
+                placeholder="seu.email@exemplo.com"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -111,7 +112,7 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <KeyRound className="w-4 h-4 text-muted-foreground" />
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
               </div>
               <Input
                 id="password"
@@ -127,7 +128,7 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
         )}
         
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
+          {isLoading ? "Processando..." : isSignUp ? "Cadastrar" : "Entrar"}
         </Button>
       </form>
       
@@ -137,7 +138,7 @@ export const LoginForm = ({ isSignUp = false }: LoginFormProps) => {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            or continue with
+            ou continue com
           </span>
         </div>
       </div>

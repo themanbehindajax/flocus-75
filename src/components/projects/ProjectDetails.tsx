@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -46,7 +45,7 @@ const ProjectDetails = () => {
               <span className="mr-2">
                 <svg width={16} height={16}><path d="M10 6L6 10M6 6l4 4" /></svg>
               </span>
-              Voltar
+              Back
             </Button>
           </motion.div>
           <motion.div 
@@ -55,11 +54,11 @@ const ProjectDetails = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="flex flex-col items-center justify-center py-12 text-center"
           >
-            <h3 className="text-xl font-medium mb-2">Projeto não encontrado</h3>
+            <h3 className="text-xl font-medium mb-2">Project not found</h3>
             <p className="text-muted-foreground mb-6">
-              O projeto que você está procurando não existe ou foi removido.
+              The project you are looking for does not exist or has been removed.
             </p>
-            <Button onClick={() => navigate("/projects")}>Ver todos os projetos</Button>
+            <Button onClick={() => navigate("/projects")}>View all projects</Button>
           </motion.div>
         </div>
       </AppLayout>
@@ -76,8 +75,8 @@ const ProjectDetails = () => {
     
     // Notifica o usuário sobre a criação da tarefa
     toast({
-      title: "Tarefa criada",
-      description: "Tarefa adicionada ao projeto com sucesso."
+      title: "Task created",
+      description: "Task added to project successfully."
     });
   };
 
@@ -120,30 +119,19 @@ const ProjectDetails = () => {
                 <DialogTrigger asChild>
                   <Button>
                     <ListPlus className="mr-2 h-4 w-4" />
-                    Nova Tarefa
+                    New Task
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Criar Nova Tarefa</DialogTitle>
+                    <DialogTitle>Create New Task</DialogTitle>
                     <DialogDescription>
-                      Adicione os detalhes da sua nova tarefa.
+                      Add details for your new task.
                     </DialogDescription>
                   </DialogHeader>
                   <TaskForm
                     onComplete={handleTaskCreated}
-                    editTask={{
-                      id: '',
-                      title: '',
-                      priority: 'media',
-                      status: 'todo',
-                      tags: [],
-                      projectId: project.id,
-                      completed: false,
-                      createdAt: new Date().toISOString(),
-                      updatedAt: new Date().toISOString(),
-                      subtasks: []
-                    }}
+                    defaultProjectId={project.id}
                   />
                 </DialogContent>
               </Dialog>

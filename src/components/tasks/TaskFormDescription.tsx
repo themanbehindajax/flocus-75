@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { t } from "@/lib/translations";
 
 interface TaskFormDescriptionProps {
   value: string;
@@ -9,10 +10,10 @@ interface TaskFormDescriptionProps {
 
 export const TaskFormDescription = ({ value, onChange }: TaskFormDescriptionProps) => (
   <div className="space-y-2">
-    <Label htmlFor="description">Descrição</Label>
+    <Label htmlFor="description">{t('description')}</Label>
     <Textarea
       id="description"
-      placeholder="Descreva a tarefa"
+      placeholder={t('task_description_placeholder')}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />

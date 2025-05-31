@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Project } from "@/lib/types";
+import { t } from "@/lib/translations";
 
 interface TaskFormProjectProps {
   projectId: string | undefined;
@@ -18,17 +19,17 @@ interface TaskFormProjectProps {
 
 export const TaskFormProject = ({ projectId, setProjectId, projects, disabled = false }: TaskFormProjectProps) => (
   <div className="space-y-2">
-    <Label htmlFor="project">Projeto</Label>
+    <Label htmlFor="project">{t('project')}</Label>
     <Select
       value={projectId || "none"}
       onValueChange={(value) => setProjectId(value === "none" ? undefined : value)}
       disabled={disabled}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Selecione um projeto" />
+        <SelectValue placeholder={t('select_project')} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="none">Sem projeto</SelectItem>
+        <SelectItem value="none">{t('no_project')}</SelectItem>
         {projects.map((project) => (
           <SelectItem key={project.id} value={project.id}>
             {project.name}
@@ -38,7 +39,7 @@ export const TaskFormProject = ({ projectId, setProjectId, projects, disabled = 
     </Select>
     {disabled && projectId && (
       <p className="text-xs text-muted-foreground mt-1">
-        O projeto foi pré-selecionado e não pode ser alterado nesta visualização.
+        {t('project_preselected')}
       </p>
     )}
   </div>
