@@ -24,15 +24,12 @@ import { toast } from "sonner";
 import { AppSettings } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, X } from "lucide-react";
-import { TIMEZONE_OPTIONS, getCurrentTimeInTimezone } from "@/lib/timezone";
-import { t } from "@/lib/translations";
 
 const Settings = () => {
-  const { settings, updateSettings, profile, updateProfile, timezone, setTimezone } = useAppStore();
+  const { settings, updateSettings, profile, updateProfile } = useAppStore();
   const [formSettings, setFormSettings] = useState<AppSettings>(settings);
   const [name, setName] = useState(profile.name);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(profile.avatar);
-  const [selectedTimezone, setSelectedTimezone] = useState(timezone || 'America/Sao_Paulo');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -43,18 +40,8 @@ const Settings = () => {
     setAvatarUrl(profile.avatar);
   }, [profile.avatar]);
 
-  useEffect(() => {
-    setSelectedTimezone(timezone || 'America/Sao_Paulo');
-  }, [timezone]);
-
   const handleSaveSettings = () => {
-    const updatedSettings = {
-      ...formSettings,
-      timezone: selectedTimezone
-    };
-    
-    updateSettings(updatedSettings);
-    setTimezone(selectedTimezone);
+    updateSettings(formSettings);
     
     const profileUpdates = {} as any;
     
@@ -72,7 +59,7 @@ const Settings = () => {
       updateProfile(profileUpdates);
     }
     
-    toast.success(t('settings_saved'));
+    toast.success("Settings updated successfully!");
   };
 
   const handleAvatarClick = () => {
@@ -95,26 +82,17 @@ const Settings = () => {
     setAvatarUrl(undefined);
   };
 
-  const handleTimezoneChange = (newTimezone: string) => {
-    setSelectedTimezone(newTimezone);
-  };
-
-  const getSelectedTimezoneLabel = () => {
-    const option = TIMEZONE_OPTIONS.find(tz => tz.value === selectedTimezone);
-    return option?.label || selectedTimezone;
-  };
-
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">{t('settings_title')}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('profile')}</CardTitle>
+            <CardTitle>Profile</CardTitle>
             <CardDescription>
-              {t('profile_description')}
+              Configure your personal information
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -155,7 +133,7 @@ const Settings = () => {
 
               <div className="w-full space-y-4">
                 <div>
-                  <Label htmlFor="name">{t('name')}</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
                     value={name}
@@ -165,13 +143,13 @@ const Settings = () => {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">{t('your_points')}</h3>
-                    <p className="text-muted-foreground text-sm">{profile.points} {t('points')}</p>
+                    <h3 className="font-medium">Your points:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.points} points</p>
                   </div>
                   
                   <div>
-                    <h3 className="font-medium">{t('current_streak')}</h3>
-                    <p className="text-muted-foreground text-sm">{profile.streak} {t('days')}</p>
+                    <h3 className="font-medium">Current streak:</h3>
+                    <p className="text-muted-foreground text-sm">{profile.streak} days</p>
                   </div>
                 </div>
               </div>
@@ -182,17 +160,17 @@ const Settings = () => {
         {/* Pomodoro Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('pomodoro_settings')}</CardTitle>
+            <CardTitle>Pomodoro Settings</CardTitle>
             <CardDescription>
-              {t('pomodoro_settings_description')}
+              Adjust focus and break times
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="pomodoro-duration">{t('pomodoro_duration')}</Label>
-                  <span className="text-muted-foreground">{formSettings.pomodoroDuration} {t('minutes')}</span>
+                  <Label htmlFor="pomodoro-duration">Pomodoro Duration</Label>
+                  <span className="text-muted-foreground">{formSettings.pomodoroDuration} min</span>
                 </div>
                 <Slider
                   id="pomodoro-duration"
@@ -206,8 +184,8 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="short-break">{t('short_break')}</Label>
-                  <span className="text-muted-foreground">{formSettings.shortBreakDuration} {t('minutes')}</span>
+                  <Label htmlFor="short-break">Short Break</Label>
+                  <span className="text-muted-foreground">{formSettings.shortBreakDuration} min</span>
                 </div>
                 <Slider
                   id="short-break"
@@ -221,8 +199,8 @@ const Settings = () => {
               
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label htmlFor="long-break">{t('long_break')}</Label>
-                  <span className="text-muted-foreground">{formSettings.longBreakDuration} {t('minutes')}</span>
+                  <Label htmlFor="long-break">Long Break</Label>
+                  <span className="text-muted-foreground">{formSettings.longBreakDuration} min</span>
                 </div>
                 <Slider
                   id="long-break"
@@ -240,60 +218,31 @@ const Settings = () => {
         {/* Appearance Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('appearance')}</CardTitle>
+            <CardTitle>Appearance</CardTitle>
             <CardDescription>
-              {t('appearance_description')}
+              Customize the appearance of the application
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="theme">{t('theme')}</Label>
+              <Label htmlFor="theme">Theme</Label>
               <Select
                 value={formSettings.theme}
                 onValueChange={(value) => setFormSettings({ ...formSettings, theme: value as "light" | "dark" | "system" })}
               >
                 <SelectTrigger id="theme">
-                  <SelectValue placeholder={`${t('select')} ${t('theme').toLowerCase()}`} />
+                  <SelectValue placeholder="Select a theme" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">{t('light')}</SelectItem>
-                  <SelectItem value="dark">{t('dark')}</SelectItem>
-                  <SelectItem value="system">{t('system')}</SelectItem>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timezone">{t('timezone')}</Label>
-              <Select
-                value={selectedTimezone}
-                onValueChange={handleTimezoneChange}
-              >
-                <SelectTrigger id="timezone">
-                  <SelectValue placeholder={`${t('select')} ${t('timezone').toLowerCase()}`}>
-                    {getSelectedTimezoneLabel()}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  {TIMEZONE_OPTIONS.map((timezone) => (
-                    <SelectItem key={timezone.value} value={timezone.value}>
-                      <div className="flex justify-between items-center w-full">
-                        <span>{timezone.label}</span>
-                        <span className="text-xs text-muted-foreground ml-2">
-                          {getCurrentTimeInTimezone(timezone.value)}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-muted-foreground">
-                {t('timezone_description')} {getCurrentTimeInTimezone(selectedTimezone)}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notifications">{t('notifications')}</Label>
+              <Label htmlFor="notifications">Notifications</Label>
               <Select
                 value={formSettings.notificationsEnabled ? "enabled" : "disabled"}
                 onValueChange={(value) => setFormSettings({ 
@@ -302,11 +251,11 @@ const Settings = () => {
                 })}
               >
                 <SelectTrigger id="notifications">
-                  <SelectValue placeholder={`Configure ${t('notifications').toLowerCase()}`} />
+                  <SelectValue placeholder="Configure notifications" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enabled">{t('enabled')}</SelectItem>
-                  <SelectItem value="disabled">{t('disabled')}</SelectItem>
+                  <SelectItem value="enabled">Enabled</SelectItem>
+                  <SelectItem value="disabled">Disabled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -315,7 +264,7 @@ const Settings = () => {
         
         <div className="flex justify-end">
           <Button onClick={handleSaveSettings}>
-            {t('save_settings')}
+            Save Settings
           </Button>
         </div>
       </div>

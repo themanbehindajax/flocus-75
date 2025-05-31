@@ -76,7 +76,6 @@ export interface AppSettings {
   longBreakDuration: number;
   theme: "light" | "dark" | "system";
   notificationsEnabled?: boolean;
-  timezone?: string;
 }
 
 export interface CalendarEvent {

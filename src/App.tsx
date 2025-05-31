@@ -20,7 +20,6 @@ import Pomodoro from "./pages/Pomodoro";
 import Settings from "./pages/Settings";
 import Achievements from "./pages/Achievements";
 import Login from "./pages/Login";
-import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import React from "react";
 
@@ -44,7 +43,6 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/lp" element={<PageTransition><LandingPage /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
         
         <Route path="/" element={

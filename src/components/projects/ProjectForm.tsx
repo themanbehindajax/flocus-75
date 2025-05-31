@@ -15,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { t } from "@/lib/translations";
 
 interface ProjectFormProps {
   onSubmit: (project: Omit<Project, "id" | "createdAt" | "updatedAt" | "tasks">) => void;
@@ -28,7 +27,7 @@ export const ProjectForm = ({
   onSubmit,
   onCancel,
   initialProject = {},
-  submitButtonText = t('create_project')
+  submitButtonText = "Criar Projeto"
 }: ProjectFormProps) => {
   const [name, setName] = useState(initialProject.name || "");
   const [goal, setGoal] = useState(initialProject.goal || "");
@@ -50,25 +49,25 @@ export const ProjectForm = ({
   return (
     <div className="space-y-4 py-4">
       <div className="space-y-2">
-        <Label htmlFor="name">{t('project_name')}</Label>
+        <Label htmlFor="name">Nome do Projeto</Label>
         <Input
           id="name"
-          placeholder={t('project_name_placeholder')}
+          placeholder="Insira o nome do projeto"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="goal">{t('main_goal')}</Label>
+        <Label htmlFor="goal">Meta Principal</Label>
         <Textarea
           id="goal"
-          placeholder={t('main_goal_placeholder')}
+          placeholder="Qual é o objetivo deste projeto?"
           value={goal}
           onChange={(e) => setGoal(e.target.value)}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="dueDate">{t('completion_date')}</Label>
+        <Label htmlFor="dueDate">Data de Conclusão</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -80,7 +79,7 @@ export const ProjectForm = ({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>{t('select_date')}</span>}
+              {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Selecione uma data</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -96,7 +95,7 @@ export const ProjectForm = ({
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
-          {t('cancel')}
+          Cancelar
         </Button>
         <Button onClick={handleSubmit}>{submitButtonText}</Button>
       </DialogFooter>
