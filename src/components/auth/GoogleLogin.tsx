@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { GoogleLogin as GoogleOAuthLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -37,11 +36,11 @@ export const GoogleLogin = () => {
       login(user, credentialResponse.credential);
       updateProfile(user);
       
-      toast.success("Login realizado com sucesso!");
+      toast.success("Login successful!");
       setIsLoading(false);
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      toast.error("Erro ao fazer login com Google");
+      console.error("Error during login:", error);
+      toast.error("Error logging in with Google");
       setIsLoading(false);
     }
   };
@@ -50,18 +49,18 @@ export const GoogleLogin = () => {
     <div className="w-full">
       {isLoading ? (
         <div className="w-full h-10 flex items-center justify-center border rounded-md bg-muted/20">
-          <span className="text-sm">Processando...</span>
+          <span className="text-sm">Processing...</span>
         </div>
       ) : (
         <GoogleOAuthLogin
           onSuccess={handleSuccess}
           onError={() => {
-            toast.error("Erro ao fazer login com Google");
+            toast.error("Error logging in with Google");
           }}
           width="100%"
           shape="rectangular"
           text="signin_with"
-          locale="pt"
+          locale="en"
           theme="outline"
           size="large"
         />

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuthStore } from "@/lib/auth";
 import { useAppStore } from "@/lib/store";
@@ -36,7 +35,7 @@ export const OnboardingForm = () => {
     e.preventDefault();
     
     if (!name.trim()) {
-      toast.error("Por favor, insira seu nome");
+      toast.error("Please enter your name");
       return;
     }
     
@@ -53,8 +52,8 @@ export const OnboardingForm = () => {
     
     // Add a default project
     addProject({
-      name: "Meu Primeiro Projeto",
-      description: "Um projeto para organizar minhas tarefas iniciais",
+      name: "My First Project",
+      description: "A project to organize my initial tasks",
       color: "#9b87f5"
     });
     
@@ -73,7 +72,7 @@ export const OnboardingForm = () => {
     // Login with local info
     login(user, "local");
     
-    toast.success(`Bem-vindo ao Flocus, ${name}!`);
+    toast.success(`Welcome to Flocus, ${name}!`);
   };
 
   return (
@@ -100,7 +99,7 @@ export const OnboardingForm = () => {
               htmlFor="avatar-upload" 
               className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             >
-              <span className="text-white text-sm font-medium">Alterar</span>
+              <span className="text-white text-sm font-medium">Change</span>
             </label>
             <input
               id="avatar-upload"
@@ -114,11 +113,11 @@ export const OnboardingForm = () => {
           <div className="space-y-3 w-full">
             <div className="flex items-center space-x-2">
               <User className="w-5 h-5 text-primary" />
-              <Label htmlFor="name" className="font-medium text-lg">Como podemos te chamar?</Label>
+              <Label htmlFor="name" className="font-medium text-lg">What should we call you?</Label>
             </div>
             <Input
               id="name"
-              placeholder="Seu nome"
+              placeholder="Your name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -134,7 +133,7 @@ export const OnboardingForm = () => {
           className="w-full py-6 text-lg font-medium mt-6"
           disabled={!name.trim()}
         >
-          Começar a usar o Flocus
+          Start using Flocus
         </Button>
       </form>
     </motion.div>
