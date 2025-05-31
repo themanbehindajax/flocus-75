@@ -1,3 +1,4 @@
+
 import { 
   Task, 
   PomodoroSession, 
@@ -21,6 +22,10 @@ export interface UIState {
   
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
+  
+  // Add timezone and setTimezone
+  timezone: string;
+  setTimezone: (timezone: string) => void;
   
   // Add colorMode and the setter function
   colorMode: 'light' | 'dark' | 'system';

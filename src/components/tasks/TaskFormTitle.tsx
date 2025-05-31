@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { t } from "@/lib/translations";
 
 interface TaskFormTitleProps {
   value: string;
@@ -9,10 +10,10 @@ interface TaskFormTitleProps {
 
 export const TaskFormTitle = ({ value, onChange }: TaskFormTitleProps) => (
   <div className="space-y-2">
-    <Label htmlFor="title">Título</Label>
+    <Label htmlFor="title">{t('title')}</Label>
     <Input
       id="title"
-      placeholder="Insira o título da tarefa"
+      placeholder={t('task_title_placeholder')}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
