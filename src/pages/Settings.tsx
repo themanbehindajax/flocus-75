@@ -26,6 +26,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, X } from "lucide-react";
 import { TIMEZONE_OPTIONS, getCurrentTimeInTimezone } from "@/lib/timezone";
 import { t } from "@/lib/translations";
+import { loadDemoData, clearAllData } from "@/lib/loadDemoData";
+import { Database, Trash2 } from "lucide-react";
 
 const Settings = () => {
   const { settings, updateSettings, profile, updateProfile, timezone, setTimezone } = useAppStore();
@@ -310,6 +312,48 @@ const Settings = () => {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+        
+        {/* Data Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Gerenciamento de Dados</CardTitle>
+            <CardDescription>
+              Carregar dados de exemplo ou limpar todos os dados da aplicação
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={() => {
+                  loadDemoData();
+                  toast.success("Dados demo carregados com sucesso!");
+                }}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Database className="h-4 w-4" />
+                Carregar Dados Demo
+              </Button>
+              
+              <Button 
+                onClick={() => {
+                  if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
+                    clearAllData();
+                    toast.success("Todos os dados foram removidos!");
+                  }
+                }}
+                variant="destructive"
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Limpar Todos os Dados
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Os dados demo incluem tarefas, projetos, sessões de pomodoro, tags e eventos de calendário de exemplo.
+            </p>
           </CardContent>
         </Card>
         

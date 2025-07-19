@@ -10,6 +10,15 @@ import { createPomodoroSlice } from './slices/pomodoroSlice';
 import { createMiscSlice } from './slices/miscSlice';
 import { createCalendarSlice } from './slices/calendarSlice';
 import { AppState } from './types';
+import { 
+  demoTasks, 
+  demoProjects, 
+  demoTags, 
+  demoPomodoroSessions, 
+  demoDailyPriorities, 
+  demoProfile, 
+  demoCalendarEvents 
+} from '../demoData';
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -40,6 +49,23 @@ export const useAppStore = create<AppState>()(
         calendarEvents: state.calendarEvents,
         settings: state.settings
       }),
+      onRehydrateStorage: () => (state) => {
+        // Para novos usuários (sem dados salvos), carregar dados demo automaticamente
+        if (state && !localStorage.getItem('flocus-app-storage-loaded')) {
+          if (state.tasks.length === 0) {
+            state.tasks = demoTasks;
+            state.projects = demoProjects;
+            state.tags = demoTags;
+            state.pomodoroSessions = demoPomodoroSessions;
+            state.dailyPriorities = demoDailyPriorities;
+            state.calendarEvents = demoCalendarEvents;
+            if (state.profile.name === 'Usuário' && state.profile.points === 0) {
+              state.profile = demoProfile;
+            }
+            localStorage.setItem('flocus-app-storage-loaded', 'true');
+          }
+        }
+      }
     }
   )
 );
