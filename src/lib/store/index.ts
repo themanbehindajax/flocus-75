@@ -50,18 +50,21 @@ export const useAppStore = create<AppState>()(
         settings: state.settings
       }),
       onRehydrateStorage: () => (state) => {
-        // Para novos usuários (sem dados salvos), carregar dados demo automaticamente
-        if (state && !localStorage.getItem('flocus-app-storage-loaded')) {
-          if (state.tasks.length === 0) {
+        // Para novos usuários, carregar dados demo automaticamente
+        if (state) {
+          const hasExistingData = localStorage.getItem('flocus-app-storage-loaded') || 
+                                state.tasks.length > 0 || 
+                                state.projects.length > 0 || 
+                                state.pomodoroSessions.length > 0;
+          
+          if (!hasExistingData) {
             state.tasks = demoTasks;
             state.projects = demoProjects;
             state.tags = demoTags;
             state.pomodoroSessions = demoPomodoroSessions;
             state.dailyPriorities = demoDailyPriorities;
             state.calendarEvents = demoCalendarEvents;
-            if (state.profile.name === 'Usuário' && state.profile.points === 0) {
-              state.profile = demoProfile;
-            }
+            state.profile = demoProfile;
             localStorage.setItem('flocus-app-storage-loaded', 'true');
           }
         }
